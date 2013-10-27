@@ -1,0 +1,3 @@
+[submodule "sl2"]
+	path = sl2
+	url = git@github.com:illupoed/sl2.git

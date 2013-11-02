@@ -1,2 +1,12 @@
 /.target
 /bin
+*~
+/project/project/*
+/project/target/*
+/target/*
+/.classpath
+/.project
+/.settings/*
+/public/sl/generated/*
+/sl-files
+/test/*

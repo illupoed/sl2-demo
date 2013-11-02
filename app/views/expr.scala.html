@@ -1,0 +1,65 @@
+@()
+@import de.tuberlin.uebb.sl2.impl.MacroDriver._
+
+<!DOCTYPE html>
+<html>
+  <head>
+  <head>
+    <title>Pretty Printer example</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/main.css")">
+    <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
+    <script src="@routes.Assets.at("javascripts/jquery-1.9.0.min.js")" type="text/javascript"></script>
+    <script type="text/javascript">@Html("foobar"/*slc1[Expr]("/expr.sl")*/)</script>
+
+    <!-- Bootstrap -->
+    <link href="@routes.Assets.at("stylesheets/bootstrap.min.css")" rel="stylesheet" media="screen">
+  </head>
+
+  <body onLoad="$main()">
+    
+    <div class="container-fluid">
+      <div class="row-fluid">
+
+	<div class="span4">
+	  <form>
+	    <fieldset>
+	      <legend>Pretty Printer</legend>
+	      <label>Expression to parse:</label>
+	      <textarea id="input" placeholder="Type something…"></textarea>
+	      <span class="help-block">Input an SL-expression and press parse.</span>
+	      <div id="parse" class="btn">Parse</div>
+	    </fieldset>
+	  </form>
+	  <div id="result"></div>
+	</div>
+
+	<div class="span8">
+	  <div class="well" style="padding: 8px 0;">
+	    <div style="overflow-y: scroll; overflow-x: hidden; height: 500px;">
+	      <ul id="tree" class="nav nav-list">
+	      </ul>
+	    </div>
+	  </div>
+	</div>
+
+      </div><!--/row-->	
+    <hr>
+    <footer>
+      <p>&copy; UEBB TU Berlin 2012</p>
+    </footer>
+    </div>
+
+
+    <script src="http://code.jquery.com/jquery.js"></script>
+    <script src="@routes.Assets.at("javascripts/bootsrap.min.js")" type="text/javascript"></script>
+
+    <script>
+      $(document).ready(function () {
+      $('label.tree-toggler').click(function () {
+      $(this).parent().children('ul.tree').toggle(300);
+      });
+      });
+    </script>
+  </body>
+</html>

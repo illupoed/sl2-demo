@@ -1,0 +1,44 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+		<title>Example</title>
+		
+		<script src="sl_init.js"></script>
+		<script src="require.js"></script>
+	</head>
+	<body>
+		<h1> TEST </h1>
+		<div id="foo"> jupp </div>
+		<script type="text/javascript">
+sl.hash1 = {};
+sl.hash1.var1 = 1;
+sl.hash1.var2 = "Hallo World!";
+
+require
+	( [ "hash1" ]
+	, function (h1)
+		{
+			h1.$main()
+		}
+	);
+
+		</script>
+		jupp
+		<script type="text/javascript">
+sl.hash2 = {};
+sl.hash2.var1 = [ "1", "2" ];
+
+require
+	( [ "hash2" ]
+	, function ( h2 )
+		{
+			h2.$main()
+		}
+	);
+
+		</script>
+	</body>
+</html>

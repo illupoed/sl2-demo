@@ -10,8 +10,8 @@ GET     /assets/*file               controllers.Assets.at(path="/public", file)
 
 GET	/koch			    controllers.Application.koch
 
-GET	/kochFile		    controllers.Application.kochFile
+#GET	/kochFile		    controllers.Application.kochFile
 
-GET	/expr			    controllers.Application.expr
+#GET	/expr			    controllers.Application.expr
 
-GET	/parseExpr		    controllers.Application.expr2Json(in : String)
+#GET	/parseExpr		    controllers.Application.expr2Json(in : String)

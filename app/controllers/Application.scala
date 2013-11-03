@@ -36,7 +36,7 @@ object Application extends Controller {
 
   def someSl(x : JValue) = makeObj(1, x)
 
-  implicit def list2SlList[T](x : List[T])(implicit f : T => JValue) : JValue = x match {
+  /*implicit def list2SlList[T](x : List[T])(implicit f : T => JValue) : JValue = x match {
     case hd::tl => makeObj(0, f(hd), list2SlList(tl))
     case Nil => 1
   }
@@ -92,8 +92,8 @@ object Application extends Controller {
 
     case Lambda(p, e, attr)          => makeObj(10, p, e, attr)
     case Let(ds, b, attr)            => makeObj(11, ds, b, attr)   
-  }
-
+  }*/
+  /*
   def expr2Json(in : String) = Action {
     println("Requested for parsing: '%s'".format(in))
     val e = parseExpr(in) 
@@ -107,7 +107,8 @@ object Application extends Controller {
       case _ => Ok(compact(jrender(noneSl)))
     }
   }
-
+*/
+  /*
   def parseType(in : String) = Action {
     println("Requested for parsing: '%s'".format(in))
     val t = parseExpr("{| |} : " + in) 
@@ -121,4 +122,6 @@ object Application extends Controller {
       case _ => Ok(compact(jrender(noneSl)))
     }
   }
+  * 
+  */
 }

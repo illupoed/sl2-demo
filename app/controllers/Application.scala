@@ -6,35 +6,36 @@ import play.api.mvc._
 import de.tuberlin.uebb.sl2.impl.MacroDriver._
 
 import org.json4s._
-import org.json4s.JsonDSL.{list2jvalue=>_,_}
-import org.json4s.native.JsonMethods.{render=>jrender,_}
+import org.json4s.JsonDSL.{ list2jvalue => _, _ }
+import org.json4s.native.JsonMethods.{ render => jrender, _ }
 
 object Application extends Controller {
-  
+
   def index = Action {
-    Ok(views.html.index("Your new application is ready."))
+    Ok( views.html.index( "Your new application is ready." ) )
   }
-
+  
   def koch = Action {
-    Ok(views.html.koch())
+    Ok( views.html.koch(true) )
   }
+  
+//  def kochFile = Action {
+//    Ok( views.html.kochfile() )
+//  }
+//
+//  def expr = Action {
+//    Ok( views.html.expr() )
+//  }
+//
+//  def makeObj( clazz: Int, vals: JValue* ) =
+//    {
+//      val fields: List[( String, JValue )] = ( "_cid" -> JInt( clazz ) ) :: ( vals.zipWithIndex.map( { case ( v, idx ) => ( ( "_var" + idx ) -> v ) } ).toList )
+//      JObject( fields )
+//    }
 
-  def kochFile = Action {
-    Ok(views.html.kochfile())
-  }
+//  val noneSl = JInt( 0 )
 
-  def expr = Action {
-    Ok(views.html.expr())
-  }
-
-  def makeObj(clazz : Int, vals : JValue*) = {
-    val fields : List[(String, JValue)]= ("_cid" -> JInt(clazz)) :: (vals.zipWithIndex.map( {case (v, idx) => (("_var" + idx) -> v)}).toList )
-    JObject(fields)
-  }
-
-  val noneSl = JInt(0)
-
-  def someSl(x : JValue) = makeObj(1, x)
+//  def someSl( x: JValue ) = makeObj( 1, x )
 
   /*implicit def list2SlList[T](x : List[T])(implicit f : T => JValue) : JValue = x match {
     case hd::tl => makeObj(0, f(hd), list2SlList(tl))

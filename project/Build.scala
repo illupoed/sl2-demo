@@ -8,7 +8,7 @@ object ApplicationBuild extends Build {
   val appVersion      = "1.0-SNAPSHOT"
   val paradiseVersion = "2.0.0-M3"
   
-  val json4sNative = "org.json4s" %% "json4s-native" % "3.2.4"
+  val json4sNative = "org.json4s" %% "json4s-native" % "3.2.8"
 
   val appDependencies = Seq(
     // Add your project dependencies here,
@@ -29,7 +29,8 @@ object ApplicationBuild extends Build {
       libraryDependencies ++= (
         if (scalaVersion.value.startsWith("2.10")) List("org.scalamacros" % "quasiquotes" % paradiseVersion cross CrossVersion.full)
         else Nil
-      )
+      ),
+      libraryDependencies += json4sNative
     )
   )
 

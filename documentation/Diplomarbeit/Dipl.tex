@@ -1,20 +1,25 @@
-\documentclass[12pt,a4paper]{report}
+\documentclass[12pt]{scrreprt}
+
+% satz nach der norm auf der tu-seite
+
+% \documentclass[12pt,a4paper]{report}
+% satzspiegel festlegen
+%\usepackage{geometry}
+%\geometry{
+%  left=4cm,
+%  right=1.5cm,
+%  top=3cm,
+%  bottom=3cm,
+%  bindingoffset=0mm
+%}
+
 
 % farben definieren
 \usepackage{xcolor}
 \definecolor{lightblue}{cmyk}{0.346, 0.114, 0, 0.106}
 
-% satzspiegel festlegen
-\usepackage{geometry}
-\geometry{
-  left=4cm,
-  right=1.5cm,
-  top=3cm,
-  bottom=2cm,
-  bindingoffset=0mm
-}
 
-% zeilenabstand
+% zeilenabstand (nach dem dokument auf der tu-seite)
 \usepackage[onehalfspacing]{setspace}
 
 % deutsch
@@ -40,6 +45,10 @@
 
 % abkürzungen
 \usepackage[printonlyused]{acronym}
+
+% bessere listen
+\usepackage{enumitem}
+\setlist{noitemsep} % entfernen der abstände zwischen den verschiedenen items (naja so halb der rest kommt vom zeilenabstand)
 
 % bessere links (sollte als letztes paket geladen werden)
 \usepackage[colorlinks=false]{hyperref}
@@ -339,8 +348,8 @@ Weiter Parameter sind 'context' und 'translators'. 'context' ist der Compiler Ma
 
 Möchte man einen Scala Typ nicht nur gegen eine Klasse prüfen kann man die Hilfsfunktionen 'useTranslators', 'useTranslatorSLToScala' oder 'useTranslatorScalaToSL' aus dem companion object von 'AbstractTranslator' nutzen.
 
-%Code: Hilfsfunktionen
-\begin{lstlisting}[caption=Hilfsfunktionen, label=lst:bsp1]
+
+\begin{lstlisting}[caption=Hilfsfunktionen, label=lst:hilfsfunktionen]
 def useTranslators
   ( c: MacroCtxt )
   ( input: c.universe.Type, translators: Seq[AbstractTranslator] )
@@ -469,19 +478,55 @@ Die Wertübersetzungsfunktionen von Scala nach \ac{SL} und umgekehrt werden im c
 \chapter{Scala Compiler Macros}
 \label{chap:scala-compiler-macros}
 
-Wie bereits erwähnt wurde, konnte in einem Paper\footnote{siehe Paper} der Technischen Universität Berlin gezeigt, das man mit Hilfe von Compiler Macros statischen \ac{SL} Code in die Views von Play-Anwendungen einbetten kann. Mit der Erweiterung von \ac{SL} durch ein Modul-System musste dieses Macro komplett neu geschrieben werden. Weiterhin sollte es möglich sein Scala Funktionen und Werte im statischen \ac{SL} Code zu nutzen. 
+Wie bereits erwähnt wurde, konnte in einem Paper\footnote{siehe Paper} der Technischen Universität Berlin gezeigt, das man mit Hilfe von Compiler Macros statischen \ac{SL} Code in die Views von Play-Anwendungen einbetten kann. Mit der Erweiterung von \ac{SL} durch ein Modul-System musste dieses Macro komplett neu geschrieben werden.
+
+Es blieb aber ein grundsätzliches Problem erhalten. Wie kann der generierte \ac{JS}-Code auf das Serverumfeld wie Datenbanken, Session oder Benutzerdaten zugreifen. In herkömmlichen Anwendungen gibt es zwei Lösungen dafür: Entweder man bindet die Daten direkt in das \ac{HTML} der Webseite ein oder läd sie mit Hilfe von Ajax nach. In der aktuellen Version kann man Scala-Werte direkt im \ac{SL} Code benutzen und Daten über übersetzte Scala Funktionen nachladen.
 
 Um Scala Funktionen für die Verwendung in \ac{SL} Code zu markieren wurden macro annotations\footnote{siehe http://docs.scala-lang.org/overviews/macros/annotations.html} benutzt. Die Beschreibung und Arbeitsweise dieses Macros wird Inhalt des nächste Kapitels (\ref{sec:annotation-macro}) sein. Im darauf folgenden Kapitel (\ref{sec:inline-macro}) wird beschrieben, wie statischer \ac{SL} Code eingebunden wird und welchen Veränderungen gemacht werden mussten um Scala Werte und Funktionen benutzen zu können.
-
-%TODO
-% - beschreiben des grundsätzlichen Aufbaus
-% - die 2 Macros - Config - Translator Klassen
 
 \section{Annotation Macro}
 \label{sec:annotation-macro}
 
+Mit Hilfe des \lstinline!sl_function!-Macros können wir Funktionen markieren, die für die Verwendung in \ac{SL}-Code zur Verfügung stehen sollen. Für eine markierte Funktion wird ein \ac{SL}-Modul erzeugt, das dann eingebunden werden kann. Wird die Funktion in SL aufgerufen wird Ajax-Anfrage mit den entsprechenden Parametern an den Server gesenden, die Scala Funktion mit Hilfe von Reflections\footnote{siehe http://docs.scala-lang.org/overviews/reflection/overview.html} aufgerufen und das Ergebnis als Antwort verpackt. Im Listing \ref{lst:example-signatur-translated-funktion} sieht man beispielhaft die Benutzung des Macros und die Signaturen der generierten SL-Funktionen. Der Aufruf kann synchron oder asynchron erfolgen. Um Fehler in der Verbindung behandeln zu können wird das Ergebnis in \lstinline!Option! verpackt.
+
+\begin{lstlisting}[caption=Beispiel einer übersetzten Funktion, label=lst:example-signatur-translated-funktion, float]
+-- Signatur der Scala-Funktion
+object Example {
+  @sl_function def factorial( i: Int ): Int = {...}
+}
+
+-- Signaturen der entsprechenden SL-Funktionen
+-- synchroner Aufruf
+PUBLIC FUN factorialSync : Int ->  DOM ( Opt.Option (Int) )
+-- und asynchroner Aufruf
+PUBLIC FUN factorialAsync : ( Opt.Option (Int) -> DOM Void ) -> Int ->  DOM Void
+
+\end{lstlisting}
+
+Damit eine Funktion für \ac{SL} übersetzt werden kann, muss sie gewisse Vorraussetzungen erfüllen:
+\begin{itemize}
+ \item[-]{sie muss statisch aufrufbar sein, also:}
+ \begin{itemize}
+  \item[*]{muss in einem Objekt definiert sein}
+  \item[*]{die Signatur darf keine Typparameter enthalten}
+  \item[*]{muss public sein}
+ \end{itemize}
+ \item[-]{der Rückgabetyp und die Parametertypen müssen sich in \ac{SL}-Typen übersetzen lassen}
+ \item[-]{sie muss einen Rückgabetyp definieren}
+ \item[-]{sie darf nur eine Parameterliste enthalten}
+ \item[-]{der Funktionsname darf keine ungewöhnlichen Zeichen enthalten}
+\end{itemize}
+
+%kurz Aufruf
+
+%Ablauf des Macros
+
+%
+
 %TODO
 % - Ablauf beschreiben (grundsätzliche Idee)
+%  - scala function 
+
 % - Welche Probleme mussten behoben werden
 
 
@@ -551,7 +596,8 @@ Um Scala Funktionen für die Verwendung in \ac{SL} Code zu markieren wurden macr
  \acro{AST}{Abstract Syntax Tree}
  \acro{TU-Berlin}{Technische Universität Berlin}
  \acro{}{}
- \acro{}{}
+ \acro{HTML}{Hypertext Markup Language}
+ \acro{DOM}{Document Object Model}
 \end{acronym}
 
 %TODO

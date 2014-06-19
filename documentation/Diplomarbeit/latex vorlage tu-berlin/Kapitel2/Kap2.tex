@@ -1,0 +1,144 @@
+% Kapitel 2 - Mathe
+
+\chapter{Mathematische Ausdrücke und Formeln} \label{chap:math}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Matrizen} \label{sec:matrizen}
+
+Matrizen gehen so: TEST
+
+Definition einer $(M \times N)$-Matrix:
+\begin{equation}
+	{\bf A}=\left(
+		\begin{array}{cccc}
+			a_{11}  & a_{12}        & \cdots                & a_{1N}        \\
+			a_{21}  & a_{22}        & \cdots                & a_{2N}        \\
+			\vdots  & \vdots        & \ddots                & \vdots        \\
+			a_{M1}  & a_{M2}        & \cdots                & a_{MN}
+		\end{array}
+		\right)
+		  =(a_{ij})
+\end{equation}
+
+
+\section{Schreibweisen und Formelsatz}
+
+Oft stellt sich die Frage, ob man ein Formelzeichen oder einen Bezeichner in
+einer Zeichnung senkrecht (also ``normal'' bzw. nicht-kursiv) oder
+\textit{kursiv} zu schreiben hat. Um diese Fragen zu klären folgen nun die
+wichtigsten Regeln, wie sie Standard sein sollten. Sie sind aus den DIN-Normen
+1338 und 1302 übernommen. Zusätzlich wird darauf hingewiesen, wie man in
+mathematischen Formeln die korrekten Abstände zwischen den Elementen und
+Einheiten einzuhalten hat.
+
+Um zwischen mathematischen und physikalischen Konstanten und Variablen
+unterscheiden zu können, werden diese mit unterschiedlichen Schreibweisen
+gekennzeichnet.
+
+\subsection{Senkrechte Schreibweise}
+\textbf{Mathematische Konstanten} werden generell senkrecht geschrieben.
+Dazu gehören beispielsweise die Euler´sche Zahl $\mathrm{e}$, die Zahl $\pi$ oder $	\mathrm{j}$ bzw. $	\mathrm{i} = \sqrt{-1}$. \textbf{Mathematische Funktionen und Operatoren} schreibt man senkrecht.
+z.\,B.\ $\sin, \cos, \exp, \ln$ und  $\mathrm{\frac{d}{dt}}$
+
+\subsection{Kursive Schreibweise}
+\textbf{\textit{Physikalische Konstanten}}, die physikalische Größen bezeichnen werden generell \textit{kursiv} geschrieben.
+z.\,B.\ $R, L$ oder $i, u$ und Konstanten wie $\epsilon_0$ oder $k$.
+
+\textbf{\textit{Variablen}} werden generell kursiv geschrieben
+
+\subsection{Schreibweise des Index}
+Für Indizes gelten dieselben wie oben beschriebenen Regeln:
+Beschreiben die Indizes eine Variable, so werden sie kursiv geschrieben So schreibt man beispielsweise den Ohm´schen Widerstand $R$ einer Induktivität $L$: $R_L$. $R$ und $L$ bezeichnen beide physikalische Größen, und werden somit kursiv geschrieben.
+Dient der Index jedoch der Bezeichnung der Funktion von bestimmten Elementen, so wird dieser senkrecht gedruckt. Möchte man beispielsweise einen Widerstand R als Lastwiderstand kennzeichnen, so geschieht dies mit einer senkrechten Indizierung: $R_{\mathrm{Last}}$
+Zählvariablen, als oft vorkommendes Beispiel, werden als Veränderliche im Index ebenfalls kursiv geschrieben. Z.\,B.\ $k_n$ , wobei $n$ beispielsweise die Zahlen von $0 \ldots 10$ durchläuft.
+Ein bestimmtes Element z.\,B.\ von einem Vektor, wird jedoch mit senkrechten Zahlen indiziert. So z.\,B.\ $k_1$.
+
+Der folgende Hinweis ist eigentlich unnötig:
+{\footnotesize Hinweis für Microsoft Word:
+Neben der üblichen Formatierung über Menübefehle gibt es noch die Möglichkeit Shortcuts einzusetzen:
+Soll ein Index hochgestellt werden, so betätigt man unter Festhalten der Ctrl- bzw. Strg- Taste die * - Taste. Jetzt kann man den gewünschten Index eintippen.
+Soll ein Index tiefgestellt werden, so drückt man Ctrl bzw. Strg und \#.}
+
+\section{Formelsatz}
+\subsection[Formelabstände]{Korrekte Abstände in Formeln}
+Man nutze z.\,B.\ den Befehl ``$\backslash$unit [2]\{kHz\}'': Das Ergebnis sieht dann immer so aus $f_1=\unit[2]{kHz}$. Der folgende Abschnitt erübrigt sich bei Benutzung von LaTeX. {\footnotesize MS Word: Um Formeln übersichtlicher zu gestalten, soll zwischen allen Elementen ein festes Leerzeichen, also ein an den vorhergehenden Ausdruck gebundenes Freizeichen gelassen werden. In Microsoft Word und im Formeleditor erhält man ein solches Leerzeichen indem man die Space-Taste unter Gedrückthalten der Shift und der Ctrl- bzw. Strg-Taste betätigt.
+Auf dem Bildschirm werden diese als Steuerzeichen ``$ \circ $'' sichtbar.
+$R = \unit[100]{\Omega}$  ist als $R \circ = \circ \unit[100\circ]{\Omega}$ zu sehen. Diese Regelung ist besonders bei einheitengebundenen Zahlen wie in diesem Beispiel zu beachten. So muss zwischen Zahl und Einheit immer ein festes Leerzeichen gesetzt werden! Abgesehen von der Übersicht haben diese festen Leerzeichen den Vorteil, dass die Zahlen beim Zeilenumbruch nicht von ihrer Einheit getrennt werden.}
+
+\normalsize
+\newpage
+\subsection[Formelbeispiel]{Beispiel für eine richtig dargestellte Formel}
+Als Bild (aus Word):
+\begin{figure}[!htbp]
+			\begin{center}
+				\includegraphics[scale=0.6]{formelbeispiel}
+				\caption{Formelbeispiel}
+				\label{kap2:formelbeispiel}
+  		\end{center}
+\end{figure}
+
+Und nun in LaTeX als Formel:
+\begin{equation}
+		\frac{\mathrm{d}u_C(t)}{\mathrm{d}t}
+		=	- \frac{1}{R_{\mathrm{Last}}C} K_2(t) \cdot \mathrm{e}^{-\frac{t}{R_{\mathrm{Last}}C}} 																	+ \frac{\mathrm{d}K_2(t)}{\mathrm{d}t} \cdot \mathrm{e}^{-\frac{t}{R_{\mathrm{Last}}C}}
+		\label{kap2:eqformelbeispiel}
+\end{equation}
+
+
+\subsection{Weitere Formeln} \label{sec:formeln}
+\subsubsection{Fouriertransformation}
+\paragraph{Analyse}
+Die Berechnung der Fouriertransformierten\footnote{So könnte eine Fußnote aussehen.} erfolgt mit der Analysegleichung:
+\begin{equation}
+	F(\mathrm{j}\omega)  = {\cal F}[f(t)] = \int\limits_{-\infty}^{\infty}f(t)\cdot \mathrm{e}^{-\mathrm{j}\omega t}\mathrm{d}t
+	\label{analft}
+\end{equation}
+
+\paragraph{Synthese}
+Die Synthesegleichung der Fouriertransformation lautet:
+
+\begin{equation}
+	f(t)  = \frac{1}{2 \pi}\int\limits_{-\infty}^{\infty}F(j \omega) \cdot \mathrm{e}^{\mathrm{j}\omega t}\mathrm{d}\omega
+	\label{synthft}
+\end{equation}
+
+\subsubsection{weitere Transformationen}
+Der mathematische Zusammenhang zwischen einer Zeitfunktion $f(t)$ und ihrer %%@
+Laplacetransformierten $F(s)$ ist durch die Analysegleichung definiert:
+\begin{equation}
+	F(s) = {\cal L}[f(t)] := \int\limits_{-\infty}^{\infty}f(t)\cdot \mathrm{e}^{-st}\mathrm{d}t
+	\label{anallaplace}
+\end{equation}
+Die komplexe Frequenz $s = \sigma +\mathrm{j}\omega$ wird in einem rechtwinkligen Koordinatensystem, der %%@
+Laplace- bzw. $s$-Ebene, dargestellt.
+%
+%
+\subsubsection{Große griechische Buchstaben}
+Sollen in einer Formel große griechische Buchstaben verwendet werden, ist es nötig, das Paket \textsl{fixmath} einzusetzen, da diese ansonsten nicht kursiv dargestellt werden, wenn es sich um Variablen handelt, z.\,B.:
+
+Die normierte Kreisfrequenz ist gegeben als
+%
+\[\upOmega = 2\pi\frac{f}{f_t} = 2\pi\frac{\omega}{\omega_t} \qquad \text{ohne fixmath}\]
+\[\Omega = 2\pi\frac{f}{f_t} = 2\pi\frac{\omega}{\omega_t} \qquad \text{mit fixmath}\]
+
+\subsubsection{Weitere Pakete}
+\paragraph{Griechische Buchstaben in Einheiten}
+Für die Verwendung von griechischen Buchstaben in Einheiten ist bei einigen Schriftarten das Paket \textsl{gensymb} notwendig:
+%
+\[\unit[5]{\mu V} \qquad \text{ohne gensymb}\]
+\[\unit[5]{\micro V} \qquad \text{mit gensymb}\]
+
+\paragraph{Erweiterte Integrale}
+Das Paket \textsl{wasysym} liefert erweiterte Möglichkeiten für den Satz von Integralen, z.\,B.\ für Oberflächenintegrale mit mehreren Integralzeichen:
+%
+\[\oiint\limits_{A_Q}{\vec{G}(\vec{r}) dA_Q}\]
+
+\paragraph{Chemische Formeln}
+Mit Hilfe des Paketes \textsl{mhchem} lassen sich einfach chemischen Formelzeichen bzw.\ Formeln setzen:
+%
+\[\ce{Na+} \quad \ce{O^2-} \quad \ce{H2CO3}  \quad \ce{^1H}\]
+
+\vspace{3cm}
+Vielen Dank für diese Zusammenstellung der Schreibweisen an Stefan Bauer und Christian Carstensen, ISEA - RWTH-Aachen
+

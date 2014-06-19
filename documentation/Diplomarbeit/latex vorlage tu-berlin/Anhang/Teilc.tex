@@ -1,0 +1,29 @@
+% Anhang A - Quellcode
+
+\chapter[TeX-Editoren und Distributionen]{TeX-Editoren und Distributionen}
+
+\section{TeXnicCenter}
+Als frei verfügbarer Editor für LaTeX-Projekte unter Windows ist TeXnicCenter in Verbindung mit der Distribution MiKTeX zu empfehlen. Hierbei sollte zuerst MiKTeX und anschließend TeXnicCenter installiert werden. Um die vorhandene Vorlage fehlerfrei kompilieren zu können, muss im TeXnicCenter ein bereits vordefiniertes Ausgabeprofil genutzt werden. Ausgabeprofile dienen dazu festzulegen, "`welches TeX"' (TeX, LaTeX, pdfTeX) benutzt wird und legen somit fest, in welchem Format verwendete Grafiken vorliegen müssen sowie das Format der Ausgabedatei. Für weiterführende Informationen sollten die entsprechenden Tutorials bemüht werden.
+
+\subsection{Ausgabeprofil für diese Vorlage}
+Für diese Vorlage kann das vordefinierte Ausgabeprofil LaTeX-->PS-->PDF genutzt werden. Auf diese Art und Weise ist es möglich, eps-Grafiken einzubinden. Das Ergebnis des Kompilierens ist vorerst eine *.dvi-Datei. Diese wird danach automatisch zuerst in eine *.ps-Datei umgewandelt (mittels dvips.exe), welche anschließend in eine *.pdf-Datei konvertiert wird (ps2pdf.exe).
+
+\subsection{Ausgabeprofile selbst Anlegen}
+Manchmal kann es sinnvoll sein, eigene Ausgabeprofile zu definieren. Im folgenden wird ein Beispiel vorgestellt, mit dem ein Profil erzeugt wird, das im Projekt vor der Dokumentenklasse den Schalter "`$\backslash$ pdfoutput=0"' erwartet. Hierbei wird pdfTeX verwendet, aber eine *.dvi-Datei erzeugt, die anschließend nach pdf konvertiert werden soll.
+
+Im TeXnicCenter ist unter dem Menüpunkt \textit{Ausgabe} der Punkt \textit{Ausgabeprofile definieren} (auch ALT+F7) anzuwählen. Dort wird dann das vordefinierte Profil LATEX-->PDF kopiert und mit einem neuen, sinnvollen Namen versehen, z.\,B. Diplomarbeit. Die Registerkarten \textit{(La)TeX} und \textit{Viewer} können unverändert übernommen werden. Unter \textit{Nachbearbeitung} werden nun zwei sogenannte Postprozessoren angelegt:
+
+\begin{enumerate}
+
+\item{DVIPS: Anwendung ist dvips.exe mit dem entsprechenden lokalen Pfad. Als Argument wird \textit{-R0 -P pdf ''\%Bm.dvi''} eingetragen.}
+
+\item{PS2PDF: Anwendung ist gswin32c.exe (ghostview) ebenfalls mit dem entsprechenden lokalen Pfad. Als Argument wird \textit{-sPAPERSIZE=a4 -dSAFER -dBATCH -dNOPAUSE -sDEVICE=pdfwrite -sOutputFile=''\%bm.pdf'' -c save pop -f ''\%bm.ps''} angegeben.}
+
+\end{enumerate}
+
+Nun muss das soeben angelegte Profil noch aktiviert werden (Menu \textit{Auswahl/Aktives Ausgabeprofil wählen}). 
+
+Der Vorlage liegt ein entsprechendes Beispielprofil (Datei TexnicCenterProfil.tco) bei, das importiert werden kann. Die lokalen Pfade zu den Anwendungen und Viewern müssen allerdings überprüft bzw. per Hand ergänzt werden.
+
+\section{Weitere Editoren/Distributionen}
+Es existiert eine Vielzahl weiterer Editoren zum Erstellen von TeX-Dokumenten. Beispiele hierfür sind WinEdt, Winshell, LaTeX Editor oder auch LyX (wysiwyg). Eine ähnlich große Auswahl herrscht bei TeX-Distributionen (z.\,B. teTeX, AucTeX, emTeX...). Eine gute Übersicht hierzu ist unter \url{http://www.math.vanderbilt.edu/~schectex/wincd/list_tex.htm} zu finden.

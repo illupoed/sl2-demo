@@ -1,0 +1,45 @@
+% Anhang A - Quellcode
+
+\chapter[Erstellter Programmcode]{Erstellter Programmcode}
+%
+Für das Einfügen erstellten Programmcodes bietet sich das Paket \textsl{listings} an. Der Funktionsumfang des Paketes ist sehr groß, weshalb hier nur ein Beispiel gezeigt werden soll, dass mit den folgenden Einstellungen erzeugt wurde:
+{\lstset{language=[LaTeX]{TeX}, basicstyle=\small, keywordstyle=\color{DarkBlue}}
+\begin{lstlisting}
+\lstset{language=Matlab, basicstyle=\small, xleftmargin=15pt,
+        keywordstyle=\color{DarkBlue}, numbers=left, 
+        numberstyle=\tiny, commentstyle=\color{DarkGreen}}.
+\end{lstlisting}}
+%
+Für weitere Informationen zu Möglichkeiten des Pakets sei auf dessen Dokumentation verwiesen.
+\section{Matlab-Code}
+% set style for matlab listings
+\lstset{language=Matlab, basicstyle=\small, xleftmargin=15pt,
+				keywordstyle=\color{DarkBlue}, numbers=left, 
+				numberstyle=\tiny, commentstyle=\color{DarkGreen}}
+%
+Der folgende Code dient zur Erzeugung des Bildes \ref{kap3:colorbar}. Die Einrückungen im Quelltext sollen lediglich die Möglichkeiten des listings-Paket zeigen.
+
+\begin{lstlisting}
+%----------------------------------------------
+% Make an image that uses only 8 levels/colors.
+%----------------------------------------------
+imagesc(floor(8*rand(20)))
+
+%-----------------------------------------------------------
+% Make an 8-row color map from the original 64-row colormap.
+%-----------------------------------------------------------
+	m64 = colormap; % Beispiel Einrückung
+m8=m64(1:8:end,:);
+	colormap(m8);   % Beispiel Einrückung
+
+%---------------------
+% Label new color map.
+%---------------------
+h = colorbar % Make colorbar and save handle.
+set(h, 'ytick', (1:2:16)*7/16) % Assign positions of ticks
+labels = strvcat('zero','one','two','three','four', ...
+'five','six','seven'); %
+%Make  levels for ticks.
+set(h, 'yticklabel', labels) % Assign tick labels.
+\end{lstlisting}
+

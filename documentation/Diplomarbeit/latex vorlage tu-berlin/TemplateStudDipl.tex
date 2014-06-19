@@ -1,0 +1,138 @@
+% Vorlage Studien- und Diplomarbeiten, Bachelor- Masterarbeiten
+%
+% author: FG EMSP TU Berlin, Dipl.-Ing. Alexander Vorwerk
+%
+% last updated: 11.01.2011, by FG EMSP TU Berlin, Dipl.-Ing. Dennis lerch
+
+% PREAMBLE, for use with pdfTex
+% before documentclass
+% disable pdfoutput to be able to include eps graphics and use packages like pstricks
+% conversion dvi2ps and ps2pdf needed afterwards, pdftex specials like hyperref are still possible
+%\pdfoutput=0														% dvi output - use with pdfcprot (character protruding)
+
+\RequirePackage{fix-cm} 											% error correction for standard fonts
+
+%% define CLASS
+\documentclass[11pt, a4paper, parskip=half*, bibliography=totoc, cleardoublepage=empty, final,
+numbers=noenddot]{scrbook} 											% begin every chapter one left page
+% \documentclass[11pt, a4paper, parskip=half*, bibliography=totoc, cleardoublepage=empty, final,
+% numbers=noenddot]{scrreprt}										% ongoing pages, no page break after chapter
+
+%% misc
+%\usepackage{cmbright}												% serifenlose computer modern fonts
+\usepackage[T1]{fontenc}											% T1 fonts für gute pdf-Ausgabe
+\usepackage[ansinew]{inputenc}										% wegen deutschen Umlauten
+\usepackage[automark]{scrpage2}										% Koma Headers
+\usepackage{fixltx2e}												% fixes for latex2e
+
+% prepare for german AND english, last language loaded is default
+%\usepackage[ngerman, english]{babel}								% switch by \begin{otherlanguage}{ngerman}.. \end{otherlanguage}
+\usepackage[english, ngerman]{babel}								% switch by \begin{otherlanguage}{english}.. \end{otherlanguage}
+
+\usepackage{boxit}	 												% frame handling
+\usepackage{nag}													% warn user on outdated packages
+\usepackage[linktocpage]{hyperref}									% links in pdf, thumbnails
+\usepackage{soul}													% emphasizing text, underlining
+\usepackage{breakurl}												% for broken urls in Bibliography when hyperref is in use
+%\usepackage[square]{natbib}										% andere Literaturverweise, z. B. Zahlen
+\usepackage[onehalfspacing]{setspace}								% 1.5, change line spaces by \singlespacing \doublespacing
+
+%% tables
+\usepackage{multicol} 												% multiple columns in tables
+\usepackage{multirow}												% multiple rows in tables
+\usepackage[margin=10pt,labelfont=bf]{caption}						% table headers
+\usepackage{hhline}													% horizontal lines
+\usepackage{longtable}												% pagebreak tables
+\usepackage{booktabs}												% bold table lines, e.g. \toprule
+\usepackage{tabularx}												% neue Tabular-Umgebung
+
+%% math, symbols
+\usepackage{amsmath}												% AMS Math like brackets, integrals...
+\usepackage{amssymb}  												% AMS-Symbols v2.0
+\usepackage{fixmath}												% big greek letters italic in math mode
+\usepackage{array}													% matrices
+\usepackage{units}		  											% includes nicefrac, nicer fracs for one line, SI-Units
+\usepackage{trfsigns}												% symbole für transformationen
+\usepackage{textcomp}												% einfache Sonderzeichen, z.B. \texteuro
+\usepackage{gensymb}												% correct greek letters in units,\micro instead of \mu
+\usepackage[integrals]{wasysym}										% for integrals like \oiint
+\usepackage[version=3]{mhchem}										% easy typesetting of chemical formulae
+\usepackage{ziffer}													% let"',"' be a valid delimiter in formulaes
+\usepackage{dsfont}													% für andere Mengenzeichen, $\mathds{ABCDEFGHIJKLMNOPQRSTUVWXYZ}$
+
+%% graphics
+%\usepackage[activate]{pdfcprot}									% use margin kerning (character protruding) (Opt. Randausgleich)
+\usepackage{microtype}												% character protruding, font expansion - instead of pdfcprot
+\usepackage{graphicx}												% include graphics
+\usepackage{wrapfig} 												% graphics in text
+\usepackage{floatflt}												% graphics/tables in text
+\usepackage{rotating} 												% rotating elements
+\usepackage{listings}												% for programming source code
+\usepackage[svgnames]{xcolor}										% colors for listings
+\usepackage{psfrag}													% Text in .eps Grafiken ersetzen
+
+%% layout
+\usepackage[top=2.5cm,left=3.5cm,right=2.5cm,bottom=3cm]{geometry}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% document definitions, do not change
+\input{./Hauptdatei/mandaDef}         								% input only replaces text, include creates newpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% user definitions, change this!
+\input{./Hauptdatei/userDef}   										% input only replaces text, includecreates newpage
+
+%%%%%%%%%%%%%%% THESIS START %%%%%%%%%%%%%%
+\begin{document}
+
+	% Titelblatt
+	\input{./Titelblatt/titel}										% Füge Titelblatt ein
+	\cleardoublepage												% Leere Seite
+	\nocite{*}														% einbinden aller Literatureinträge
+
+	% Vorspann
+	\pagenumbering{roman}											% römische Seitennummerierung
+	\tableofcontents 												% Inhaltsverzeichnis
+	\include{./Vorspann/Abkuerzungen}								% Abkürzungen
+	\input{./Vorspann/Erklaerung}									% Erklärung	(NÖTIG!)
+	\input{./Vorspann/Danksagung}									% Danksagung (optional) / acknowledgement
+	\cleardoublepage
+
+	% Hauptteil
+	\pagenumbering{arabic}											% Umschalten der Numerierung / switch the numbering
+	\include{./Kapitel0/Kap0}										% Kurzfassung der Arbeit / abstract of the thesis
+	\include{./Kapitel1/Kap1}
+	\include{./Kapitel2/Kap2}
+	\include{./Kapitel3/Kap3}
+
+	% Anhang
+	\begin{appendix}
+		\include{./Anhang/Teila}
+		\include{./Anhang/Teilb}
+		\include{./Anhang/Teilc}
+	\end{appendix}
+
+	% das Abbildungsverzeichnis
+	\listoffigures
+	\addcontentsline{toc}{chapter}{Abbildungsverzeichnis}
+
+	% das Tabellenverzeichnis
+	\listoftables
+	\addcontentsline{toc}{chapter}{Tabellenverzeichnis}
+
+	% Literaturverzeichnis
+	\raggedright													% Literatur im Flattersatz (v.a. wegen URLs)
+	\bibliography{./Literatur/Literatur}
+	\bibliographystyle{alphadin}
+
+\end{document}
+%%%%%%%%%%%%%%% END %%%%%%%%%%%%%%%
+
+
+
+
+
+
+
+
+

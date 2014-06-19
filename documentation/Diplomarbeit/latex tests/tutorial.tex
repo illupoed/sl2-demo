@@ -1,0 +1,126 @@
+\documentclass[12pt]{scrreprt}
+% deutsch
+\usepackage{ucs}
+\usepackage[utf8x]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[ngerman]{babel}
+
+% mathe pakete
+\usepackage{amsmath,amssymb,amstext}
+
+% einfach bilder einbinden
+\usepackage{graphicx}
+
+% fußnoten immer am ende
+\usepackage[bottom]{footmisc}
+
+% kopf und fußzeile
+\usepackage[automark]{scrpage2}
+\pagestyle{scrheadings}
+\clearscrheadfoot
+\ifoot[]{\author}
+\ofoot[]{\pagemark}
+% ende kopf und fuß
+
+%codeblöcke
+\usepackage{listings}
+ 
+\title{Latex Tutorial}
+\author{Tom Landvoigt, Matrikelnummer: 222115}
+\date{\today{}, Berlin}
+ 
+\begin{document}
+\maketitle
+\tableofcontents
+
+\section{Einleitende Worte}
+\label{sec:einleitende-worte}
+
+Finster $ \alpha $ war's, der Mond schien helle auf die grünbeschneite Flur, als ein Wagen blitzesschnelle langsam um die runde Ecke fuhr. Drinnen saßen stehend Leute schweigend ins Gespräch vertieft, als ein  totgeschossner Hase auf dem Wasser Schlittschuh lief und ein blondgelockter Knabe mit kohlrabenschwarzem Haar auf die grüne Bank sich setzte, die gelb angestrichen war. $\Omega$
+
+\begin{itemize}
+  \item Alice im Wunderland
+  \item Till Eulenspiegel
+  \item Harry Potter
+  \begin{itemize}
+    \item Der Stein der Weisen
+    \item Kammer des Schreckens
+    \item Der Gefangene von Askaban
+    \item Der Feuerkelch
+    \item Der Orden des Phönix
+  \end{itemize}
+  \item Jim Knopf
+\end{itemize}
+
+\begin{equation*}
+  a + 2 = c
+\end{equation*}
+
+\begin{equation*}
+  a_{ij} - a_2 = 0
+\end{equation*}
+
+\begin{equation*}
+  \frac{1}{a} + \frac{1}{b} = \frac{a+b}{ab}
+\end{equation*}
+
+\begin{equation*}
+  \sigma + \tau = \alpha
+\end{equation*}
+
+\begin{equation}
+  \label{eq:1}
+  \left( \frac{a}{b} \right)' = \frac{a'b-ab'}{b^{2}}
+\end{equation} 
+
+\begin{equation}
+  \label{eq:2}
+  \int\limits_{a}^{b} x^{2} \, dx = \frac{ b^{3} - a^{3} }{3}
+\end{equation}
+
+\begin{equation}
+  \label{eq:3}
+  c = \sqrt{ a^{2} + b^{2} }
+\end{equation}
+
+\chapter{Kapitel}
+
+Abschnitts Referenz \ref{sec:einleitende-worte}.
+
+Und das ist eine Gleichungsreferenz \eqref{eq:1}.
+
+Und wie können natürlich auch Seiten referenzieren: Seite \pageref{sec:einleitende-worte}
+
+\section{Ihr Bilderlein kommet!}
+
+\begin{center}
+  Zentriert
+  
+  \includegraphics[width=0.1\textwidth]{tug-logo}
+  
+  Das Bild zeigt unser Logo\footnote{Bitte korrekt verwenden.}.
+\end{center}
+
+Und nocheinmal das Bild. Falls es sich hier einfügen lässt
+
+\begin{figure}
+  \centering
+   \includegraphics[width=0.6\textwidth]{tug-logo}
+   \caption{Meine Abbildung}
+   \label{fig:mein-bild}
+\end{figure}
+
+\lstset{language=Pascal}
+\begin{lstlisting}[caption=Pascal Code, label=lst:mycode]
+begin
+  a := 3;
+  b := a * 4;
+  c := (b + a)/ 2
+end.
+\end{lstlisting}
+
+Und natürlich geht das auch inline
+
+Mit dem Anchor-Tag (\lstinline!<a href="">...</a>!) lassen...
+
+\end{document}

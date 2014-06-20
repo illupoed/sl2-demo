@@ -57,11 +57,11 @@
 
 
 
-%\titlehead{Technische Universität Berlin\\Fachbereich Compilerbau}
-%\subject{Diplomarbeit}
+\titlehead{Technische Universität Berlin\\Fakultät IV (Elektrotechnik und Informatik)\\Institut für Softwaretechnik und Theoretische Informatik\\Fachgebiet Übersetzerbau und Programmiersprachen\\Franklinstr. 28/29\\10587 Berlin}
+\subject{Diplomarbeit}
 \title{Titel}
 \author{Tom Landvoigt, Matrikelnummer: 222115}
-%\publishers{betreut durch Prof. Peter Pepper}
+\publishers{betreut durch Prof. Dr. Peter Pepper}
 \date{\today{}, Berlin}
  
 \begin{document}
@@ -480,27 +480,39 @@ Die Wertübersetzungsfunktionen von Scala nach \ac{SL} und umgekehrt werden im c
 
 Wie bereits erwähnt wurde, konnte in einem Paper\footnote{siehe Paper} der Technischen Universität Berlin gezeigt, das man mit Hilfe von Compiler Macros statischen \ac{SL} Code in die Views von Play-Anwendungen einbetten kann. Mit der Erweiterung von \ac{SL} durch ein Modul-System musste dieses Macro komplett neu geschrieben werden.
 
-Es blieb aber ein grundsätzliches Problem erhalten. Wie kann der generierte \ac{JS}-Code auf das Serverumfeld wie Datenbanken, Session oder Benutzerdaten zugreifen. In herkömmlichen Anwendungen gibt es zwei Lösungen dafür: Entweder man bindet die Daten direkt in das \ac{HTML} der Webseite ein oder läd sie mit Hilfe von Ajax nach. In der aktuellen Version kann man Scala-Werte direkt im \ac{SL} Code benutzen und Daten über übersetzte Scala Funktionen nachladen.
+Es blieb aber ein grundsätzliches Problem erhalten. Wie kann der generierte \ac{JS}-Code auf das Serverumfeld wie Datenbanken, Session oder Benutzerdaten zugreifen. In herkömmlichen Anwendungen gibt es zwei Lösungen dafür: Entweder man bindet die Daten direkt in das \ac{HTML} der Webseite ein oder läd sie mit Hilfe von Ajax nach. In der aktuellen Version kann man Scala-Werte direkt im \ac{SL} Code benutzen und Daten über übersetzte Scala Funktionen nachladen bzw. verändern.
 
-Um Scala Funktionen für die Verwendung in \ac{SL} Code zu markieren wurden macro annotations\footnote{siehe http://docs.scala-lang.org/overviews/macros/annotations.html} benutzt. Die Beschreibung und Arbeitsweise dieses Macros wird Inhalt des nächste Kapitels (\ref{sec:annotation-macro}) sein. Im darauf folgenden Kapitel (\ref{sec:inline-macro}) wird beschrieben, wie statischer \ac{SL} Code eingebunden wird und welchen Veränderungen gemacht werden mussten um Scala Werte und Funktionen benutzen zu können.
+\section{Struktur des Projekts}
+\label{sec:project-structure}
 
-\section{Annotation Macro}
+Um Scala Funktionen für die Verwendung in \ac{SL}-Code zu markieren wurden die Macro-Annotation \lstinline!sl_function! geschrieben, welche im Abschnitt \ref{sec:annotation-macro} behandelt wird. Im darauf folgenden Kapitel \ref{sec:inline-macro} wird beschrieben, wie statischer \ac{SL} Code eingebunden wird und welchen Veränderungen gemacht werden mussten um Scala Werte und Funktionen benutzen zu können. Beide Macros binden den Trait MacroConfig ein, in dem grundsätzliche Konfigurationen definiert sind. Zur Übersetzung der Typen und Werte, werden die Hilfsfunktionen aus \lstinline!AbstractTranslator! und \lstinline!AbstractModuleTranslator! genutzt.
+
+\section{Macro Annotation sl\_function }
 \label{sec:annotation-macro}
 
-Mit Hilfe des \lstinline!sl_function!-Macros können wir Funktionen markieren, die für die Verwendung in \ac{SL}-Code zur Verfügung stehen sollen. Für eine markierte Funktion wird ein \ac{SL}-Modul erzeugt, das dann eingebunden werden kann. Wird die Funktion in SL aufgerufen wird Ajax-Anfrage mit den entsprechenden Parametern an den Server gesenden, die Scala Funktion mit Hilfe von Reflections\footnote{siehe http://docs.scala-lang.org/overviews/reflection/overview.html} aufgerufen und das Ergebnis als Antwort verpackt. Im Listing \ref{lst:example-signatur-translated-funktion} sieht man beispielhaft die Benutzung des Macros und die Signaturen der generierten SL-Funktionen. Der Aufruf kann synchron oder asynchron erfolgen. Um Fehler in der Verbindung behandeln zu können wird das Ergebnis in \lstinline!Option! verpackt.
+Mit macro annotations\footnote{siehe http://docs.scala-lang.org/overviews/macros/annotations.html} können in Scala Funktionsdefinitionen\footnote{Es können auch Klassen, Objekte, Typparameter oder Funktionsparameter annotiert werden.} annotiert werden, um ihren Aufbau während der Übersetzung zu verändern. Im Rahmen dieser Diplomarbeit wurde dies genutzt um 
 
-\begin{lstlisting}[caption=Beispiel einer übersetzten Funktion, label=lst:example-signatur-translated-funktion, float]
--- Signatur der Scala-Funktion
-object Example {
-  @sl_function def factorial( i: Int ): Int = {...}
+
+ENDE DER BEARBEITUNG
+
+\subsection{Anforderungen an eine Funktion}
+
+
+\subsection{SL-Modul}
+
+\subsection{Wrapper-Funktion}
+
+ÜBERARBEITEN
+
+Mit Hilfe des \lstinline!sl_function!-Macros können wir Funktionen markieren, die für die Verwendung in \ac{SL}-Code zur Verfügung stehen sollen. Für eine markierte Funktion wird ein \ac{SL}-Modul erzeugt, das dann eingebunden werden kann. Wird die Funktion in SL aufgerufen wird Ajax-Anfrage mit den entsprechenden Parametern an den Server gesenden, die Scala Funktion mit Hilfe von Reflections\footnote{siehe http://docs.scala-lang.org/overviews/reflection/overview.html} aufgerufen und das Ergebnis als Antwort verpackt. Im Listing \ref{lst:example-signatur-translated-funktion} sieht man beispielhaft die Benutzung des Macros und die Signaturen der generierten SL-Funktionen. Der Aufruf kann synchron oder asynchron erfolgen. Um Fehler in der Verbindung behandeln zu können, wird das Ergebnis in \lstinline!Option! verpackt.
+
+\begin{lstlisting}[caption=Scala Beispielfunktion, label=lst:example-signatur-translated-funktion, float]
+-- Foo.scala
+package example
+
+object Foo {
+  @sl_function def factorial( i: Int ): Long = {...}
 }
-
--- Signaturen der entsprechenden SL-Funktionen
--- synchroner Aufruf
-PUBLIC FUN factorialSync : Int ->  DOM ( Opt.Option (Int) )
--- und asynchroner Aufruf
-PUBLIC FUN factorialAsync : ( Opt.Option (Int) -> DOM Void ) -> Int ->  DOM Void
-
 \end{lstlisting}
 
 Damit eine Funktion für \ac{SL} übersetzt werden kann, muss sie gewisse Vorraussetzungen erfüllen:
@@ -509,13 +521,13 @@ Damit eine Funktion für \ac{SL} übersetzt werden kann, muss sie gewisse Vorrau
  \begin{itemize}
   \item[*]{muss in einem Objekt definiert sein}
   \item[*]{die Signatur darf keine Typparameter enthalten}
-  \item[*]{muss public sein}
+  \item[*]{die Funktion darf nicht als \lstinline!private! oder \lstinline!protected! markiert sein}
  \end{itemize}
- \item[-]{der Rückgabetyp und die Parametertypen müssen sich in \ac{SL}-Typen übersetzen lassen}
  \item[-]{sie muss einen Rückgabetyp definieren}
- \item[-]{sie darf nur eine Parameterliste enthalten}
- \item[-]{der Funktionsname darf keine ungewöhnlichen Zeichen enthalten}
+ \item[-]{sie darf nur eine Parameterliste haben\footnote{In der aktellen Implemetation werden die Default-Werte eines Parameters ignoriert. Eine entsprechende Warning wird erzeugt.}}
+ \item[-]{der Funktionsname darf keine ungewöhnlichen Zeichen enthalten\footnote{Da sich der Name der Funktion im Name des erzeugten Moduls wiederspiegelt sind nur die Zahlen von 0 bis 9 sowie kleine Buchstaben von a bis z erlaubt. Ähnliche Einschränkungen gelten für die übergeordneten Pakete sowie den Namen des Objekts in dem die Funktion definiert ist.}}
 \end{itemize}
+Falls diese Vorraussetzungen erfüllt sind, werden mit Hilfe der Translator-Klassen SL-Entsprechungen für die Eingangs- und Ausgangstypen gesucht. Im obigen Beispiel (Listing \ref{lst:example-signatur-translated-funktion}) wird  der Typ des Parameters \lstinline!i! nach \lstinline!Int! übersetzt. Der Rückgabetyp wird nach \lstinline!Opt.Option (Int)! übersetzt. 
 
 %kurz Aufruf
 

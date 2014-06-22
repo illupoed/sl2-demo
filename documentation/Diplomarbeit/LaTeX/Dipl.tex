@@ -494,14 +494,18 @@ Die Wertübersetzungsfunktionen von Scala nach \ac{SL} und umgekehrt werden im c
 
 Wie bereits erwähnt wurde, konnte in einem Paper\footnote{siehe Paper} der Technischen Universität Berlin gezeigt, das man mit Hilfe von Compiler Macros statischen \ac{SL} Code in die Views von Play-Anwendungen einbetten kann. Mit der Erweiterung von \ac{SL} durch ein Modul-System musste dieses Macro komplett neu geschrieben werden.
 
-Es blieb aber ein grundsätzliches Problem erhalten. Wie kann der generierte \ac{JS}-Code auf das Serverumfeld wie Datenbanken, Session oder Benutzerdaten zugreifen. In herkömmlichen Anwendungen gibt es zwei Lösungen dafür: Entweder man bindet die Daten direkt in das \ac{HTML} der Webseite ein oder läd sie mit Hilfe von Ajax nach. In der aktuellen Version kann man Scala-Werte direkt im \ac{SL} Code benutzen und Daten über übersetzte Scala Funktionen nachladen bzw. verändern.
+Es blieb aber ein grundsätzliches Problem erhalten. Wie kann der generierte \ac{JS}-Code auf das Serverumfeld wie Datenbanken, Session oder Benutzerdaten zugreifen. In herkömmlichen Anwendungen gibt es zwei Lösungen dafür: Entweder man bindet die Daten direkt in den Quellcode der einzelnen Webseite ein oder läd sie mit Hilfe von Ajax nach. In der aktuellen Version von \ac{SL} kann man Scala-Werte direkt im \ac{SL} Code benutzen und Daten über übersetzte Scala Funktionen nachladen bzw. verändern.
 
 \section{Struktur des Projekts}
 \label{sec:project-structure}
 
-Um Scala Funktionen für die Verwendung in \ac{SL}-Code zu markieren wurden die macro annotation \lstinline!sl_function! geschrieben, welche im Abschnitt \ref{sec:annotation-macro} behandelt wird. Im darauf folgenden Abschnitt \ref{sec:inline-macro} wird beschrieben, wie statischer \ac{SL} Code eingebunden wird und welchen Veränderungen gemacht werden mussten um Scala Werte und Funktionen benutzen zu können. Beide Macros binden den Trait MacroConfig ein, in dem grundsätzliche Konfigurationen definiert sind. Zur Übersetzung der Typen und Werte, werden die Hilfsfunktionen aus \lstinline!AbstractTranslator! und \lstinline!AbstractModuleTranslator! genutzt.
+Um Scala Funktionen für die Verwendung in \ac{SL}-Code zu markieren wurden die macro annotation \lstinline!sl_function! geschrieben, welche im Abschnitt \ref{sec:annotation-macro} behandelt wird. Im darauf folgenden Abschnitt \ref{sec:inline-macro} wird beschrieben, wie statischer \ac{SL} Code eingebunden wird und welchen Veränderungen gemacht werden mussten um Scala Werte und Funktionen benutzen zu können. Beide Macros binden den Trait \lstinline!MacroConfig! ein, in dem grundsätzliche Konfigurationen definiert sind. 
 
-%TODO Verzeichnisse erklären
+%TODO Config erklären
+
+Zur Übersetzung der Typen und Werte, werden die Hilfsfunktionen aus \lstinline!AbstractTranslator! und \lstinline!AbstractModuleTranslator! genutzt.
+
+%TODO Verzeichnisse erklären / Config erklären
 
 \section{Macro Annotation sl\_function }
 \label{sec:annotation-macro}
@@ -602,10 +606,26 @@ params         & JSON encodierte Liste der übergebenen Parameter\\
 \label{tab:post-parameter}
 \end{table}
 
-\section{Inline Macro}
+\section{Def Macro slci}
 \label{sec:inline-macro}
 
+Bis jetzt kann man nur Funktionen markieren um sie in \ac{SL}-Code zu benutzen. Nun soll \ac{SL} benutzt werden um \ac{JS}-Code zu generieren und ihn auf Benutzerseite zu verwenden. Dazu wurde das \lstinline!slci! Makro neu geschrieben und erweitert. Im Laufe der nächsten Abschnitter vollziehen wir die Entwicklung des Macros nach.
 
+Mit def macros\footnote{siehe http://docs.scala-lang.org/overviews/macros/overview.html} kann auch wärend des Übersetzungsprozesses von Scala in den Code eingegriffen werden. Der Aufruf solch eines Macros verhält sich wie eine Funktion, nur das das Makro die \ac{AST}s der Parameter übergeben bekommt und einen \ac{AST} liefert der den Aufruf des Makros ersetzt.
+
+\subsection{Statischen SL Code übersetzen}
+
+Mit der Entwicklung eines Modulsystems\footnote{siehe Projektbericht} für \ac{SL} musste das Einbetten von statischem Code neu geschrieben werden. Die erste Version des \lstinline!slci! Makros nutzte eine Version von \ac{SL} die \ac{JS} Code erzeugt. Im Laufe des Studentenprojekts wurde davon Abstand genommen. Das Ergebnis der Übersetzung sind \ac{JS} Dateien, die mit Hilfe von require.js\footnote{siehe Projektbericht require.js} in Webseiten eingebettet werden\footnote{Der erzeugte \ac{JS} Code kann auch mit node.js (siehe node.js) ausgeführt werden.}.
+
+Entsprechend wird jetzt vom \lstinline!slci! Makro ein \ac{SL}-Modul erzeugt. Die Datei wird entsprechend des Ortes an dem \lstinline!slci! aufgerufen wird benannt:
+\begin{center}
+\lstinline!<Dateiname>.<Zeilennummer>.sl!
+\end{center}
+Wenn diese Datei übersetzt werden kann, wird sie mit require.js eingebunden. Andernfalls wird ein Compilerfehler erzeugt.
+
+\subsection{Scala Variablen in SL nutzen}
+
+\subsection{Scala Funktionen in SL nutzen}
 
 
 

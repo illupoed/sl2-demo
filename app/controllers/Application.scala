@@ -24,18 +24,22 @@ object Application extends Controller {
     Ok( views.html.foo() )
   }
 
+  def checkOption = Action {
+    Ok( views.html.checkOption() )
+  }
+
   def slCalls = Action { request =>
 
     val obj_name = request.body.asFormUrlEncoded.get( "object_name" ).head
     val fun_name = request.body.asFormUrlEncoded.get( "function_name" ).head
     val params = request.body.asFormUrlEncoded.get( "params" ).head
-    
+
     try {
       val fun_result = invokeObjectMethodByName( obj_name, fun_name, jparse( params ).children: _* )
       Ok( compact( jrender( JObject( JField( "result", fun_result ) ) ) ) ).as( "application/json" )
     }
     catch {
-      case _ : Throwable => BadRequest( "not found" )
+      case _: Throwable => BadRequest( "not found" )
     }
 
   }

@@ -1,0 +1,77 @@
+@import de.tuberlin.uebb.sl2.impl.MacroDriver._
+
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>Check Option</title>
+        
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        
+        <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/main.css")">
+        <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
+        
+        <script src="@routes.Assets.at("javascripts/jquery-1.9.0.min.js")" type="text/javascript"></script>
+        <script src="@routes.Assets.at("javascripts/sl_init.js")" type="text/javascript"></script>
+        <script src="@routes.Assets.at("javascripts/require.js")" type="text/javascript"></script>
+    </head>
+
+   	<body>
+    	<h1>Check Option</h1>
+    	<hr />
+    	This should test if the OptionTranslator correctly translates the scala value Some(3) to sl
+    	<br>
+    	<div id="test1">not tested</div>
+    	<p>
+    	This should test if the OptionTranslator correctly translates the scala value None to sl
+    	<br>
+    	<div id="test2">not tested</div>
+    	<p>
+    	The next two tests should fail. Some(3) != None and None != Some(3)
+    	<br>
+    	<div id="test3">not tested</div><br>
+    	<div id="test4">not tested</div>
+    	
+    	</div>
+		<script type="text/javascript">@{
+Html(slci(
+"""
+IMPORT "std/basicweb" AS Web
+IMPORT "std/option" AS Option
+
+-- this function should create 3 alerts
+-- they test if the translator classes for Option (and Int) work correctly
+PUBLIC FUN main : DOM Void
+-- DEF main = writeToDiv "foo" "bar"
+ DEF main = testOption totest1 shouldbe1 "test1"
+  & testOption totest2 shouldbe2 "test2"
+  & testOption totest1 shouldbe2 "test3"
+  & testOption totest2 shouldbe1 "test4"
+
+-- Helper Funktion
+FUN testOption : Option.Option Int -> Option.Option Int -> String -> DOM Void
+DEF testOption a b c = (IF (Option.cmp eq a b) THEN writeToDiv c "passed" ELSE writeToDiv c "failed") 
+
+-- helper function | can not use == as function literal for Option.cmp
+FUN eq : Int -> Int -> Bool
+DEF eq a b = a == b
+
+FUN writeToDiv : String -> String-> DOM Void
+DEF writeToDiv id what = {| $("#" + $id).html($what) |}
+
+FUN totest1 : Option.Option Int
+DEF totest1 = $s
+
+FUN shouldbe1 : Option.Option
+DEF shouldbe1 = Option.Some 3
+
+FUN totest2 : Option.Option Int
+DEF totest2 = $s
+
+FUN shouldbe2 : Option.Option Int
+DEF shouldbe2 = Option.None
+""", Some(3), None:Option[Int]))
+		}
+        </script>
+    </body>
+</html>

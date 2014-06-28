@@ -14,6 +14,8 @@ GET		/foo				controllers.Application.foo
 
 POST	/ajax				controllers.Application.slCalls
 
+GET		/checkOption		controllers.Application.checkOption
+
 #GET		/woot				controllers.Application.woot
 
 #GET	/kochFile		    controllers.Application.kochFile

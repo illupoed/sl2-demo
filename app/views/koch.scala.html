@@ -18,7 +18,7 @@
         <script src="@routes.Assets.at("javascripts/require.js")" type="text/javascript"></script>
     </head>
 
-    <body onLoad="$main()">
+   	<body>
     	<h1>@("fooo")</h1>
     	<hr />
     	<canvas id="canvas" width="1000" height="500"></canvas>
@@ -29,6 +29,7 @@ Html(slci(
 IMPORT "std/debuglog" AS Log 
 IMPORT "std/basicweb" AS Web
 IMPORT "std/option" AS Opt
+IMPORT "std/list" AS List
 IMPORT "generated_annotation/callable_functions/examples/addfoo" AS Ext 
 IMPORT "generated_annotation/callable_functions/examples/fac" AS Fac
 
@@ -78,11 +79,14 @@ DEF bar = Opt.None
 FUN baz : Bool
 DEF baz = True
 
+FUN woot : List.List
+DEF woot = $s
+
 FUN foo : Opt.Option Int
 DEF foo = $s
 
 
-""", i, Some(3)))
+""", i, Seq(1,2), Some(3)))
 		}
         </script>
     </body>

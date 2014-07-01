@@ -94,25 +94,25 @@ Für das Verständnis der Diplomarbeit werden Kentnisse im Berich funktionaler P
 
 \chapter{ Einführung in Simple Language}
 
-Mitte 2013 wurde \ac{SL} als einfache funktionale Lehrsprache für den Studienbetrieb der TU-Berlin entwickelt. Im Rahmen des Compilerbauprojekts im Sommersemerster 2013 wurde \ac{SL} von den Studierenden um die Möglichkeit der Modularisierung erweitert\footnote{siehe. Projektbericht}. \ac{SL} ist eine strikt getypte funktionale Sprache.
+Mitte 2013 wurde \ac{SL} als einfache funktionale Lehrsprache für den Studienbetrieb der TU-Berlin entwickelt. Im Rahmen des Compilerbauprojekts im Sommersemerster 2013 wurde \ac{SL} von den Studierenden um die Möglichkeit der Modularisierung erweitert\footnote{siehe Projektbericht}. \ac{SL} ist eine strikt getypte funktionale Sprache.
 
-Ein \ac{SL} Programm besteht aus einer Menge von Modulen. Ein Modul ist eine Textdatei mit der Endung '.sl'. In ihm können Funktionen und Typen definiert werden. Das Modul prelude.sl beschreibt alle vordefinierten Funktionen und Datentypen und wird in alle Programme eingebunden.
+Ein \ac{SL} Programm besteht aus einer Menge von Modulen. Ein Modul ist eine Textdatei mit der Endung '.sl'. In ihm können Funktionen und Typen definiert werden. Durch die Übersetzung eines \ac{SL} Moduls werden zwei Dateien erzeugt. Die Datei mit der Endung '.ls.js' enthält den ausführbaren JavaScript-Code. Die zweite Datei mit der Endung '.signature' enthält Informationen darüber welche Funktionen und Datentypen in anderen Modulen verwendet werden können. Das Modul prelude.sl beschreibt alle vordefinierten Funktionen und Datentypen und wird in alle Programme eingebunden. 
 
-Der Syntax soll hier nur Beispielhaft beschrieben werden. 
+Der Syntax soll hier nur Beispielhaft beschrieben werden.
 
 \begin{lstlisting}[caption=Beispielmodul, label=lst:bsp1]
 -- Kommentar
 
-IMPORT "std/basicweb" AS Web (1)
+IMPORT "std/basicweb" AS Web [1.]
 IMPORT EXTERN "foo/_bar"
 
-DATA StringOrOther a = Nothing | StringVal String | OtherVal a (4)
+DATA StringOrOther a = Nothing | StringVal String | OtherVal a [4.]
 
-PUBLIC FUN getOtherOrElse : StringOrOther a -> a -> a (2)
+PUBLIC FUN getOtherOrElse : StringOrOther a -> a -> a [2.]
 DEF getString (OtherVal x) y = x
 DEF getString x y = y
 
-PUBLIC FUN main : DOM Void (3)
+PUBLIC FUN main : DOM Void [3.]
 DEF main = Web.alert(intToString (getOtherOrElse(exampleVar, 3)))
 
 FUN exampleVar : StringOrOther Int
@@ -124,31 +124,42 @@ DEF getDocumentHight = {| window.outerHeight |} : DOM Int
 \end{lstlisting}
 
 \begin{enumerate}
-  \item Mit \lstinline!IMPORT "<Pfad>" AS <Bezeichner>! können Module nachgeladen werden. Typen und Funktionen die aus Fremdmodulen benutzt werden müssen mit dem \lstinline!<Bezeichner>! qualifiziert werden. Ein Beispiel dafür ist \lstinline!Web.alert(...)!. Mit \lstinline!IMPORT EXTERN! können \ac{JS}-Quelldateien eingebunden werden. In diesem Fall würde die Datei \_bar.js im Ordner foo mit in das Modul eingebunden werden.
+  \item Mit \lstinline!IMPORT "<Pfad>" AS <Bezeichner>! können Module nachgeladen werden. Typen und Funktionen die aus Fremdmodulen benutzt werden müssen mit dem \lstinline!<Bezeichner>! qualifiziert werden. Ein Beispiel dafür ist \lstinline!Web.alert(...)!. 
+  
+  Mit \lstinline!IMPORT EXTERN! können \ac{JS}-Quelldateien eingebunden werden. In diesem Fall würde der Inhalt der Datei \lstinline!\_bar.js! im Ordner \lstinline!foo! an den Anfang des Kompilats kopiert werden.
   \item Die optionale Typdefinition einer Funktion kann mit \lstinline!FUN <Funktionsname> : <Typ>! angegeben werden. Wenn ein \lstinline!PUBLIC! vorgestellt wird, ist die Funktion auch außerhalb des Modules sichtbar. Darauf folgen eine oder mehrer pattern basierte\footnote{siehe Opal} Funktionsdefinition der Form \lstinline!DEF <Funktionsname> = <Funktionsrumpf>!.
   \item Ein Spezialfall bildet die Funktion 'main'. Sie bildet den Einstiegspunkt in ein \ac{SL} Programm. Sie hat den festen Typ \lstinline!DOM Void!. \lstinline!DOM a! und \lstinline!Void! sind einige der Vordefinierten Typen. \lstinline!Void! bezeichnet den leeren Typen, also keinen Rückgabewert. \lstinline!DOM a! ist der Typ der \ac{JS}-quoating Monade. Mit ihr können \ac{JS} Snippets in \ac{SL} eingebunden werden (Beispiel: \lstinline!{| window.outerHeight |} : DOM Int!). Weiter vordefinierte Typen sind \lstinline!Char! und \lstinline!String! um Zeichen(ketten) darzustellen, sowie \lstinline!Int! für ganzezahlige Werte und \lstinline!Real! für Gleitkommazahlen. Der letzte vordefinierte Typ ist \lstinline!Bool! für boolsche Werte.
-  %TODO wir übersetzen scala nach \ac{SL} nicht umgekehrt
-  \item Mit \lstinline!DATA <Typname> [<Typprameter> ...] = <Konstruktor> [<Typparameter> ...] | ...! können eigene Typen definiert werden. Wie wir die so möglichen \ac{SL} Typen und Werte nach Scala und zurück übersetzen wird Stoff des nächsten Kapitels sein.
+  \item Mit \lstinline!DATA <Typname> [<Typprameter> ...] = <Konstruktor> [<Typparameter> ...] | ...! können eigene Typen definiert werden. Wie wir Scala Typen und Werte nach \ac{SL} und zurück übersetzen wird Stoff des nächsten Kapitels (\ref{cha:model-sharing}) sein.
 \end{enumerate}
 
-\ac{SL} bietet noch weitere Features wie Lambdafunktionen, benutzerdefinierte Operatoren und 'LET IN'-Ausdrücke, diese sind aber nicht für das Verständnis der Diplomarbeit relevant. Bei interesse kann die aktuelle Grammatik und lexikalische Struktur im Report des Compilerbauprojekts [] nachgelesen werden.
+\ac{SL} bietet noch weitere Eigenschaften wie Lambdafunktionen, benutzerdefinierte Operatoren und 'LET IN'-Ausdrücke, diese sind aber nicht für das Verständnis der Diplomarbeit relevant. Bei Interesse kann eine vollständige Beschreibung der Sprache im Report des Compilerbauprojekts\footnote{siehe Projektbericht} nachgelesen werden.
 
-\chapter{Modelsharing}
+\chapter{Model Sharing}
+\label{cha:model-sharing}
 
-Wenn man Scala Werte in \ac{SL} Code benutzen möchte müssen diese übersetzt werden. Sowohl der Typ als auch die interne Darstellung. Möchten man zum Beispiel den Scala Wert \lstinline!1.0! in \ac{SL} übersetzen, so weist der Scala Compiler diesen mit dem Typ \lstinline!Float! aus. Die naheliegenste Entsprechnung in \ac{SL} wäre dazu \lstinline!Real!. Die Übersetzung der Darstellung wäre in diesem Fall ähnlich naheliegend. Da \ac{SL} nach \ac{JS} compiliert würde der Wert im \ac{JS} Compilat durch \lstinline!1.0! representiert werden. Die Gegenrichtung, also wenn wir \ac{SL} Werte in Scala benutzen wollen, funktioniert analog. 
+Im Zuge dieser Arbeit sollten Scala-Werte und -Funktionen in \ac{SL} eingebettet werden. Dazu muss einem Scala Typ ein \ac{SL} Typ zugeordnet werden. Betrachten wir dazu die Scala Funktion \lstinline!foo! im Listing \ref{lst:scala-fun-example}.
 
-Im Zuge der Diplomarbeit reichte es immer anhand des Scala Typs alle benötigten Teile der Übersetzung zu bestimmen:
-\begin{itemize}
-\item passender \ac{SL} Typ
-\item Funktion zum Übersetzen eines Scala Wertes in einen \ac{SL} Wert
-\item Funktion zum Übersetzen eines \ac{SL} Wertes in einen Scala Wert
-\end{itemize}
+\begin{lstlisting}[caption=Beispielfunktion foo, label=lst:scala-fun-example]
+def foo( i: Float ): Double = {...}
+\end{lstlisting}
 
-(Schematische Beschreibung der übersetzung von eines wertes und einer Funktion <- erklärt warum wir immer von dem scala typ ausgehen)
+Für die Typen \lstinline!Float! und \lstinline!Double! müssen wir ihre \ac{SL}-Entsprechnung finden. Um die Implementation zu vereinfachen setzen wir voraus, das jedem Scala Typ genau ein \ac{SL}-Typ zugeordnet wird. Andernfalls müssten wir für alle möglichen Permutationen einen \ac{SL}-Funktionsrumpf erstellen. Bei eingebetteten Scala Werten müsste der SL-Code analysiert werden, um die passende Übersetzung zu finden\footnote{Das ist keine besonders große Einschränkung, da wie wir später sehen werden, das das Typsystem von SL sehr einfach ist und dadurch viele Scala-Typen auf ein und den selben SL Typen abgebildet werden. }. Wir erhalten die partielle Function $translate_{type}(Type_{Scala}) = Type_{SL}$. Diese wird in Abschnitt \ref{subsec:translate_type} behandelt.
 
-Zunächst betrachten wir die Typübersetzung, darauf folgt die Darstellungsübersetzung und schließlich eine Beschreibung der Implementation.
+Haben wir einen passenden Typen gefunden, müssen auch die Werte in eineander überführt werden. Dies sollte eine bijektive Abbildung sein. Das dies nicht immer möglich ist, wird in Abschnitt \ref{sec:value-transformation} behandelt.
+
+Für \lstinline!Float! und \lstinline!Double! ist semantisch beste Wahl der SL Typ \lstinline!Real!. Im Ergebnis erhalten wir die Funktion \lstinline!sl_foo! aus Listing \ref{lst:scala-fun-example-translate}.
+
+\begin{lstlisting}[caption=Übersetzung von foo, label=lst:scala-fun-example-translate]
+FUN sl_foo : Real -> Real
+DEF sl_foo p0 = double_to_real (call_via_ajax (foo (real_to_float p0) ) )
+\end{lstlisting}
 
 \section{Typübersetzung}
+\label{sec:type-translation}
+
+%TODO ein zwei sätze
+
+\subsection{SL Typsystem}
 
 Das Typsystem von \ac{SL} ist (entsprechend seines Anspruches als Lehrsprache) sehr einfach. Es gibt eine Reihe von vordefinierten Typen \lstinline!Int!, \lstinline!Real!, \lstinline!Char!, \lstinline!String!, \lstinline!Bool! und \lstinline!Void! sowie den Typ der \ac{JS}-Quoting Monade \lstinline!DOM a!\footnote{Typen werden groß geschrieben, Typvariablen klein. \lstinline!DOM a! steht also zum Beispiel für \lstinline!DOM Void!, \lstinline!DOM Int! usw.}. Mit dem Stichwort \lstinline!DATA! können eigene Konstruktor-/Summentypen definiert werden\footnote{siehe Funktionale Programmierung}.
 
@@ -163,106 +174,78 @@ DATA CycleKonst = Cycle Int Int
 DATA Either a b = Left a | Right b
 \end{lstlisting}
 
-Im Gegensatz dazu ist das Typsystem von Scala wesentlich komplexer. Scala ist strikt Objektorientiert. Es kennt keine Vordefinierten Typen. Alle Typen sind Objekte, aber es gibt vordefinierte Objekttypen die den primitiven Datentypen von Java zugeordnet werden können (vgl.: http://www.scalatutorial.de/topic161.html\#basistypen).
+\subsection{Scala Typsystem}
 
-\begin{lstlisting}
-Bild: Objekttypen von Scala in ihrer Klassenhierachie [vgl.: http://www.scalatutorial.de/topic161.html\#basistypen]
+Das Scala Typsystem in Gänze zu erklären würde den Rahmen dieser Arbeit bei weitem sprengen\footnote{siehe Scala Ref}. Im Rahmen dieser Arbeit wurden nur einige wenige vordefinierte Typen übersetzt.
 
-                     scala.Any
+Scala ist strikt Objektorientiert. Es kennt keine primitiven Typen. Alle Typen sind Objekte, aber es gibt vordefinierte Objekttypen die den primitiven Datentypen von Java zugeordnet werden können\footnote{ (vgl.: http://www.scalatutorial.de/topic161.html\#basistypen)}. Im Folgenden werden die Typen \lstinline!Byte!, \lstinline!Short!, \lstinline!Int!, \lstinline!Long!, \lstinline!Float!, \lstinline!Double!, \lstinline!Boolean!, \lstinline!Char!, \lstinline!String! und \lstinline!Unit! trotzdem als die primitiven Typen von Scala bezeichnet. Die Vererbungshierarchie einiger vordefinierter Objekttypen kann dem Bild \ref{fig:classhierarchy} entnommen werden.
 
-scala.AnyVal                       scala.AnyRef
+\begin{figure}[h] 
+  \centering
+     \includegraphics[width=\textwidth]{Bilder/classhierarchy}
+  \caption{Vererbungshierarchie einiger Scala Klassen}
+  \label{fig:classhierarchy}
+\end{figure}
 
-scala.Byte                         java.lang.String
-scala.Short                        ...
-scala.Int
-scala.Long
-scala.Float
-scala.Double
-scala.Char
-scala.Boolean
-scala.Unit
-...
+Es gibt in Scala, Konstrukte, die den selbstdefinierten Typen aus \ac{SL} sehr ähnelich sind. Das wird anschaulich am Beispiel von Option (siehe Listing \ref{lst:option-in-sl-scala}). Es wurden aber auch andere vordefinierte Typen wie \lstinline!Seq[A]! übersetzt, deren innere Struktur sich stark von ihrem SL Äquivalent \lstinline!List a! unterscheiden.
+
+\begin{lstlisting}[caption=Option in \ac{SL} und Scala, label=lst:option-in-sl-scala, float=h]
+Option in SL:
+PUBLIC DATA Option a = Some a | None
+
+Option in Scala:
+sealed abstract class Option[+A] ... { ... }
+
+final case class Some[+A](x: A) extends Option[A] { ... }
+
+case object None extends Option[Nothing] { ... }
 \end{lstlisting}
 
-Eigene Typen können in Scala mit Vererbung und den Schlüsselworten 'object' und 'class' definiert werden. Für die Methoden der Klassen gibt es in \ac{SL} kein Äquivalent.
+\subsection{Funktion $translate_{type}$}
+\label{subsec:translate_type}
 
-Für die Übersetzung der Typen definieren wir eine Funktion $translate_{type}(Type_{Scala}) = Type_{SL}$. In Abbildung () sehen man diese für die primitiven Datentypen von \ac{SL}. Diese Zuordnung wurde gewählt, da sie semantisch am Sinnvollsten ist. Die Typen \lstinline!Float! und \lstinline!Double! wurden mit \lstinline!Real! assoziert um die Bedienung zu erleichtern. Analog gilt dies für den \ac{SL} Typ \lstinline!Int!\footnote{Man hätte auch keine Übersetzung für \lstinline!Byte!, 'Short', \lstinline!Int! bzw \lstinline!Float! anbieten können. Der Benutzer müsste dann solche Werte zu 'Long' bzw. 'Double' casten. Weil dies wenig Intuitiv ist, wurde von dieser Lösung abstand genommen.}. Wir kommen aber im Rahmen der Darstellungsübersetzung noch einmal darauf zurück. Für \lstinline!DOM a! existiert kein sinnvolles Pandant in Scala.
+Bei der Wahl eines SL Partnertyps für einen Scala Typ sollte auf zwei Bedingungen geachtet werden:
 
-\begin{table}
-\caption{$translate_{type}$ für primitive Datentypen}
+\begin{enumerate}
+ \item{Die Typen sollten semantisch ähnlich sein.}
+ \item{Es sollte eine semantisch sinnvolle bijektive Abildung zwischen den Werten der beiden Typen existieren. }
+\end{enumerate}
+
+Wie wir im Abschnitt \ref{sec:value-transformation} sehen werden, wird die zweite Bedingung für einige primitiven Datentypen von Scala verletzt. Insbesondere für die ganzahligen Primitven kann sie nicht eingehalten werden. Da dadurch eine entsprechende Fehlerbehandlung unumgänglich wurde und um die Bedienung zu erleichtern wurden die Fließkommaprimitiven mit \lstinline!Real! und die ganzahligen Primitven mit \lstinline!Int! assoziert.
+
+
+\begin{table}[h]
+\caption{Die Funktion $translate_{type}$}
 \centering
 \begin{tabular}{ll|ll}
 Scala Typ & \ac{SL} Typ & Scala Typ & \ac{SL} Typ \\
 \hline
 \\
- Float & Real & Char & Char\\
-   Double   &  \\
-      &&&\\
-Byte  &   Int & Boolean & Bool \\
- Short     &  \\
- Int    &  & Unit &  Void\\
-  Long   &  \\
-     &&&\\
- String & String &  & DOM a \\
+Float     & Real        & Char      & Char \\
+Double    & \\
+          &             &           & \\
+Byte      & Int         & Boolean   & Bool \\
+Short     & \\
+Int       &             & Unit      &  Void \\
+Long      & \\
+          &             &           & \\
+String    & String \\
+          &             &           & \\
+Seq[A]    & List a      & Option[A] & Option a
 
 \end{tabular}
+\label{tab:translate_type}
 \end{table}
 
-Bei selbstdefinierten Typen muss die Übersetzung händisch passieren. Der \ac{SL} Typ 'Option a' soll dafür als Beispiel dienen. Neben syntaktischen Anforderungen wie:
-\begin{itemize}
-  \item gleiche Anzahl von Typparametern
-  \item alle Werte des Typs x in Scala müssen sich in Werte des Typs \lstinline!translate_type(x)! in \ac{SL} darstellen lassen und umgekehrt (siehe nächstes Kapitel)
-  \item ähnliche Unterstruktur (siehe Abblildung Übersetzung von Option)
-\end{itemize}
-Ist vor allem die semantische Gleichheit wichtig. Man könnte den \ac{SL} Typ \lstinline!String! in Scala durch 'Seq[Char]' darstellen und diese Konstruktion würde die syntaktischen Anforderungen erfüllen, wäre aber wenig sinnvoll da unintuitiv. Vor allem würden in Scala die passenden Funktionen fehlen um mit den übersetzten Werten umzugehen.
-Für diese Arbeit wurde Beispielhaft 'Option a' wie in der Abbildung [] beschrieben übersetzt.
-
-\begin{lstlisting}[caption=Option in \ac{SL} und Scala, label=lst:bsp2]
-Option in SL:
-PUBLIC DATA Option a =
-	  Some a
-	| None
-
-Option in Scala:
-sealed abstract class Option[+A] ... {
-  self =>
-
-  def isEmpty: Boolean
-  
-  ...
-}
-
-final case class Some[+A](x: A) extends Option[A] {
-  ...
-}
-
-case object None extends Option[Nothing] {
-  ...
-}
-\end{lstlisting}
-
-
-\begin{table}
-\caption{Übersetzung von Option[a]}
-\centering
-\begin{tabular}{ll}
-Scala                 & \ac{SL} \\\\
-
-\lstinline!Option[a]! & \lstinline!Option! $translate_{type}($\lstinline!a!$)$ \\
-\lstinline!Some(x:a)! & \lstinline!Some x : !$translate_{type}($\lstinline!a!$)$ \\
-\lstinline!None!      & \lstinline!None! \\
-\end{tabular}
-\end{table}
-
-
-
-%TODO Fehlt noch in diesem Kapitel:
-% - zu einem Scala Typ wird genau ein \ac{SL} Typ gewählt
-% - Behandlungen von spezialisierungen -> Wir können nicht List[Int] mit dem SeqTranslator übersetzen
+Bei generischen Datentypen wie \lstinline!Seq[A]! folgt aus den oben genannten Bedingungen, das die Anzahl der Typparameter der Partnertypen gleich sein sollte. Wenn ein generischer Datentyp übersetzt werden soll, wird versucht die Typparameter rekursiv zu übersetzen. Ist dies möglich kann auch der gesammte Typ übersetzt werden. Also \lstinline!Seq[Option[Long]]! würde zu \lstinline!List Option Int! übersetzt werden. Eine vollständige Auflistung von $translate_{type}$ findet sich in Tabelle \ref{tab:translate_type}.
 
 \section{Darstellungsübersetzung}
+\label{sec:value-transformation}
 
-Wie bereits in der Einführung dieses Kapitels erwähnt, wählen wir die Wertübersetzungsfunktionen anhand des Scala Typs. Da \ac{SL} nach \ac{JS} kompliliert muss ein Scala Wert entsprechend seines Typs in eine passende \ac{JS} Darstellung übersetzt werden. Für die Gegenrichtung, also \ac{SL} nach Scala gilt dies analog. Bei allen Übersetzungen haben wir das Problem der unterschiedlichen Grenzen. Man kann zwar jeden Wert des Scala Types 'Byte' in einen Wert des \ac{SL} Typs \lstinline!Int! übersetzen, aber nicht umgekehrt. In der Abbildung  werden die Grenzen für primitive Typen aufgelistet. Die Übersetzung übernimmt bei den primitiven Datentypen die JSON Bibliothek JSon4s\footnote{siehe https://github.com/json4s/json4s}.
+%TODO - Behandlungen von spezialisierungen -> Wir können nicht List[Int] mit dem SeqTranslator übersetzen
+
+
+Wie bereits in der Einführung dieses Kapitels erwähnt, wählen wir die Wertübersetzungsfunktionen anhand des Scala Typs. Da \ac{SL} nach \ac{JS} kompliliert muss ein Scala Wert entsprechend seines Typs in eine passende \ac{JS} Darstellung übersetzt werden. Für die Gegenrichtung, also \ac{SL} nach Scala gilt dies analog. Vor allem bei der Übersetzung von Primitven existiert das Problem der unterschiedlichen Grenzen. Man kann zwar jeden Wert des Scala Types \lstinline!Byte! in einen Wert des \ac{SL} Typs \lstinline!Int! übersetzen, aber nicht umgekehrt. In der Tabelle \ref{tab:primitives-borders} werden die Grenzen für primitive Typen aufgelistet. Kann ein Wert von einer Darstellungsform nicht in die andere Darstellungsform umgewandelt werden muss dieser Fehler behandelt werden (siehe Abschnitt \ref{sec:trans-implementation}). 
 
 \begin{table}
 \caption{Umfang der primitven Datentypen in Scala und \ac{SL} (\ac{JS})}
@@ -292,7 +275,7 @@ String& String\footnotemark (maximale Länge: ?)    &  String (maximale Länge: 
 \label{tab:primitives-borders}
 \end{table}
 %TODO das funktioniert so nicht mit den Fußnoten
-\footnotetext[3]{Alle Zahlendatentypen werden in \ac{JS} durch den primitiven Number Datentyp dargestellt. Dies ist eine Gleitkommazahldarstellung nach dem IEEE 754 Standart mit einer Breite von 64 Bit. In dieser Darstellung können Ganzzahlwerte von $-2^{53} + 1$ bis $2^{53} -1$ korrekt dargestellt werde.}
+\footnotetext[7]{Alle Zahlendatentypen werden in \ac{JS} durch den primitiven Number Datentyp dargestellt. Dies ist eine Gleitkommazahldarstellung nach dem IEEE 754 Standart mit einer Breite von 64 Bit. In dieser Darstellung können Ganzzahlwerte von $-2^{53} + 1$ bis $2^{53} -1$ korrekt dargestellt werde.}
 \footnotetext{Die maximale Länge von Strings in \ac{JS} und Scala ist Implementationsabhängig.}
 
 
@@ -340,6 +323,9 @@ None        & \lstinline!1!                  &  \lstinline!None! \\
 %TODO Anmerkung: js darstellung gilt nur soweit ich das rekonstruieren konnte
 
 \section{Erleuterung der Implementation}
+\label{sec:trans-implementation}
+
+Die Übersetzung übernimmt bei den primitiven Datentypen die JSON Bibliothek JSon4s\footnote{siehe https://github.com/json4s/json4s}.
 
 
 Die Übersetzung ist in Klassen organisiert. Eine Klasse erbt von 'AbstractTranslator' und bildet dabei die Verbindung von einem Scala Typen mit einem \ac{SL} Typen ab. Da sie wir immer vom Scala Typen ausgehen sind sie nach diesen benannt. Die Hauptfunktion ist 'translate'. Ihr wird ein Scala Typ übergeben. Wenn der übergebene Scala Typ der Klasse entspricht erhält man als Rückgabewert den entsprechenden \ac{SL} Typen, die Import Statements um die entsprechenden \ac{SL} Module zu laden\footnote{Bei primitven \ac{SL} Typen sind diese leer. Für den \ac{SL} Typ \lstinline!List.List Opt.Option Int! würde \lstinline!IMPORT "std/option" AS Opt, IMPORT "std/list" AS List! zurück gegeben werde} sowie die \ac{AST}-Representation der Wertübersetzungsfunktionen von Scala nach \ac{SL} und umgekehrt. Andernfalls wird \lstinline!None! zurückgegeben.
@@ -739,19 +725,30 @@ ist für primitive Typen gefixt\footnote{siehe Projektbericht S.29}
 \chapter{Related Works}
 \label{chap:related-works}
 
+\section{SL in Scala}
+
 \section{Scala.js}
 \label{sec:scala-js}
 
-\section{}
+\section{KA wie die das nennen}
 
-\chapter{Zusammenfassung}
-\label{chap:summary}
+\chapter{Fazit}
+\label{chap:conclusion}
 
 \chapter{Anhänge}
 \label{chap:anhänge}
 
 \section{Future Works}
 \label{sec:future-works}
+
+\begin{itemize}
+ \item{Security Aspekte beim Aufrufen von Scala Funktionen}
+ \item{Play PlugIn bauen}
+ \item{Erzeugen eines JAR's}
+ \item{Erweiterung von SL um Objekte}
+ \item{Analyse des SL-Codes um bessere Typen für Scala Werte zu finden.}
+\end{itemize}
+
 
 \section{Quellenverzeichnis}
 

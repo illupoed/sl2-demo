@@ -147,7 +147,7 @@ Für die Typen \lstinline!Float! und \lstinline!Double! müssen wir ihre \ac{SL}
 
 Haben wir einen passenden Typen gefunden, müssen auch die Werte in eineander überführt werden. Dies sollte eine bijektive Abbildung sein. Das dies nicht immer möglich ist, wird in Abschnitt \ref{sec:value-transformation} behandelt.
 
-Für \lstinline!Float! und \lstinline!Double! ist semantisch beste Wahl der SL Typ \lstinline!Real!. Im Ergebnis erhalten wir die Funktion \lstinline!sl_foo! aus Listing \ref{lst:scala-fun-example-translate}.
+Für \lstinline!Float! und \lstinline!Double! ist der SL Typ \lstinline!Real! die semantisch beste Wahl. Im Ergebnis erhalten wir schematisch die Funktion \lstinline!sl_foo! aus Listing \ref{lst:scala-fun-example-translate}.
 
 \begin{lstlisting}[caption=Übersetzung von foo, label=lst:scala-fun-example-translate]
 FUN sl_foo : Real -> Real
@@ -157,7 +157,7 @@ DEF sl_foo p0 = double_to_real (call_via_ajax (foo (real_to_float p0) ) )
 \section{Typübersetzung}
 \label{sec:type-translation}
 
-%TODO ein zwei sätze
+In den nächsten Abschnitten wird die Typübersetzung betrachtet. Also welche Scala Typen mit welchen SL Typen assoziert werden. Dazu werden die beiden Typsysteme kurz erleutert und dann die Funktion $translate_{type}$ näher beschrieben.
 
 \subsection{SL Typsystem}
 
@@ -242,10 +242,16 @@ Bei generischen Datentypen wie \lstinline!Seq[A]! folgt aus den oben genannten B
 \section{Darstellungsübersetzung}
 \label{sec:value-transformation}
 
-%TODO - Behandlungen von spezialisierungen -> Wir können nicht List[Int] mit dem SeqTranslator übersetzen
+Wie bereits in der Einführung dieses Kapitels erwähnt, wählen wir die Wertübersetzungsfunktionen anhand des Scala Typs. Da \ac{SL} nach \ac{JS} kompliliert muss ein Scala Wert entsprechend seines Typs in eine passende \ac{JS} Darstellung übersetzt werden. Für die Gegenrichtung, also \ac{SL} nach Scala gilt dies analog. 
 
+\subsection{Übersetzung von primitiven Werten}
 
-Wie bereits in der Einführung dieses Kapitels erwähnt, wählen wir die Wertübersetzungsfunktionen anhand des Scala Typs. Da \ac{SL} nach \ac{JS} kompliliert muss ein Scala Wert entsprechend seines Typs in eine passende \ac{JS} Darstellung übersetzt werden. Für die Gegenrichtung, also \ac{SL} nach Scala gilt dies analog. Vor allem bei der Übersetzung von Primitven existiert das Problem der unterschiedlichen Grenzen. Man kann zwar jeden Wert des Scala Types \lstinline!Byte! in einen Wert des \ac{SL} Typs \lstinline!Int! übersetzen, aber nicht umgekehrt. In der Tabelle \ref{tab:primitives-borders} werden die Grenzen für primitive Typen aufgelistet. Kann ein Wert von einer Darstellungsform nicht in die andere Darstellungsform umgewandelt werden muss dieser Fehler behandelt werden (siehe Abschnitt \ref{sec:trans-implementation}). 
+Vor allem bei der Übersetzung von Primitven existiert das Problem der unterschiedlichen Wertebereiche. Man kann zwar jeden Wert des Scala Types \lstinline!Byte! in einen Wert des \ac{SL} Typs \lstinline!Int! übersetzen, aber nicht umgekehrt. In der Tabelle \ref{tab:primitives-borders} werden die Werteberiche für primitive Typen aufgelistet. Kann ein Wert von einer Darstellungsform nicht in die andere Darstellungsform umgewandelt werden muss dieser Fehler behandelt werden (siehe Abschnitt \ref{sec:trans-implementation}). 
+
+Bei den ganzahligen Primitven fällt auf, das für den Werteberich gilt:
+\begin{center}
+$|$\lstinline!Int!$| < |$\lstinline!Number!$| < |$\lstinline!Long!$|$
+\end{center}
 
 \begin{table}
 \caption{Umfang der primitven Datentypen in Scala und \ac{SL} (\ac{JS})}
@@ -275,62 +281,59 @@ String& String\footnotemark (maximale Länge: ?)    &  String (maximale Länge: 
 \label{tab:primitives-borders}
 \end{table}
 %TODO das funktioniert so nicht mit den Fußnoten
-\footnotetext[7]{Alle Zahlendatentypen werden in \ac{JS} durch den primitiven Number Datentyp dargestellt. Dies ist eine Gleitkommazahldarstellung nach dem IEEE 754 Standart mit einer Breite von 64 Bit. In dieser Darstellung können Ganzzahlwerte von $-2^{53} + 1$ bis $2^{53} -1$ korrekt dargestellt werde.}
+\footnotetext[6]{Alle Zahlendatentypen werden in \ac{JS} durch den primitiven Number Datentyp dargestellt. Dies ist eine Gleitkommazahldarstellung nach dem IEEE 754 Standart mit einer Breite von 64 Bit. In dieser Darstellung können Ganzzahlwerte von $-2^{53} + 1$ bis $2^{53} -1$ korrekt dargestellt werde.}
 \footnotetext{Die maximale Länge von Strings in \ac{JS} und Scala ist Implementationsabhängig.}
 
+\subsection{Übersetzung von komplexen Werten}
 
-Bei nicht primitiven Werten ist mehr Aufwand nötig. Dazu muss man zuerst verstehen wie die Darstellung von \ac{SL} Werte für selbstdefinierte Type \ac{JS} aussieht.
+Bei nicht primitiven Werten ist mehr Aufwand nötig. Dafür müssen wir zunächst die JS-Darstellung von selbstdefinierten SL Typen verstehen\footnote{Das beschriebene Schema wurde aus dem SL Compiler generierten Code abgeleitet. Es ist nicht dokumentiert.}.
 
-
-(Beschreibung der übersetzung fehlt)
-
-\begin{lstlisting}[caption=Beispiel eines selbstedefinierten Typs, label=lst:bsp6]
-DATA People a b c = Alice | Bob a | Cesar b c | Dieter
+\begin{lstlisting}[caption=Beispiel eines selbstedefinierten Typs, label=lst:example-datatype-sl]
+DATA People a b = Alice | Bob Int | Cesar a b | Octavian
 \end{lstlisting}
 
-\begin{table}
-\caption{JS Darstellung des \ac{SL} Typen People}
+Die einzelnen Konstruktoren erhalten ensprechend ihrer Reinfolge eine \lstinline!_cid! beginnend bei $0$. Hat ein Konstruktor keine Parameter, wird er nur durch seine \lstinline!_cid! dargestellt. Andernfalls wird ein Objekt erzeugt. Dies besitzt das Attribut \lstinline!_cid! sowie entsprechend der Anzahl der Parameter Attribute die von \lstinline!_var0! bis \lstinline!_varN! bennant sind. Die JS Darstellung von dem Beispieltyp aus Listing \ref{lst:example-datatype-sl} findet sich in der Tabelle \ref{tab:js-code-of-people}.
+
+\begin{table}[h]
+\caption{JS Darstellung des \ac{SL} Typen \lstinline!People Char Bool!}
 \centering
 \begin{tabular}{ll}
  \ac{SL}              &  \ac{JS} Darstellung \\
 \lstinline!Alice!           &  \lstinline!0! \\
 \lstinline!Bob 42!          &  \lstinline!{ "_cid" => 1, "_var0" => 42 }! \\
 \lstinline!Cesar "a" true!  &  \lstinline!{ "_cid" => 2, "_var0" => "a", "_var1" => true }! \\
-\lstinline!Dieter!          &  \lstinline!3! \\
+\lstinline!Octavian!        &  \lstinline!3! \\
 \end{tabular}
+\label{tab:js-code-of-people}
 \end{table}
 
-
-(Zwischensatz)
-- Hier können vielfältige Probleme bei den Übersetzungen auftreten zb.: Können Seq[Double] beliebiger Länge in List[Real] übersetzt werden
+An Hand dieses Schemas können wir nun eine Darstellungsübersetzung für den Scala Typ Option (siehe Listing \ref{lst:option-in-sl-scala}) erzeugen:
 
 %Bild: Übersetzung von Option Werten
-\begin{table}
+\begin{table}[h]
 \caption{Übersetzung von Option Werten}
 \centering
 \begin{tabular}{lll}
- \ac{SL}        &   \ac{JS} Darstellung   &    Scala \\
+Scala                   & \ac{JS} Darstellung                        & SL \\
 
-Option a   &                    &   Option[a] \\
+\lstinline!Option[Int]! &                                            & \lstinline!Option Int! \\
 
-Some(val)   & \lstinline!{ "_cid" => 0!      &  \lstinline!Some(sl_to_scala(val))! \\
-            & \lstinline!, "_var0" => val! \\
-            & \lstinline!}! \\
-
-None        & \lstinline!1!                  &  \lstinline!None! \\
+\lstinline!Some(15)!    & \lstinline!{ "_cid" => 0, "_var0" => 15 }! & \lstinline!Some(15)! \\
+\lstinline!None!        & \lstinline!1!                              &  \lstinline!None! \\
 \end{tabular}
 \end{table}
-%TODO Anmerkung: js darstellung gilt nur soweit ich das rekonstruieren konnte
+
+%TODO vllt noch Seq[A] zu List a erklären
 
 \section{Erleuterung der Implementation}
 \label{sec:trans-implementation}
+%TODO - Behandlungen von spezialisierungen -> Wir können nicht List[Int] mit dem SeqTranslator übersetzen
+%TODO - die übersetzung findet bei der Übersetzung statt
 
-Die Übersetzung übernimmt bei den primitiven Datentypen die JSON Bibliothek JSon4s\footnote{siehe https://github.com/json4s/json4s}.
+Für die Erzeugung der JS Werte wird die Bibliothek json4s\footnote{siehe json4s} benutzt. Sie erledigt auch die Übersetzung der primitven Datentypen\footnote{Entsprechend ist der Rückgabewert der }.
 
+Die Übersetzung ist in Klassen organisiert. Eine Klasse erbt von 'AbstractTranslator' und bildet dabei die Verbindung von einem Scala Typen mit einem \ac{SL} Typen ab. Da immer vom Scala Typen ausgehen wird, sind sie nach diesen benannt. Die Hauptfunktion ist 'translate'. Ihr wird ein Scala Typ übergeben. Wenn der übergebene Scala Typ der Klasse entspricht erhält man als Rückgabewert den entsprechenden \ac{SL} Typen, die Import Statements um die entsprechenden \ac{SL} Module zu laden\footnote{Bei primitven \ac{SL} Typen sind diese leer. Für den \ac{SL} Typ \lstinline!List.List Opt.Option Int! würde \lstinline!IMPORT "std/option" AS Opt, IMPORT "std/list" AS List! zurück gegeben werden.} sowie die \ac{AST}-Representation der Wertübersetzungsfunktionen von Scala nach \ac{SL} und umgekehrt. Andernfalls wird \lstinline!None! zurückgegeben.
 
-Die Übersetzung ist in Klassen organisiert. Eine Klasse erbt von 'AbstractTranslator' und bildet dabei die Verbindung von einem Scala Typen mit einem \ac{SL} Typen ab. Da sie wir immer vom Scala Typen ausgehen sind sie nach diesen benannt. Die Hauptfunktion ist 'translate'. Ihr wird ein Scala Typ übergeben. Wenn der übergebene Scala Typ der Klasse entspricht erhält man als Rückgabewert den entsprechenden \ac{SL} Typen, die Import Statements um die entsprechenden \ac{SL} Module zu laden\footnote{Bei primitven \ac{SL} Typen sind diese leer. Für den \ac{SL} Typ \lstinline!List.List Opt.Option Int! würde \lstinline!IMPORT "std/option" AS Opt, IMPORT "std/list" AS List! zurück gegeben werde} sowie die \ac{AST}-Representation der Wertübersetzungsfunktionen von Scala nach \ac{SL} und umgekehrt. Andernfalls wird \lstinline!None! zurückgegeben.
-
-%Code: translate
 \begin{lstlisting}[caption=Hauptfunktion in AbstractTranslator, label=lst:bsp2]
 def translate
   ( context: MacroCtxt )
@@ -341,12 +344,13 @@ def translate
            context.Expr[JValue => Any] )]
 \end{lstlisting}
 
-Weiter Parameter sind 'context' und 'translators'. 'context' ist der Compiler Macro Kontext. Mit 'translators' werden alle Translatorklassen übergeben mit denen Spezialisierungen übersetzt werden können.
+%TODO was ist compiler macro context
+Weiter Parameter sind \lstinline!context! und \lstinline!translators!. \lstinline!context! ist der Compiler Macro Kontext. Mit 'translators' werden alle Translatorklassen übergeben mit denen Spezialisierungen eines generischen Typs übersetzt werden können.
 
-Möchte man einen Scala Typ nicht nur gegen eine Klasse prüfen kann man die Hilfsfunktionen 'useTranslators', 'useTranslatorSLToScala' oder 'useTranslatorScalaToSL' aus dem companion object von 'AbstractTranslator' nutzen.
+Möchte man einen Scala Typ nicht nur gegen eine Klasse prüfen kann man die Hilfsfunktionen \lstinline!useTranslators! aus dem companion object von 'AbstractTranslator' nutzen.
 
 
-\begin{lstlisting}[caption=Hilfsfunktionen, label=lst:hilfsfunktionen]
+\begin{lstlisting}[caption=Statische Hilfsfunktion in AbstractTranslator, label=lst:hilfsfunktionen]
 def useTranslators
   ( c: MacroCtxt )
   ( input: c.universe.Type, translators: Seq[AbstractTranslator] )
@@ -354,20 +358,6 @@ def useTranslators
            Set[String], 
            c.Expr[Any => JValue], 
            c.Expr[JValue => Any] )]
-
-def useTranslatorSLToScala
-  ( c: MacroCtxt )
-  ( input: c.universe.Type, translators: Seq[AbstractTranslator] )
-: Option[( String, 
-           Set[String], 
-           c.Expr[JValue => Any] )]
-
-def useTranslatorScalaToSL
-  ( c: MacroCtxt )
-  ( input: c.universe.Type, translators: Seq[AbstractTranslator] )
-: Option[( String, 
-           Set[String], 
-           c.Expr[Any => JValue] )]
 \end{lstlisting}
 
 'translators' gibt hier an welchen Teil der Funktion $translate_{type}$ man nutzen möchte.

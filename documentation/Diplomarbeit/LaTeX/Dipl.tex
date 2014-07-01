@@ -327,14 +327,10 @@ Scala                   & \ac{JS} Darstellung                        & SL \\
 
 \section{Erleuterung der Implementation}
 \label{sec:trans-implementation}
-%TODO - Behandlungen von spezialisierungen -> Wir können nicht List[Int] mit dem SeqTranslator übersetzen
-%TODO - die übersetzung findet bei der Übersetzung statt
 
-Für die Erzeugung der JS Werte wird die Bibliothek json4s\footnote{siehe json4s} benutzt. Sie erledigt auch die Übersetzung der primitven Datentypen\footnote{Entsprechend ist der Rückgabewert der }.
+Die Paare der Funktion $translate_{type}$ werden durch Klassen, die von \lstinline!AbstractTranslator! erben, dargestellt. Sie sind nach dem jeweiligen Scala Typen den sie übersetzen benannt\footnote{zB. \lstinline!SeqTranslator!}. Ihre Hauptfunktion ist \lstinline!translate! (siehe Listing \ref{lst:main-function-translate}). Ihr wird ein Scala Typ übergeben. Wenn der übergebene Scala Typ der Klasse entspricht erhält man als Rückgabewert den entsprechenden \ac{SL} Typen, die Import Statements um die entsprechenden \ac{SL} Module zu laden\footnote{Bei primitven \ac{SL} Typen sind diese leer. Für den \ac{SL} Typ \lstinline!List.List Opt.Option Int! würde \lstinline!IMPORT "std/option" AS Opt, IMPORT "std/list" AS List! zurück gegeben werden.} sowie die \ac{AST}-Representation der Wertübersetzungsfunktionen von Scala nach \ac{SL} und umgekehrt. Andernfalls wird \lstinline!None! zurückgegeben.
 
-Die Übersetzung ist in Klassen organisiert. Eine Klasse erbt von 'AbstractTranslator' und bildet dabei die Verbindung von einem Scala Typen mit einem \ac{SL} Typen ab. Da immer vom Scala Typen ausgehen wird, sind sie nach diesen benannt. Die Hauptfunktion ist 'translate'. Ihr wird ein Scala Typ übergeben. Wenn der übergebene Scala Typ der Klasse entspricht erhält man als Rückgabewert den entsprechenden \ac{SL} Typen, die Import Statements um die entsprechenden \ac{SL} Module zu laden\footnote{Bei primitven \ac{SL} Typen sind diese leer. Für den \ac{SL} Typ \lstinline!List.List Opt.Option Int! würde \lstinline!IMPORT "std/option" AS Opt, IMPORT "std/list" AS List! zurück gegeben werden.} sowie die \ac{AST}-Representation der Wertübersetzungsfunktionen von Scala nach \ac{SL} und umgekehrt. Andernfalls wird \lstinline!None! zurückgegeben.
-
-\begin{lstlisting}[caption=Hauptfunktion in AbstractTranslator, label=lst:bsp2]
+\begin{lstlisting}[caption=Hauptfunktion in AbstractTranslator, label=lst:main-function-translate]
 def translate
   ( context: MacroCtxt )
   ( input: context.universe.Type, translators: Seq[AbstractTranslator] )
@@ -344,125 +340,26 @@ def translate
            context.Expr[JValue => Any] )]
 \end{lstlisting}
 
-%TODO was ist compiler macro context
-Weiter Parameter sind \lstinline!context! und \lstinline!translators!. \lstinline!context! ist der Compiler Macro Kontext. Mit 'translators' werden alle Translatorklassen übergeben mit denen Spezialisierungen eines generischen Typs übersetzt werden können.
+Weiter Parameter sind \lstinline!context! und \lstinline!translators!. \lstinline!context! ist der Macro Kontext\footnote{siehe Kapitel \ref{chap:scala-compiler-macros} und online tutorial compiler macros}. Er wird benötigt um \ac{AST}s aufzubauen und den übergebenen Typen zu prüfen. Mit \lstinline!translators! wird der Teil von $translate_{type}$ übergeben mit denen Spezialisierungen eines generischen Typs übersetzt werden können.
 
-Möchte man einen Scala Typ nicht nur gegen eine Klasse prüfen kann man die Hilfsfunktionen \lstinline!useTranslators! aus dem companion object von 'AbstractTranslator' nutzen.
+Möchte man einen Scala Typ nicht nur gegen eine Klasse prüfen kann man die Hilfsfunktion \lstinline!useTranslators! aus dem companion object von \lstinline!AbstractTranslator! nutzen.
 
 
 \begin{lstlisting}[caption=Statische Hilfsfunktion in AbstractTranslator, label=lst:hilfsfunktionen]
 def useTranslators
-  ( c: MacroCtxt )
-  ( input: c.universe.Type, translators: Seq[AbstractTranslator] )
+  ( context: MacroCtxt )
+  ( input: context.universe.Type, translators: Seq[AbstractTranslator] )
 : Option[( String,
            Set[String], 
-           c.Expr[Any => JValue], 
-           c.Expr[JValue => Any] )]
+           context.Expr[Any => JValue], 
+           context.Expr[JValue => Any] )]
 \end{lstlisting}
 
-'translators' gibt hier an welchen Teil der Funktion $translate_{type}$ man nutzen möchte.
+\lstinline!translators! gibt hier an welchen Teil der Funktion $translate_{type}$ man nutzen möchte\footnote{\lstinline!translators! wird in diesem Fall auch für die Spezialisierungen von generischen Typen benutzt.}. 
 
-\subsection{Die Klasse OptionTranslator als Beispiel}
+Die Wertübersetzungsfunktionen haben die Signatur \lstinline!Any => JValue! bzw. \lstinline!JValue => Any!. \lstinline!JValue! ist Teil der json4s\footnote{siehe json4s} Bibliothek, die benutzt wird um JS Werte zu erzeugen. Insbesonder übernimmt sie in der aktuellen Implementation die Übersetzung der primitiven Werte.
 
-Exemplarisch als Implementation für \lstinline!AbstractTranslator! wird in diesem Kapitel der \lstinline!OptionTranslator! genauer betrachtet.
-
-ÜBERARBEITEN (listing kürzen)
-
-\begin{lstlisting}[caption=Source Code von OptionTranslator, label=lst:source option translator]
-case class OptionTranslator( override val module_alias: String = "Opt" ) 
-extends AbstractModulTranslator( module_alias ) {
-  val import_path = "std/option"
-
-  override def rename( module_alias: String ) = copy( module_alias );
-  
-  override def translate
-    ( context: Context )
-    ( input: context.universe.Type, translators: Seq[AbstractTranslator] )
-  : Option[( String, 
-             Set[String], 
-             context.Expr[Any => JValue], 
-             context.Expr[JValue => Any] )] =
-    {
-      import context.universe._
-
-      val option_class_symbol: ClassSymbol = typeOf[Option[_]].typeSymbol.asClass
-      val first_type_parameter: Type = option_class_symbol.typeParams( 0 ).asType.toType
-      val option_any_type: Type = typeOf[Option[Any]]
-
-      if ( input.<:<( option_any_type ) ) {
-        val actual_type = first_type_parameter.asSeenFrom( input, option_class_symbol )
-
-        AbstractTranslator.useTranslators( context )( actual_type, translators ) match {
-          case Some( ( \ac{SL}_type, imports, expr_s2j, expr_j2s ) ) =>
-            {
-              val scala2js = reify( 
-                { 
-                  ( i: Any ) => de.tuberlin.uebb.sl2.slmacro.variabletranslation.std.
-                  OptionTranslator.scalaToJsOption( i, expr_s2j.splice ) 
-                } 
-              )
-              val \ac{JS}2scala = reify( 
-                { 
-                  ( i: JValue ) => de.tuberlin.uebb.sl2.slmacro.variabletranslation.std.
-                  OptionTranslator.jsToScalaOption( i, expr_j2s.splice ) 
-                } 
-              )
-              Some( 
-                ( module_alias + ".Option ( " + \ac{SL}_type + " )", 
-                imports + module_import, 
-                scala2js, 
-                \ac{JS}2scala ) 
-              )
-            }
-          case None =>
-            None
-        }
-      }
-      else
-        None
-    }
-}
-
-object OptionTranslator {
-  def scalaToJsOption( input: Any, f: Any => JValue ): JValue =
-    {
-      import org.json4s._
-
-      input match {
-        case Some( x ) => {
-          val tmp: List[( String, JValue )] = List( "_cid" -> JInt( 0 ), "_var0" -> f( x ) )
-          JObject( tmp )
-        }
-        case None => JInt( 1 )
-        case _ =>
-          throw new IllegalArgumentException
-      }
-    }
-
-  def \ac{JS}ToScalaOption[T]( input: JValue, f: JValue => T ): Option[T] =
-    {
-      input match {
-        case JInt( _ ) => None: Option[T]
-        case JObject( x ) => {
-          val tmp = x.find( j => ( j._1 == "_var0" ) )
-          if ( tmp.isDefined )
-            Some( f( tmp.get._2 ) )
-          else
-            throw new IllegalArgumentException
-        }
-        case _ => throw new IllegalArgumentException
-      }
-    }
-}
-
-\end{lstlisting}
-
-\lstinline!OptionTranslator! erbt nicht von \lstinline!AbstractTranslator! sondern von \lstinline!AbstractModuleTranslator!, weil der korrespondierende \ac{SL} Typ \lstinline!Option! in einem Modul definiert ist (Zeile 1-2). Außerdem wird ein default \lstinline!module_alias! angegeben. Dies wird im Kapitel \ref{sec:annotation-macro} relevant werden. In Zeile 3 wird der \lstinline!import_path! des zu ladenen Moduls angegeben. 
-
-Kommen wir zur Hauptfunktion \lstinline!translate!. Zunächst wird überprüft ob der übergebene Typ \lstinline!input! ein Subtyp von \lstinline!Option[Any]!\footnote{Für den Scala Typ \lstinline!Any! kann es keine semantisch sinnvolle Übersetzung nach \ac{SL} geben} ist (Zeile 21). Falls dies der Fall ist wird die Spezialisierung von \lstinline!Option! bestimmt (Zeile 22). Also handelt es sich um \lstinline!Option[Int]! oder \lstinline!Option[OptionTranslator]! um Beispiele zu nennen. In Zeile 24 wird versucht mit \lstinline!AbstractTranslator.useTranslators! eine passende \ac{SL} Entsprechung für die Spezialisierung zu finden. Ist dies der Fall wird ein Ergebnis zusammengesetzt (Zeile 25-45). In jedem anderen Fall wird \lstinline!None! zurückgegeben.
-
-Die Wertübersetzungsfunktionen von Scala nach \ac{SL} und umgekehrt werden im companion object \lstinline!OptionTranslator! definiert um sie besser testen zu können (ab Zeile 55). Sie werfen eine \lstinline!IllegalArgumentException! falls der Wert auserhalb der übersetzbaren Grenzen liegt\footnote{Das kann bei \lstinline!Option! nicht passieren, aber bei anderen Übersetzungen. Siehe Tabelle \ref{tab:primitives-borders}.} oder ein unerwarteter Wert übergeben wird.
-%TODO ? Soll reify erwähnt werden?
+In Anhang \ref{subsec:option-translator} kann eine kommentierte Variante des OptionTranslators eingesehen werden.
 
 \chapter{Scala Compiler Macros}
 \label{chap:scala-compiler-macros}
@@ -717,8 +614,12 @@ ist für primitive Typen gefixt\footnote{siehe Projektbericht S.29}
 
 \section{SL in Scala}
 
+Vor- und Nachteile von SL in Scala beschreiben
+
 \section{Scala.js}
 \label{sec:scala-js}
+
+
 
 \section{KA wie die das nennen}
 
@@ -765,6 +666,101 @@ ist für primitive Typen gefixt\footnote{siehe Projektbericht S.29}
 \section{Beschreibung der Tests und Beispielprogramme}
 
 %TODO
+
+\subsection{Die Klasse OptionTranslator als Beispiel}
+\label{subsec:option-translator}
+
+Exemplarisch als Implementation für \lstinline!AbstractTranslator! wird in diesem Kapitel der \lstinline!OptionTranslator! genauer betrachtet.
+
+ÜBERARBEITEN (listing kürzen)
+
+\begin{lstlisting}[caption=Source Code von OptionTranslator, label=lst:source option translator]
+case class OptionTranslator( override val module_alias: String = "Opt" ) 
+extends AbstractModulTranslator( module_alias ) {
+  val import_path = "std/option"
+  
+  override def translate
+    ( context: Context )
+    ( input: context.universe.Type, translators: Seq[AbstractTranslator] )
+  : Option[( String, 
+             Set[String], 
+             context.Expr[Any => JValue], 
+             context.Expr[JValue => Any] )] =
+    {
+      import context.universe._
+
+      val option_class_symbol: ClassSymbol = typeOf[Option[_]].typeSymbol.asClass
+      val first_type_parameter: Type = option_class_symbol.typeParams( 0 ).asType.toType
+      val option_any_type: Type = typeOf[Option[Any]]
+
+      if ( input.<:<( option_any_type ) ) {
+        val actual_type = first_type_parameter.asSeenFrom( input, option_class_symbol )
+
+        AbstractTranslator.useTranslators( context )( actual_type, translators ) match {
+          case Some( ( sl_type, imports, expr_s2j, expr_j2s ) ) =>
+            {
+              val scala2js = reify( 
+                { 
+                  ( i: Any ) => OptionTranslator.scalaToJsOption( i, expr_s2j.splice ) 
+                } 
+              )
+              val js2scala = reify( ... )
+              Some( 
+                ( module_alias + ".Option ( " + SL_type + " )", 
+                imports + module_import, 
+                scala2js, 
+                js2scala ) 
+              )
+            }
+          case None =>
+            None
+        }
+      }
+      else
+        None
+    }
+}
+
+object OptionTranslator {
+  def scalaToJsOption( input: Any, f: Any => JValue ): JValue =
+    {
+      import org.json4s._
+
+      input match {
+        case Some( x ) => {
+          val tmp: List[( String, JValue )] = List( "_cid" -> JInt( 0 ), "_var0" -> f( x ) )
+          JObject( tmp )
+        }
+        case None => JInt( 1 )
+        case _ =>
+          throw new IllegalArgumentException
+      }
+    }
+
+  def \ac{JS}ToScalaOption[T]( input: JValue, f: JValue => T ): Option[T] =
+    {
+      input match {
+        case JInt( _ ) => None: Option[T]
+        case JObject( x ) => {
+          val tmp = x.find( j => ( j._1 == "_var0" ) )
+          if ( tmp.isDefined )
+            Some( f( tmp.get._2 ) )
+          else
+            throw new IllegalArgumentException
+        }
+        case _ => throw new IllegalArgumentException
+      }
+    }
+}
+
+\end{lstlisting}
+
+\lstinline!OptionTranslator! erbt nicht von \lstinline!AbstractTranslator! sondern von \lstinline!AbstractModuleTranslator!, weil der korrespondierende \ac{SL} Typ \lstinline!Option! in einem Modul definiert ist (Zeile 1-2). Außerdem wird ein default \lstinline!module_alias! angegeben. Dies wird im Kapitel \ref{sec:annotation-macro} relevant werden. In Zeile 3 wird der \lstinline!import_path! des zu ladenen Moduls angegeben. 
+
+Kommen wir zur Hauptfunktion \lstinline!translate!. Zunächst wird überprüft ob der übergebene Typ \lstinline!input! ein Subtyp von \lstinline!Option[Any]!\footnote{Für den Scala Typ \lstinline!Any! kann es keine semantisch sinnvolle Übersetzung nach \ac{SL} geben} ist (Zeile 21). Falls dies der Fall ist wird die Spezialisierung von \lstinline!Option! bestimmt (Zeile 22). Also handelt es sich um \lstinline!Option[Int]! oder \lstinline!Option[OptionTranslator]! um Beispiele zu nennen. In Zeile 24 wird versucht mit \lstinline!AbstractTranslator.useTranslators! eine passende \ac{SL} Entsprechung für die Spezialisierung zu finden. Ist dies der Fall wird ein Ergebnis zusammengesetzt (Zeile 25-45). In jedem anderen Fall wird \lstinline!None! zurückgegeben.
+
+Die Wertübersetzungsfunktionen von Scala nach \ac{SL} und umgekehrt werden im companion object \lstinline!OptionTranslator! definiert um sie besser testen zu können (ab Zeile 55). Sie werfen eine \lstinline!IllegalArgumentException! falls der Wert auserhalb der übersetzbaren Grenzen liegt\footnote{Das kann bei \lstinline!Option! nicht passieren, aber bei anderen Übersetzungen. Siehe Tabelle \ref{tab:primitives-borders}.} oder ein unerwarteter Wert übergeben wird.
+%TODO ? Soll reify erwähnt werden?
 
 \section{Benutzte Techniken/Bibliotheken}
 

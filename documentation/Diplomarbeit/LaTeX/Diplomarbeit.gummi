@@ -1,6 +1,0 @@
-version=0.6.0
-typesetter=pdflatex
-steps=texpdf
-root=/home/norcain/workspace/sl2-demo/documentation/Diplomarbeit/LaTeX/Dipl.tex
-
-file=/home/norcain/workspace/sl2-demo/documentation/Diplomarbeit/LaTeX/powers.bib

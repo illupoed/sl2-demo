@@ -77,11 +77,12 @@
 \begin{document}
 \pagenumbering{roman}
 \maketitle
-\tableofcontents
-
+\tableofcontents   % Inhaltsverzeichnis
+\listoffigures     % Abbildungsverzeichnis
+\listoftables      % Tabellenverzeichnis
+\lstlistoflistings % Listingverzeichnis
 \newpage
-
-\thispagestyle{empty}													% ohne Kopf und Fußzeilen
+\thispagestyle{empty}		% ohne Kopf und Fußzeilen
 \begin{LARGE}
 	\textbf{Erklärung}
 \end{LARGE}
@@ -111,11 +112,11 @@ Unterschrift
 
 \section{Einleitung}
 
-Das World Wide Web ist ein integraler Bestandteil unseres Lebens geworden. Ein Großteil der Software mit der wir in Berührung kommen, benutzt Webseiten als Frontend. Deshalb muss sich jede moderne Programmiersprache daran messen lassen wie leicht es ist mit ihr Webprojekte zu erstellen. Daher bieten Java, Scala, Ruby und viele andere Programmiersprachen Frameworks an um schnell und einfach strukturierte Webprojekte zu erstellen. Ein gemeinsames Problem dieser Frameworks ist es, insbesondere mit dem aufkommen von Rich Internet Applications, das clientseitig Code ausgeführt werden muss. In diesem Bereich hat sich \ac{JS} zum Quasistandart entwickelt\footnote{Es gibt weitere Alternativen wie Java oder Flash, die aber Browserplugins vorraussetzen.}. Dadurch ist man beim schreiben von browserseitigen Funktionen auf die von den \ac{JS}-Entwicklern bevorzugten Programmierparadigmen wie dynamische Typisierung festgelegt. Bei größeren Bibliotheken kann dies die Wartung und Weiterentwicklung erschweren.
+Das World Wide Web ist ein integraler Bestandteil unseres Lebens geworden. Ein Großteil der Software mit der wir in Berührung kommen, benutzt Webseiten als Frontend. Deshalb muss sich jede moderne Programmiersprache daran messen lassen wie leicht es ist mit ihr Webprojekte zu erstellen. Daher bieten Java, Scala, Ruby und viele andere Programmiersprachen Frameworks an um schnell und einfach strukturierte Webprojekte zu erstellen. Ein gemeinsames Problem dieser Frameworks ist es, insbesondere mit dem aufkommen von Rich Internet Applications, das clientseitig Code ausgeführt werden muss. In diesem Bereich hat sich \ac{JS} zum Quasistandard entwickelt\footnote{Es gibt weitere Alternativen wie Java oder Flash, die aber Browserplugins vorraussetzen.}. Dadurch ist man beim Schreiben von browserseitigen Funktionen auf die von den \ac{JS}-Entwicklern bevorzugten Programmierparadigmen wie dynamische Typisierung festgelegt. Bei größeren Bibliotheken kann dies die Wartung und Weiterentwicklung erschweren.
 
 Im Rahmen eines Projekts \cite{Buchle2013} an der TU-Berlin wurde die typsichere funktionale Sprache \ac{SL} entwickelt die nach \ac{JS} compiliert. Andererseits wurde Mitte 2013 durch die Einführung von compiler makros \cite{Burmako2013} die Metaprogrammierung innerhalb von Scala erheblich vereinfacht.
 
-Im Rahmen eines Papers \cite{Hoger2013} wurde gezeigt, das es möglich ist mit Hilfe von Compilermakros statischen \ac{SL} Code inline in Scala zu benutzen. Diese Einbettung sollte im Zuge dieser Diplomarbeit erweitert werden. Es ist nun möglich Scala Funktionen und Werte in einem gewissen Rahmen automatisch zu übersetzen und typsicher im \ac{SL} Code zu benutzen.
+Im Rahmen eines Papers \cite{Hoger2013} wurde gezeigt, das es möglich ist mit Hilfe von Compilermakros statischen \ac{SL} Code inline in Scala zu benutzen. Dazu wurde eine Beispielanwendung im Play Framework geschrieben \cite{Play1}. Diese Einbettung sollte im Zuge dieser Diplomarbeit erweitert werden. Es ist nun möglich Scala Funktionen und Werte in einem gewissen Rahmen automatisch zu übersetzen und typsicher im \ac{SL} Code zu benutzen.
 
 Für das Verständnis der Diplomarbeit werden Kenntnisse im Bereich funktionaler Programmierung sowie Grundlagen in den Sprachen Scala und \ac{JS} vorausgesetzt.
 
@@ -568,7 +569,7 @@ Some(3)
 
 Die zu ersetzende Stelle wird durch einen Platzhalter (\lstinline!$s!) markiert. Der $n+1$-te Parameter von \lstinline!slci! wird dem $n$-ten Platzhalter zugeordnet. Falls die Anzahl der Parameter ungleich der Anzahl der Platzhalter ist, werden Warnings oder Errors erzeugt. 
 
-Daraufhin werden die \lstinline!IMPORT!-Anweisungen analysiert und die entsprechenden Translator-Klassen geladen\footnote{Translator-Klassen die in Standarttypen von SL übersetzen, werden immer geladen. Für \lstinline!IMPORT "std/option" AS Modulalias! würde die Instanz \lstinline!new OptionTranslator("Modulalias")! erzeugt werden.}. Die von der Makro-API bestimmten Typen\footnote{Manchmal muss man den Typ annotieren. Das Literal \lstinline!5! hat den Typ \lstinline!Int(5)! und nicht \lstinline!Int!. Man schreibt also \lstinline!5:Int!.} der Parameter werden dann mit den zur Verfügung stehenden Translator-Klassen übersetzt. 
+Daraufhin werden die \lstinline!IMPORT!-Anweisungen analysiert und die entsprechenden Translator-Klassen geladen\footnote{Translator-Klassen die in Standardtypen von SL übersetzen, werden immer geladen. Für \lstinline!IMPORT "std/option" AS Modulalias! würde die Instanz \lstinline!new OptionTranslator("Modulalias")! erzeugt werden.}. Die von der Makro-API bestimmten Typen\footnote{Manchmal muss man den Typ annotieren. Das Literal \lstinline!5! hat den Typ \lstinline!Int(5)! und nicht \lstinline!Int!. Man schreibt also \lstinline!5:Int!.} der Parameter werden dann mit den zur Verfügung stehenden Translator-Klassen übersetzt. 
 Wenn alle Typen übersetzt werden konnten, werden die Platzhalter durch \ac{JS}-Quotings ersetzt, die auf globale Variablen zugreifen. Im Beispiel aus Listing \ref{lst:slci-example-var} würde \lstinline!$s! durch \lstinline!{| sl['5a40c735438fd9e1fd43657bd7f8564scalaParam1'] |} : Option.Option Int!\footnote{Der Name der JS-Variable folgt folgendem Schema: \lstinline!<Hash des Macrokontexts>scalaParam<Parameternummer>!.} ersetzt werden. Der so erzeugte SL-Code wird dann, wie im Abschnitt \ref{subsec:compile-static-sl} beschrieben, übersetzt. 
 Listing \ref{lst:slci-example-var-scala-code} enthält den vom Makro erzeugt Scala-Code. 
 
@@ -617,14 +618,22 @@ Im Laufe der Diplomarbeit wurde der \ac{SL}-Compiler an einigen Stellen erweiter
 
 \section{Erweiterungen am MultiDriver}
 
-In der vorherigen Version des \lstinline!MultiDriver!s wurden, wenn ein Modul eine main-Funktion enthält, neben dem Kompilat die Dateien \lstinline!main.js! und \lstinline!index.html! erstellt \cite[S. 18-19]{Bisping2013}. Da dies unerwünscht ist, wenn der \ac{SL}-Code in eine Play View eingebettet wird, wurde in der Konfiguration (\lstinline!Configs.scala!) des Compilers eine neue Option eingeführt. Mit dem Schalter \lstinline!generate_index_html! kann das oben genannte Verhalten unterdrückt werden. Im Normalfall ist dieser Wert auf \lstinline!true! gesetzt; die Makros verwenden ihn mit dem Wert \lstinline!false!. 
+In der vorherigen Version des \lstinline!MultiDriver!s wurden, wenn ein Modul eine main-Funktion enthält, neben dem Kompilat die Dateien \lstinline!main.js! und \lstinline!index.html! erstellt \cite[S. 18-19]{Bisping2013}. Da dies unerwünscht ist, wenn der \ac{SL}-Code in eine Play View eingebettet wird, wurde in der Konfiguration (\lstinline!Configs.scala!) des Compilers eine neue Option eingeführt. Mit dem Schalter \lstinline!generate_index_html! kann das oben genannte Verhalten unterdrückt werden. Im Normalfall ist dieser Wert auf \lstinline!true! gesetzt; die Makros verwenden ihn mit dem Wert \lstinline!false!.
 
-Weiterhin wurde der Schalter \lstinline!main_function_is_required! eingeführt. Wenn dieser Wert auf \lstinline!true! gesetzt ist, wird sichergestellt das ein zu übersetzendes Modul eine main-Funktion enthält. Falls dies nicht der Fall ist wird die Übersetzung mit einem Fehler abgebrochen. Wie im Abschnitt \ref{subsec:compile-static-sl} beschrieben, braucht das slci-Makro eine main-Funktion. Der Standartwert des Schalters ist \lstinline!false!.
+Die übersetzten Bibliotheksmodule (zum Beispiel: option.sl.js) werden in das Zielverzeichnis der Übersetzung kopiert, wenn das zu übersetzende Modul eine main-Funktion enthält und der SL-Übersetzer in Form einer jar-Datei vorliegt. Das ist nötig, damit die entsprechenden Module nachgeladen werden können. Dies ist bis jetzt undokumentiertes Verhalten. In der aktuellen Version des SL-Übersetzers werden die Dateien auch kopiert wenn der Übersetzer nicht gepackt vorliegt.
+
+Weiterhin wurde der Schalter \lstinline!main_function_is_required! eingeführt. Wenn dieser Wert auf \lstinline!true! gesetzt ist, wird sichergestellt das ein zu übersetzendes Modul eine main-Funktion enthält. Falls dies nicht der Fall ist wird die Übersetzung mit einem Fehler abgebrochen. Wie im Abschnitt \ref{subsec:compile-static-sl} beschrieben, ist für das slci-Makro eine main-Funktion nötig. Der Standardwert des Schalters ist \lstinline!false!.
 
 \section{Überprüfung des Ergebnistyps von \ac{JS}-Quotings}
 
-%TODO erst noch die überprüfung von Option a implementieren. Dann dieses Kapitel abschließen
-ist für primitive Typen gefixt\footnote{siehe Projektbericht S.29}
+Mit JS-Quotings kann JS-Code direkt in SL benutzt werden. Bis jetzt wurde das Ergebnis solcher Quotings zur Laufzeit nicht auf Korrektheit überprüft \cite[S. 29]{Bisping2013}. Im Rahmen dieser Arbeit wurde dieses Verhalten für einige primitive Typen (\lstinline!String!, \lstinline!Char!, \lstinline!Bool!, \lstinline!Real! und \lstinline!Int!) geändert. Dies gilt nur für JS-Quotings die einen entsprechenden \lstinline!DOM a!-Typen haben, wie zum Beispiel im Listing \ref{lst:exampl-js-quoting}.
+
+\begin{lstlisting}[caption={Beispiel: JS-Quoting Monade}, label=lst:exampl-js-quoting]
+FUN foo : DOM Int
+DEF foo = {| document.getElementById("canvas").width |}:DOM Int
+\end{lstlisting}
+
+Passt das Ergebnis nicht zum Typ wird die Ausführung des Programms mit einer Exception abgebrochen.
 
 \chapter{Related Works}
 \label{chap:related-works}
@@ -632,6 +641,17 @@ ist für primitive Typen gefixt\footnote{siehe Projektbericht S.29}
 \section{SL in Scala}
 
 Vor- und Nachteile von SL in Scala beschreiben
+
+Nachteile:
+ - kann nicht mehr plain JS Code erzeugen -> Es werden immer Module erzeugt die mit require.js nachgeladen werden -> nur in Views verwendbar
+ - Bibliotheken können nur über spezielle Module benutzt werden (oder JS-Quotings die aber nicht Typsicher sind)
+ - JS-Objekte lassen sich nicht einfach in SL darstellen
+ - bis jetzt nur proof of concept
+
+Vorteile:
+ - Es können Scala Funktionen und Parameter in SL benutzt werden -> aus Sicht eines Webentwicklers ist das eine große Erleichterung
+ - Die Sprache ist klar -> man weiß welche Sprachkonstrukte benutzt werden können (kein Subset von Scala)
+
 
 \section{Scala.js}
 \label{sec:scala-js}

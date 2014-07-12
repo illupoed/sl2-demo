@@ -42,6 +42,7 @@
 
 % tabellen
 \usepackage[margin=10pt,labelfont=bf]{caption} %abstand zwischen caption und tabelle und fette caption nummer
+\usepackage{booktabs}
 
 % codeblöcke
 \usepackage{listings}
@@ -273,6 +274,7 @@ Bei generischen Datentypen wie \lstinline!Seq[A]! folgt aus den oben genannten B
 Wie bereits in der Einführung dieses Kapitels erwähnt, wählen wir die Wertübersetzungsfunktionen anhand des Scala Typs. Da \ac{SL} nach \ac{JS} kompiliert muss ein Scala Wert entsprechend seines Typs in eine passende \ac{JS} Darstellung übersetzt werden. Für die Gegenrichtung, also \ac{SL} nach Scala gilt dies analog. 
 
 \subsection{Übersetzung von primitiven Werten}
+\label{subsec:primitive-value-translation}
 
 Vor allem bei der Übersetzung von Primitiven existiert das Problem der unterschiedlichen Wertebereiche. Man kann zwar jeden Wert des Scala Typs \lstinline!Byte! in einen Wert des \ac{SL} Typs \lstinline!Int! übersetzen, aber nicht umgekehrt. In der Tabelle \ref{tab:primitives-borders} werden die Wertebereiche für primitive Typen aufgelistet. Kann ein Wert von einer Darstellungsform nicht in die andere Darstellungsform umgewandelt werden muss dieser Fehler behandelt werden (siehe Abschnitt \ref{sec:trans-implementation}). 
 
@@ -638,27 +640,73 @@ Passt das Ergebnis nicht zum Typ wird die Ausführung des Programms mit einer Ex
 \chapter{Related Works}
 \label{chap:related-works}
 
-\section{SL in Scala}
+Auch andere Gruppen haben JS in Scala eingebunden. In den folgenden Abschnitten wird versucht einen groben Überblick dazu zu geben und sie mit der hier vorgestellten Implementation zu vergleichen. 
 
-Vor- und Nachteile von SL in Scala beschreiben
-
-Nachteile:
- - kann nicht mehr plain JS Code erzeugen -> Es werden immer Module erzeugt die mit require.js nachgeladen werden -> nur in Views verwendbar
- - Bibliotheken können nur über spezielle Module benutzt werden (oder JS-Quotings die aber nicht Typsicher sind)
- - JS-Objekte lassen sich nicht einfach in SL darstellen
- - bis jetzt nur proof of concept
-
-Vorteile:
- - Es können Scala Funktionen und Parameter in SL benutzt werden -> aus Sicht eines Webentwicklers ist das eine große Erleichterung
- - Die Sprache ist klar -> man weiß welche Sprachkonstrukte benutzt werden können (kein Subset von Scala)
-
+Allen Ansätzen ist gemein, das sie JS zu einem statischen Typsystem verhelfen. Was die Wartung großer Projekte in JS erleichtert. 
 
 \section{Scala.js}
 \label{sec:scala-js}
 
+Scala.js ist ein Compiler. Er übersetzt Scala Code in JS anstatt in JVM Bytecode\cite{Doeraene2013}. Der Compiler wurde als Compiler-PlugIn für den Scala Standardcompiler geschrieben und kann damit auch Eigenschaften wie Compilermakros nutzen. 
+
+Mit Scala.js kann die gesamte Sprachkern von Scala sowie einige wenige Teile des Javasprachkerns, die essenziell für Scala sind, genutzt werden. Es gibt leichte Unterscheide, da sich die primitiven Datentypen in Scala und JS unterschiedlich verhalten (siehe Abschnitt \ref{subsec:primitive-value-translation} und \cite{Doeraene2014}) und man Java runtime reflection nur sehr eingeschränkt nutzen kann. Insbesondere kann man aber Scala Code in beiden Welten also Bytecode und JS nutzen[webseite].
+
+Mit Hilfe von implicit conversion und custom dynamic types war es möglich das JS Typsystem in das von Scala einzubetten ohne das von Scala zu verändern. Damit ist es möglich bestehende JS Bibliotheken dynamisch oder statisch getypt in Scala.js einzubinden. Was einen großen Vorteil bietet. 
+
+Ein großer Nachteil für das Entwickeln von Webseiten ist, das man innerhalb von Scala Code der nach Bytecode übersetzt wird, keinen JS Code mit Hilfe von Scala.js erzeugen kann. Also man kann im erstellten JS Code nicht leicht auf die Serverumgebung, wie die momentane Session oder Datenbanken, zugreifen.
+
+\section{js-scala}
+
+js-scala ist eine Scala Bibliothek um JS Code zu erzeugen\cite{Kossakowski2012}. js-Scala benutzt dafür Lightweight Modular Staging (LMS)\cite{Rompf2010}. Dabei wird der in Scala geschriebene Code während der Übersetzung in eine Zwischendarstellung gebracht, die dann zur Laufzeit optimiert und in JS Code (oder auch in Scala Code) übersetzt wird. Das bringt einige Vorteile mit sich. 
+
+Es ist möglich zur Laufzeit auf die Umgebung zu reagieren. Man kann entscheiden, ob man den Code in Scala oder JS ausführen möchte. Möchte man zum Beispiel mit JS ein Bild in einem HTML-canvas malen, aber der Browser des Benutzers unterstützt dies nicht, könnte man serverseitig mit Scala ein Bild malen und dies ausliefern. Natürlich kann man auch Daten aus der Laufzeitumgebung in den erzeugten JS-Code einbinden.
+
+Zum anderen konnte gezeigt werden, das aus einer hohen Abstraktionsebene heraus, mit Hilfe der Optimierungen, sehr effizienter JS-Code generiert werden konnte\cite{Richard-Foy2013}.
+
+Natürlich werden dies Vorteile durch mehr Aufwand während der Laufzeit erkauft. Das könnte man minimieren in dem man die Ergebnisse zwischenspeichert und/oder die Optimierungen einschränkt.
+
+Wie auch in Scala.js, ist es in js-scala möglich JS-Bibliotheken in statisch oder dynamisch getypt einzubinden.
 
 
-\section{KA wie die das nennen}
+\section{SL in Scala}
+
+Im Gegensatz zu allen anderen Ansätzen ist die Einbettung von SL in Scala sehr auf die Nutzung in Webservices beschränkt. Das liegt zum einen an der Verwendung von require.js zum Nachladen von Modulen. Dadurch ist es nicht möglich unabhängige JS Dateien zu erstellen. Zum anderen ist das Aufrufen von Scala-Funktionen über Ajax nur in einem solchen Kontext sinnvoll, aber auch besonders hilfreich.
+
+Als Vorteil kann gesehen werden, das die beschreibende Sprache, also SL, sehr übersichtlich und ihre Grenzen klar sind. Weil die anderen Ansätze Scala als beschreibende Sprache benutzen kann dies zu Verwirrung führen. 
+
+Ein besonders schwerwiegendes Manko ist die schwierige Einbindung von bereits existierenden JS-Bibliotheken. Dabei kommt eine Eigenschaft von SL besonders zum Tragen. Das Typsystem von SL kann keine JS-Objekte darstellen, die von den meisten Bibliotheken benutzt werden. Es bleibt nur die Möglichkeit Wrapper-Module zu erstellen, die massiv von JS-Quotings Gebrauch machen und um die Verwendung von Objekten herum arbeiten.
+
+Zu erwähnen bleibt, das die momentane Implementation nur zeigen soll was mit SL in Scala möglich ist. Mögliche Verbesserungsvorschläge werden im Anhang \ref{sec:future-works} diskutiert.
+
+\section{Zusammenfassung}
+
+Die wichtigsten Eigenschaften der verschiedenen Ansätze werden in der Tabelle \ref{tab:related-work-overview} noch einmal zusammengefasst. Dabei soll folgendes Szenario angenommen werden. Ein Webserver bietet, eine in Scala geschriebene, Rich Internet Application an. Möglich wäre das Online-Postfach eines E-Mail-Anbieters wie gmail.com.
+
+\begin{table}[ht]
+\caption{Übersicht über die verschiedenen JS-in-Scala-Projekte}
+\centering
+\begin{tabular}{llll}
+      & SL in Scala &  Scala.js              &    js-scala \\
+ \midrule
+Optimierung des JS Codes  &  keine  &  mit cloureScript & mit Hilfe von LMS\\
+\addlinespace
+Serveraufwand während & Wertübersetzung & keinen & erzeugen und  \\
+einer Anfrage &  & & optimieren des JS Codes\\
+\addlinespace
+Nutzen von Servervariablen  & ja & nein & ja \\
+während der Laufzeit & \\
+\addlinespace
+Abstraktion von Ajax-Anfragen & ja & nein & nein \\
+\addlinespace
+cross compiling & nein & ja & ja \\
+\addlinespace
+einbinden von JS Bibliotheken & schwer & leicht & leicht \\
+
+\end{tabular}
+\label{tab:related-work-overview}
+\end{table}
+
+Aus meiner Sicht erscheint dabei js-scala besonders viel versprechend. Es vereint die meisten Vorteile und ist besonders flexibel. Mit ähnlichen Techniken wie in dieser Arbeit vorgestellt (siehe Abschnitt \ref{sec:annotation-macro}) sollte es möglich sein eine Abstraktion für Ajax-Anfragen zu implementieren.
 
 \chapter{Fazit}
 \label{chap:conclusion}
@@ -675,7 +723,9 @@ Vorteile:
  \item{Play PlugIn bauen}
  \item{Erzeugen eines JAR's}
  \item{Erweiterung von SL um Objekte}
- \item{Analyse des SL-Codes um bessere Typen für Scala Werte zu finden.}
+ \item{Einfachere Einbindung von JS Bibliotheken. Entweder mehr Module bauen <- viel Wartung oder unterstützung von dynamischen Objekten <- weniger typsicherheit}
+ \item{Einen besser an Scala angepassten Syntax für SL}
+ \item{Optimierung des generierten JS Codes. Am Anfang vllt mit ClojureScript}
 \end{itemize}
 
 

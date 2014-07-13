@@ -27,6 +27,7 @@
 \usepackage{graphicx}
 
 % fußnoten immer am ende
+\usepackage{footnote}
 \usepackage[bottom]{footmisc}
 
 % tabellen
@@ -104,19 +105,24 @@ Unterschrift
 \setcounter{page}{1}
 \addcontentsline{toc}{chapter}{Einleitung}
 
-Das World Wide Web ist ein integraler Bestandteil unseres Lebens geworden. Ein großer Teil der Software mit der wir in Berührung kommen, benutzt Webseiten als Frontend. Deshalb muss sich jede moderne Programmiersprache daran messen lassen wie leicht es ist mit ihr Webprojekte zu erstellen. Daher bieten Java, Scala, Ruby und viele andere Programmiersprachen Frameworks an um schnell und einfach strukturierte Webprojekte zu erstellen. Ein gemeinsames Problem dieser Frameworks ist es, insbesondere mit dem aufkommen von Rich Internet Applications, das clientseitig Code ausgeführt werden muss. In diesem Bereich hat sich JavaScript (JS) zum Quasistandard entwickelt\footnote{Es gibt weitere Alternativen wie Java oder Flash, die aber Browserplugins vorraussetzen.}. Dadurch ist man beim Schreiben von Browser-seitigen Funktionen auf die von den JS-Entwicklern bevorzugten Programmierparadigmen wie dynamische Typisierung festgelegt. Bei größeren Bibliotheken kann dies die Wartung und Weiterentwicklung erschweren.
+Das World Wide Web ist ein integraler Bestandteil unseres Lebens geworden. Ein großer Teil der Software mit der wir in Berührung kommen, benutzt Webseiten als Benutzerschnittstelle. Deshalb muss sich jede moderne Programmiersprache daran messen lassen wie leicht es ist mit ihr Webprojekte zu erstellen. Daher bieten Java, Scala, Ruby und viele andere Programmiersprachen Frameworks an um schnell und einfach strukturierte Webprojekte zu erstellen. Ein gemeinsames Problem dieser Frameworks ist es, insbesondere mit dem aufkommen von Rich Internet Applications, das clientseitig Code ausgeführt werden muss. In diesem Bereich hat sich JavaScript (JS) zum Quasistandard entwickelt\footnote{Es gibt weitere Alternativen wie Java oder Flash, die aber Browserplugins vorraussetzen.}. Dadurch ist man beim Schreiben von Browser-seitigen Funktionen auf die von den JS-Entwicklern bevorzugten Programmierparadigmen wie dynamische Typisierung festgelegt. Bei größeren Bibliotheken kann dies die Wartung und Weiterentwicklung erschweren.
 
 Innerhalb der letzten Jahre kam es zu Entwicklungen die eine mögliche Lösung für dieses Problem bieten. Einerseits haben Büchle et al. im Rahmen eines Projektes an der TUB einen Compiler entwickelt, der die Typ-sichere, funktionale Sprache Simple Language (SL) nach JS übersetzt\cite{Buchle2013}. Andererseits wurde durch die Einführung von compiler makros \cite{Burmako2013}, die Metaprogrammierung innerhalb von Scala erheblich vereinfacht.
 
 Mit Hilfe dieser beiden Voraussetzungen konnte SL als Abstraktion für JS in Scala eingebettet werden\cite{Hoger2013} um Probleme mit der dynamischen Typisierung von JS zu lösen. Dazu wurde eine Beispielanwendung im Play Framework geschrieben\cite{Play1}. 
 
-Diese Einbettung wurde im Zuge dieser Diplomarbeit erweitert. Nun ist es  möglich Scala-Funktionen und -Werte in einem gewissen Rahmen automatisch zu übersetzen und typsicher im \ac{SL} Code zu benutzen.
+Diese Einbettung wurde im Zuge dieser Diplomarbeit erweitert. Nun ist es  möglich Scala-Funktionen und -Werte in einem gewissen Rahmen automatisch zu übersetzen und typsicher im SL Code zu benutzen. 
+
+Mit Scala Werten ist der Inhalt einer Scala Variable gemeint. Wenn dieser sich in SL abbilden lässt, kann er jetzt in statischen SL Code eingebunden werden. Für Scala-Funktionen werden eine SL Funktionen erzeugt, die dann die entsprechenden Scala-Funktionen aufrufen, falls sich die Ein- und Rückgabetypen in SL Typen übersetzen lassen.
+
+Dazu wurde die Möglichkeit geschaffen Scala Type und Werte in SL zu übersetzen sowie zwei Makros geschrieben, die die Einbettung von SL in Scala ermöglichen. 
 
 Für das Verständnis der Diplomarbeit werden Kenntnisse im Bereich funktionaler Programmierung sowie Grundlagen in den Sprachen Scala und JS vorausgesetzt.
 
-%TODO übersicht über die Kapitel
+Im \ref{cha:sl-introduction}. Kapitel wird die Sprache SL kurz vorgestellt. Daraufhin wird beschrieben wie Scala Typen und Werte in SL übersetzt werden (Kapitel \ref{cha:model-sharing}). Dies wird im \ref{chap:scala-compiler-macros}. Kapitel benutzt um mit Hilfe der dort beschriebenen Makros SL in Scala einzubetten. Darauf hin wird kurz auf den SL Compiler eingegangen und welche Erweiterungen im Zuge dieser Arbeit an ihm gemacht wurden. Abschließend wird diese Einbettung von JS in Scala mit anderen Varianten aus dem Scala Universum verglichen (Kapitel \ref{chap:related-works}). 
 
 \chapter{Einführung in Simple Language}
+\label{cha:sl-introduction}
 
 Zunächst wird im diesem Kapitel die Sprache SL vorgestellt, da sie essenziell für das Verständnis dieser Arbeit ist.
 
@@ -167,7 +173,7 @@ Mit \lstinline!IMPORT "<Pfad>" AS <Bezeichner>! können Module nachgeladen werde
   
 \subsection{Funktionsdefintionen}
 
-Die optionale Typdefinition einer Funktion kann mit \lstinline!FUN <Funktionsname> : <Typ>! angegeben werden. Wenn ein \lstinline!PUBLIC! vorgestellt wird, ist die Funktion auch außerhalb des Moduls sichtbar. Darauf folgen eine oder mehrere pattern basierte Funktionsdefinition der Form \lstinline!DEF <Funktionsname> = <Funktionsrumpf>!.
+Die optionale Signatur einer Funktion kann mit \lstinline!FUN <Funktionsname> : <Typ>! angegeben werden. Wenn ein \lstinline!PUBLIC! vorgestellt wird, ist die Funktion auch außerhalb des Moduls sichtbar. Darauf folgen eine oder mehrere pattern basierte Funktionsdefinition der Form \lstinline!DEF <Funktionsname> = <Funktionsrumpf>!.
 
 
 \subsection{Programmeinstiegspunkt}
@@ -208,8 +214,6 @@ In den nächsten Abschnitten wird die Typübersetzung betrachtet. Also welche Sc
 
 \subsection{SL Typsystem}
 
-%TODO das typsystem ist nicht einfache!!!
-
 Das Typsystem von SL ist besteht aus einer Reihe von vordefinierten Typen. Vordefiniert sind \lstinline!Int!, \lstinline!Real!, \lstinline!Char!, \lstinline!String!, \lstinline!Bool! und \lstinline!Void! sowie der Typ der \ac{JS}-Quoting Monade \lstinline!DOM a!.
 
 Mit dem Stichwort \lstinline!DATA! können eigene Konstruktor-/Summentypen definiert werden \cite[S. 123]{Pepper2007}.
@@ -240,9 +244,7 @@ Scala ist strikt Objektorientiert. Es kennt keine primitiven Typen. Alle Typen s
   \label{fig:classhierarchy}
 \end{figure}
 
-Es gibt in Scala, Konstrukte, die den selbst definierten Typen aus \ac{SL} sehr ähnlich sind. Das wird anschaulich am Beispiel von Option (siehe Listing \ref{lst:option-in-sl-scala}). Es wurden aber auch andere vordefinierte Typen wie \lstinline!Seq[A]! übersetzt, deren innere Struktur sich stark von ihrem SL Äquivalent \lstinline!List a! unterscheiden.
-
-%TODO option nach translate_type verschieben
+Es gibt in Scala-Konstrukte, die den selbst definierten Typen aus \ac{SL} sehr ähnlich sind. Das wird anschaulich am Beispiel von Option (siehe Listing \ref{lst:option-in-sl-scala}). Für sie kann die Übersetzung formalisiert werden. Mehr dazu im Abschnitt \ref{subsec:translate_type}. Es wurden aber auch andere Typen wie \lstinline!Seq[A]! übersetzt, deren innere Struktur sich stark von ihrem SL Äquivalent \lstinline!List a! unterscheiden.
 
 \begin{lstlisting}[caption=Option in \ac{SL} und Scala, label=lst:option-in-sl-scala, float=h]
 Option in SL:
@@ -268,33 +270,74 @@ Bei der Wahl eines SL Partnertyps für einen Scala Typ sollte auf zwei Bedingung
  \item{Es sollte eine semantisch sinnvolle bijektive Abbildung zwischen den Werten der beiden Typen existieren. }
 \end{enumerate}
 
-Wie wir im Abschnitt \ref{sec:value-transformation} sehen werden, wird die zweite Bedingung für einige primitiven Datentypen von Scala verletzt. Insbesondere für die ganzzahligen Primitiven kann sie nicht eingehalten werden. Da dadurch eine entsprechende Fehlerbehandlung unumgänglich wurde und um die Bedienung zu erleichtern wurden die Fließkommaprimitiven mit \lstinline!Real! und die ganzzahligen Primitiven mit \lstinline!Int! assoziiert.
-
+Wie wir im Abschnitt \ref{sec:value-transformation} sehen werden, wird die zweite Bedingung für einige primitiven Datentypen von Scala verletzt. Insbesondere für die ganzzahligen Primitiven kann sie nicht eingehalten werden. Da dadurch eine entsprechende Fehlerbehandlung unumgänglich wurde und um die Bedienung zu erleichtern wurden alle Fließkommaprimitiven von Scala mit \lstinline!Real! und die ganzzahligen Primitiven mit \lstinline!Int! assoziiert.
 
 \begin{table}[h]
 \caption{Die Funktion $translate_{type}$}
 \centering
-\begin{tabular}{ll|ll}
-Scala Typ & \ac{SL} Typ & Scala Typ & \ac{SL} Typ \\
-\hline
-\\
-Float     & Real        & Char      & Char \\
-Double    & \\
-          &             &           & \\
-Byte      & Int         & Boolean   & Bool \\
-Short     & \\
-Int       &             & Unit      &  Void \\
-Long      & \\
-          &             &           & \\
-String    & String \\
-          &             &           & \\
-Seq[A]    & List a      & Option[A] & Option a
-
+\begin{tabular}{l|llllllllllllll}
+Scala Typ & Byte & Float & Char & Boolean & Unit & String & Seq[A] & Option[A]\\
+ & Short & Double\\
+ & Int\\
+ & Long\\
+SL Typ & Int & Real & Char & Bool & Void & String & List a & Option a\\
 \end{tabular}
 \label{tab:translate_type}
 \end{table}
 
+
 Bei generischen Datentypen wie \lstinline!Seq[A]! folgt aus den oben genannten Bedingungen, das die Anzahl der Typparameter der Partnertypen gleich sein sollte. Wenn ein generischer Datentyp übersetzt werden soll, wird versucht die Typparameter rekursiv zu übersetzen. Ist dies möglich kann auch der gesamte Typ übersetzt werden. Also \lstinline!Seq[Option[Long]]! würde zu \lstinline!List Option Int! übersetzt werden. Eine vollständige Auflistung von $translate_{type}$ findet sich in Tabelle \ref{tab:translate_type}.
+
+\subsection{Formalisierung von $translate_{type}$}
+\label{subsec:formal-translate-typ}
+
+Bei primitiven Datentypen in Scala wurden ihre SL-Äquivalente durch ihre semantische Gleichheit vorgegeben (siehe Tabelle \ref{tab:translate_type}). 
+
+Für bestimmte Typ-Konstrukte aus Scala kann die Übersetzung formalisiert werden. Sei dafür ein $Model$ durch folgende Grammatik beschrieben:
+
+\begin{tabular}{lll}
+\emph{Model} & ::= & \emph{Base} ; \emph{$Sub^+$}\\
+\emph{Param} & ::= & \textbf{[ $\mathbf{V_1, \dots ,V_n}$ ]}\\
+\emph{Base}  & ::= & \textbf{sealed abstract class} \emph{BaseName Param}\\
+\emph{Sub}   & ::=   & \textbf{final case class} \emph{TypeName Param} \textbf{(} $Field^+$ \textbf{) extends} \emph{BaseName Param}\\
+ & | & \textbf{case object} \emph{TypeName} \textbf{extends} \emph{BaseName} \textbf{[ Nothing$\,,\dots,\,$Nothing ]}\\
+\emph{Field} & ::= & \emph{Name} \textbf{:} \emph{TypeName}\\
+\\
+\end{tabular}
+
+Dabei sei $BaseName$ ein fester lokaler Typname, also alle Definitionen von $Sub$ erben von der gleichen abstrakten Klasse und $TypeName$ und $Name$ sind gültige Scala-Bezeichner. Damit wir diese Art von Klassen in einen SL-Typ übersetzen können, müssen alle Typvariablen die in den $Sub$ Definitionen benutzt werden bereits in der $Base$-Klasse definiert werden. Also $Param$ ist konstant für jede Instanz von $Model$.
+
+Dann kann $translate_{type}$ folgendermaßen definiert werden, wobei = durch $\hat{=}$ ersetzt wird da es in SL Teil der Syntax ist:
+
+\begin{centering}
+$translate_{type}(Model)\:\hat{=}$\\
+\textbf{DATA} $t_{Name}(BaseName)\:t_{Param}(Param)$ \textbf{=} $t_{Case}(Sub_1)$ \textbf{|} $\dots$ \textbf{|} $t_{Case}(Sub_n)$\\
+\end{centering}
+
+mit:
+
+\begin{equation*}
+t_{Param}( \textbf{[ } \mathbf{V_1, \dots, V_n} \textbf{ ]} )\:\hat{=}\: t_{TypVar}(\mathbf{V_1} ) \dots t_{TypVar}(\mathbf{V_n} )
+\end{equation*}
+\begin{gather*}
+t_{Case}(\textbf{final case class }TypeName \: Param\:\textbf{(}\mathbf{N_1:T_1, \dots, N_n:T_n}\textbf{)} \textbf{ extends }\dots )\:\hat{=}\\t_{Name}(TypeName)\:t_{Type}(T_1) \dots t_{Type}(T_n)\\
+t_{Case}(\textbf{case object } TypeName\textbf{ extends }BaseName\textbf{ [ Nothing}\, ,\dots,\,\textbf{Nothing ]})\:\hat{=}\\
+t_{Name}(TypeName)
+\end{gather*}
+und
+\begin{equation*}
+t_{Type}(x)\:\hat{=} \begin{cases}
+        t_{TypeVar}(x)  &|\, x \in \{V_1, \dots , V_n\}\\
+        translate_{type}(x) &|\, \text{sonst}
+        \end{cases}
+\end{equation*}
+
+Wobei $t_{Name}$ einem Scala-Bezeichner einen SL-konformen Bezeichner  und $t_{TypeVar}$ einer Typvariable eine eindeutige SL-konforme Typvariable zuordnet. Eine komplette Übersetztung ist nur möglich wenn $t_{Type}$ jedes $T_x$ übersetzen kann.
+
+Dieses Schema wurde von einem Schema zum Übersetzen von \textbf{sealed trait}s im Paper von Höger et al.\cite{Hoger2013} inspiriert. Mit Hilfe dieser Schemata können einige der Scala-Typen in SL-Typen übersetzt werden. Wie man im Listing \ref{lst:option-in-sl-scala} sehen kann folgt die Definition von \lstinline!Option[A]! dem hier vorgestellten Schema. Die Definition von \lstinline!Option a! ist eine mögliche Lösung des Aufrufs von $translate_{type}$. Ein weiterer übersetzbarer Typ ist \lstinline!Either[A]!.
+
+Im Rahmen dieser Arbeit wurden alle Übersetzungen händisch programmiert, da Typen der Standartbibliotheken von Scala und SL mit einander assoziiert wurden\footnote{Es wurden also keine Typen für SL zu Scala-Typen generiert. Da Klassenmethoden im Moment nicht automatisch übersetzt werden können, hätte man keine Funktionen die auf den generierten Typen opperieren.}. Es wurde sich aber bei einigen Typen an dem hier beschriebenen Schema orientiert. Bei anderen wie \lstinline!Seq[A]! war dies nicht möglich, da sich die innere Struktur von seinem SL-Äquivalent zu sehr unterscheidet.
+
 
 \section{Darstellungsübersetzung}
 \label{sec:value-transformation}
@@ -304,22 +347,15 @@ Wie bereits in der Einführung dieses Kapitels erwähnt, wählen wir die Wertüb
 \subsection{Übersetzung von primitiven Werten}
 \label{subsec:primitive-value-translation}
 
-%nochmal darauf verweisen welche primitive mit welchen primitiven assoziert sind | siehe translate_funktion dabei entsteht das problem der unterschiedlichen werte bereiche.
-
-Vor allem bei der Übersetzung von Primitiven existiert das Problem der unterschiedlichen Wertebereiche. Man kann zwar jeden Wert des Scala Typs \lstinline!Byte! in einen Wert des \ac{SL} Typs \lstinline!Int! übersetzen, aber nicht umgekehrt. In der Tabelle \ref{tab:primitives-borders} werden die Wertebereiche für primitive Typen aufgelistet. Kann ein Wert von einer Darstellungsform nicht in die andere Darstellungsform umgewandelt werden muss dieser Fehler behandelt werden (siehe Abschnitt \ref{sec:trans-implementation}). 
-
-Insbesondere bei den ganzzahligen Primitiven ist das Problem unumgänglich.  Für ihre Wertebereiche gilt:
-\begin{center}
-$|$\lstinline!Int!$| < |$\lstinline!Number!$| < |$\lstinline!Long!$|$
-\end{center}
-
+%TODO nochmal darauf verweisen welche primitive mit welchen primitiven assoziert sind | siehe translate_funktion dabei entsteht das problem der unterschiedlichen werte bereiche.
+\begin{savenotes}
 \begin{table}
 \caption{Umfang der primitiven Datentypen in Scala und \ac{SL} (\ac{JS})\cite[S. 28-30]{Ecma2011}\cite{Oracle2011}}
 \centering
 \begin{tabular}{lll}
  \ac{SL} &    \ac{JS} Darstellung              &    Scala \\
 \\
-Int  &  Number\footnotemark $[-2^{53} + 1, 2^{53} -1]$   &  Byte  $[-128, 127]$\\
+Int  &  Number\footnote{Alle Zahlendatentypen werden in \ac{JS} durch den primitiven Number Datentyp dargestellt. Dies ist eine Gleitkommazahldarstellung nach dem IEEE 754 Standard mit einer Breite von 64 Bit. In dieser Darstellung können Ganzzahlwerte von $-2^{53} + 1$ bis $2^{53} -1$ korrekt dargestellt werde.} $[-2^{53} + 1, 2^{53} -1]$   &  Byte  $[-128, 127]$\\
 Int  &  Number $[-2^{53} + 1, 2^{53} -1]$   &  Short $[-2^{15}, 2^{15}-1]$\\
 Int  & Number $[-2^{53} + 1, 2^{53} -1]$    & Int   $[-2^{31}, 2^{31}-1]$\\
 Int  &  Number $[-2^{53} + 1, 2^{53} -1]$   &  Long  $[-2^{63}, 2^{63}-1]$\\
@@ -331,12 +367,16 @@ Bool &  Boolean ${true, false}$         &  Boolean ${true, false}$\\
 \\
 Char &  String (Länge 1) (16-Bit)     &  Char (16-Bit)\\
 \\
-String& String\footnotemark (maximale Länge: ?)    &  String (maximale Länge: ?)\\
+String& String\footnote{Die maximale Länge von Strings in \ac{JS} und Scala ist Implementationsabhängig.} (maximale Länge: ?)    &  String (maximale Länge: ?)\\
 \end{tabular}
 \label{tab:primitives-borders}
 \end{table}
-\footnotetext[2]{Alle Zahlendatentypen werden in \ac{JS} durch den primitiven Number Datentyp dargestellt. Dies ist eine Gleitkommazahldarstellung nach dem IEEE 754 Standard mit einer Breite von 64 Bit. In dieser Darstellung können Ganzzahlwerte von $-2^{53} + 1$ bis $2^{53} -1$ korrekt dargestellt werde.}
-\footnotetext{Die maximale Länge von Strings in \ac{JS} und Scala ist Implementationsabhängig.}
+\end{savenotes}
+
+Vor allem bei der Übersetzung von Primitiven existiert das Problem der unterschiedlichen Wertebereiche. Man kann zwar jeden Wert des Scala Typs \lstinline!Byte! in einen Wert des \ac{SL} Typs \lstinline!Int! übersetzen, aber nicht umgekehrt. In der Tabelle \ref{tab:primitives-borders} werden die Wertebereiche für primitive Typen aufgelistet. Kann ein Wert von einer Darstellungsform nicht in die andere Darstellungsform umgewandelt werden muss dieser Fehler behandelt werden (siehe Abschnitt \ref{sec:trans-implementation}). Insbesondere bei den ganzzahligen Primitiven ist das Problem unumgänglich.  Für ihre Wertebereiche gilt:
+\begin{center}
+$|$\lstinline!Int!$| < |$\lstinline!Number!$| < |$\lstinline!Long!$|$
+\end{center}
 
 \subsection{Übersetzung von komplexen Werten}
 
@@ -361,11 +401,8 @@ Die einzelnen Konstruktoren erhalten entsprechend ihrer Reihenfolge eine Konstru
 \label{tab:js-code-of-people}
 \end{table}
 
-%TODO formalisierte übersetzung von option und eine nicht formalisierte übersetzung anhand des beispiels seq
-
 An Hand dieses Schemas können wir nun eine Darstellungsübersetzung für den Scala Typ Option (siehe Listing \ref{lst:option-in-sl-scala}) erzeugen:
 
-%Bild: Übersetzung von Option Werten
 \begin{table}[h]
 \caption{Übersetzung von Option Werten}
 \centering
@@ -384,13 +421,13 @@ Scala                   & \ac{JS} Darstellung                        & SL \\
 \section{Erleuterung der Implementation}
 \label{sec:trans-implementation}
 
-%TODO translate_type genauer erklären Seq[AbstractTranslator] ist Teilmenge von translate_type.
+ 
 
 %TODO erklären das man wenn man neue Typen übersetzen möchte neue Translatorklassen schreiben muss.
 
 %TODO im anhang Beispielhaft einen neuen Typ übersetzen
 
-Die Paare der Funktion $translate_{type}$ werden durch Klassen, die von \lstinline!AbstractTranslator! erben, dargestellt. Sie sind nach dem jeweiligen Scala Typen den sie übersetzen benannt\footnote{zB. \lstinline!SeqTranslator!}. Ihre Hauptfunktion ist \lstinline!translate! (siehe Listing \ref{lst:main-function-translate}). Ihr wird ein Scala Typ übergeben. Wenn der übergebene Scala Typ der Klasse entspricht erhält man als Rückgabewert den entsprechenden \ac{SL} Typen, die Import Statements um die entsprechenden \ac{SL} Module zu laden\footnote{Bei primitiven \ac{SL} Typen sind diese leer. Für den \ac{SL} Typ \lstinline!List.List Opt.Option Int! würde \lstinline!IMPORT "std/option" AS Opt, IMPORT "std/list" AS List! zurück gegeben werden.} sowie die \ac{AST}-Repräsentation der Wertübersetzungsfunktionen von Scala nach \ac{SL} und umgekehrt. Andernfalls wird \lstinline!None! zurückgegeben.
+In der momentanen Implementation wird $translate_{type}$ durch \lstinline!Seq[AbstractTranslator]! dargestellt. Dadurch ist es möglich auch Teilmengen von $translate_{type}$ zu benutzen. Dabei stellt eine Klasse die von \lstinline!AbstractTranslator! erbt ein Paar zwischen einem Scala-Typ und einem SL-Typ dar. Die Klasse ist nach dem jeweiligen Scala Typen den sie übersetzt benannt\footnote{zB. \lstinline!SeqTranslator!}. Die Hauptmethode von \lstinline!AbstractTranslator! ist \lstinline!translate! (siehe Listing \ref{lst:main-function-translate}). Ihr wird ein Scala Typ übergeben. Wenn der übergebene Scala Typ der Klasse entspricht erhält man als Rückgabewert den entsprechenden \ac{SL} Typen, die Import Statements um die entsprechenden \ac{SL} Module zu laden\footnote{Bei primitiven \ac{SL} Typen sind diese leer. Für den \ac{SL} Typ \lstinline!List.List Opt.Option Int! würde \lstinline!IMPORT "std/option" AS Opt, IMPORT "std/list" AS List! zurück gegeben werden.} sowie die \ac{AST}-Repräsentation der Wertübersetzungsfunktionen von Scala nach \ac{SL} und umgekehrt. Andernfalls wird \lstinline!None! zurückgegeben.
 
 \begin{lstlisting}[caption=Hauptfunktion in AbstractTranslator, label=lst:main-function-translate]
 def translate
@@ -419,7 +456,7 @@ def useTranslators
            context.Expr[JValue => Any] )]
 \end{lstlisting}
 
-\lstinline!translators! gibt hier an welchen Teil der Funktion $translate_{type}$ man nutzen möchte\footnote{\lstinline!translators! wird in diesem Fall auch für die Spezialisierungen von generischen Typen benutzt.}. 
+\lstinline!translators! gibt hier an welche Teilmenge der Funktion $translate_{type}$ man nutzen möchte\footnote{\lstinline!translators! wird in diesem Fall auch für die Spezialisierungen von generischen Typen benutzt.}. 
 
 Die Wertübersetzungsfunktionen haben die Signatur \lstinline!Any => JValue! bzw. \lstinline!JValue => Any!. \lstinline!JValue! ist Teil der json4s Bibliothek \cite{Json4s}, die benutzt wird um JS Werte zu erzeugen. Insbesondere übernimmt sie in der aktuellen Implementation die Übersetzung der primitiven Werte.
 
@@ -479,8 +516,7 @@ Die zu übersetzende Funktion muss gewisse Anforderungen erfüllen. Wenn wir sie
 Andere Anforderungen ergeben sich aus der Implementation bzw. wurden aufgestellt um die Implementation zu erleichtern:
 
 \begin{itemize}
-%TODO erklären warum
- \item[-]{Die Funktion muss einen Rückgabetyp definieren.}
+ \item[-]{Die Funktion muss einen Rückgabetyp definieren\footnote{Andernfalls müsste der Rückgabetyp erst über reflection bestimmt werden.}.}
  \item[-]{Die Funktion darf nur eine Parameterliste haben\footnote{In der aktuellen Implementation werden die Default-Werte eines Parameters ignoriert. Eine entsprechende warning wird erzeugt.}}
  \item[-]{Die Ein- und Ausgangstypen müssen sich in \ac{SL}-Typen übersetzen lassen.}
  \item[-]{Der Funktionsname darf keine ungewöhnlichen Zeichen enthalten\footnote{Da sich der Name der Funktion im Name und Pfad des erzeugten Moduls widerspiegelt, sind nur die Zahlen von 0 bis 9 sowie kleine Buchstaben von a bis z erlaubt. Ähnliche Einschränkungen gelten für die übergeordneten Pakete sowie den Namen des Objekts in dem die Funktion definiert ist.}}
@@ -515,7 +551,8 @@ DEF factorialAsync callbackFun p0 = {| _sendRequestAsync( ... )  ($callbackFun, 
 
 Um den Aufruf mit Ajax Anfragen zu erleichtern wird eine Hilfsfunktion definiert. Sie kapselt die eigentliche Scala Funktion. Sie erhält die Parameter als \lstinline!JValue!. Die Parameter werden mit Hilfe der Funktionen aus den Translator Klassen in Scala Werte übertragen und dann auf die passenden Typ gecasted. Anschließend wird mit ihnen die eigentlich Funktion aufgerufen. Das Ergebnis wird in ein \lstinline!JValue! Wert umgewandelt und zurückgegeben.
 
-%TODO erwähnen das ich nicht weis wie scala_to_sl und andersherum heist.h
+%TODO ref auf translate abschnitt
+Die Funktionen $scala_to_sl$ und $sl_to_scala$ sind nur Platzhalter. Wie diese Funktionen genau definiert sind hängt von der Implementation der entsprechenden Translator-Klasse ab.
 
 \begin{lstlisting}[caption=Hilfsfunktion zur Funktion aus Listing \ref{lst:example-function}, label=lst:helperfunction, float=h]
 -- Foo.scala
@@ -563,7 +600,6 @@ Bis jetzt kann man nur Funktionen markieren. Nun soll \ac{SL} benutzt werden um 
 
 Mit def macros kann während des Übersetzungsprozesses von Scala in den Code eingegriffen werden \cite{EPFL2}. Der Aufruf solch eines Makros verhält sich wie eine Funktion, nur das das Makro die \ac{AST}s der Parameter übergeben bekommt und einen \ac{AST} liefert der den Aufruf des Makros ersetzt. Listing \ref{lst:slci-example} enthält einen beispielhaften Aufruf des slci-Makros.
 
-%TODO sind das wirklich Views in play?
 \begin{lstlisting}[caption={Beispielaufruf des slci-Makros in einer Play View}, label=lst:slci-example, float=h]
 -- Example.scala.html
 ...
@@ -668,6 +704,7 @@ require(...);
 
 Die Funktion wird unter einem zufallsgenerierten Namen importiert um Namenskonflikten vorzubeugen.
 
+%TODO kapitel umbennene hier sollte der sl compiler vorgestellt und seine erweiterungen im rahmen dieser arbeit beschrieben werden.
 \chapter{Erweiterungen am SL-Compiler}
 \label{chap:dom-monad-extensions}
 
@@ -786,10 +823,6 @@ Aus meiner Sicht erscheint dabei js-scala besonders viel versprechend. Es verein
 
 \section{Quellenverzeichnis}
 
-
-\section{Bilderverzeichnis}
-
-%TODO
 
 \section{Abkürzungsverzeichnis}
 

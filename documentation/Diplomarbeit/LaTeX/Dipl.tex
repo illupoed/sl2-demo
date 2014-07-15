@@ -38,7 +38,7 @@
 \usepackage{listings}
 
 % abkürzungen
-\usepackage[printonlyused]{acronym}
+\usepackage[printonlyused,withpage]{acronym}
 
 % bessere listen
 \usepackage{enumitem}
@@ -72,6 +72,22 @@
 \listoffigures     % Abbildungsverzeichnis
 \listoftables      % Tabellenverzeichnis
 \lstlistoflistings % Listingverzeichnis
+
+\chapter*{Abkürzungsverzeichnis}
+\begin{acronym}[TU-Berlin]
+\setlength{\itemsep}{-0.3\parsep}
+ \acro{SL}{Simple Language}
+ \acro{JS}{JavaScript}
+ \acro{AST}{Abstract Syntax Tree}
+ \acro{TUB}{Technische Universität Berlin}
+ \acro{}{}
+ \acro{MVC}{Model View Controller}
+ \acro{HTML}{Hypertext Markup Language}
+ \acro{DOM}{Document Object Model}
+ \acro{URL}{Uniform Resource Locator}
+\end{acronym}
+
+
 \newpage
 \thispagestyle{empty}		% ohne Kopf und Fußzeilen
 \begin{LARGE}
@@ -107,7 +123,7 @@ Unterschrift
 
 Das World Wide Web ist ein integraler Bestandteil unseres Lebens geworden. Ein großer Teil der Software mit der wir in Berührung kommen, benutzt Webseiten als Benutzerschnittstelle. Deshalb muss sich jede moderne Programmiersprache daran messen lassen wie leicht es ist mit ihr Webprojekte zu erstellen. Daher bieten Java, Scala, Ruby und viele andere Programmiersprachen Frameworks an um schnell und einfach strukturierte Webprojekte zu erstellen. Ein gemeinsames Problem dieser Frameworks ist es, insbesondere mit dem aufkommen von Rich Internet Applications, das clientseitig Code ausgeführt werden muss. In diesem Bereich hat sich JavaScript (JS) zum Quasistandard entwickelt\footnote{Es gibt weitere Alternativen wie Java oder Flash, die aber Browserplugins vorraussetzen.}. Dadurch ist man beim Schreiben von Browser-seitigen Funktionen auf die von den JS-Entwicklern bevorzugten Programmierparadigmen wie dynamische Typisierung festgelegt. Bei größeren Bibliotheken kann dies die Wartung und Weiterentwicklung erschweren.
 
-Innerhalb der letzten Jahre kam es zu Entwicklungen die eine mögliche Lösung für dieses Problem bieten. Einerseits haben Büchle et al. im Rahmen eines Projektes an der TUB einen Compiler entwickelt, der die Typ-sichere, funktionale Sprache Simple Language (SL) nach JS übersetzt\cite{Buchle2013}. Andererseits wurde durch die Einführung von compiler makros \cite{Burmako2013}, die Metaprogrammierung innerhalb von Scala erheblich vereinfacht.
+Innerhalb der letzten Jahre kam es zu Entwicklungen die eine mögliche Lösung für dieses Problem bieten. Einerseits haben Büchle et al. im Rahmen eines Projektes an der \ac{TUB} einen Compiler entwickelt, der die Typ-sichere, funktionale Sprache Simple Language (SL) nach JS übersetzt\cite{Buchle2013}. Andererseits wurde durch die Einführung von compiler makros \cite{Burmako2013}, die Metaprogrammierung innerhalb von Scala erheblich vereinfacht.
 
 Mit Hilfe dieser beiden Voraussetzungen konnte SL als Abstraktion für JS in Scala eingebettet werden\cite{Hoger2013} um Probleme mit der dynamischen Typisierung von JS zu lösen. Dazu wurde eine Beispielanwendung im Play Framework geschrieben\cite{Play1}. 
 
@@ -126,7 +142,7 @@ Im \ref{cha:sl-introduction}. Kapitel wird die Sprache SL kurz vorgestellt. Dara
 
 Zunächst wird im diesem Kapitel die Sprache SL vorgestellt, da sie essenziell für das Verständnis dieser Arbeit ist.
 
-SL ist eine einfache strikt getypte funktionale Sprache, die als Lehrsprache für den Studienbetrieb der TUB entwickelt wurde. SL hat einen sehr einfach modularen Compiler. Das ermöglicht es leicht neuer Konzepte aus zu probieren. In den folgenden Abschnitten werden die für diese Arbeit relevanten Eigenschaften erklärt.
+SL ist eine einfache strikt getypte funktionale Sprache, die als Lehrsprache für den Studienbetrieb der \ac{TUB} entwickelt wurde. SL hat einen sehr einfach modularen Compiler. Das ermöglicht es leicht neuer Konzepte aus zu probieren. In den folgenden Abschnitten werden die für diese Arbeit relevanten Eigenschaften erklärt.
 
 \section{Struktur eines SL Programms}
 
@@ -342,7 +358,7 @@ Im Rahmen dieser Arbeit wurden alle Übersetzungen händisch programmiert, da Ty
 \section{Darstellungsübersetzung}
 \label{sec:value-transformation}
 
-Wie bereits in der Einführung dieses Kapitels erwähnt, wählen wir die Wertübersetzungsfunktionen anhand des Scala Typs. Da \ac{SL} nach \ac{JS} kompiliert muss ein Scala Wert entsprechend seines Typs in eine passende \ac{JS} Darstellung übersetzt werden. Für die Gegenrichtung, also \ac{SL} nach Scala gilt dies analog. 
+Wie bereits in der Einführung dieses Kapitels erwähnt, wählen wir die Wertübersetzungsfunktionen anhand des Scala Typs. Da SL nach JS kompiliert muss ein Scala Wert entsprechend seines Typs in eine passende JS Darstellung übersetzt werden. Für die Gegenrichtung, also SL nach Scala gilt dies analog. 
 
 \subsection{Übersetzung von primitiven Werten}
 \label{subsec:primitive-value-translation}
@@ -373,7 +389,8 @@ String& String\footnote{Die maximale Länge von Strings in \ac{JS} und Scala ist
 \end{table}
 \end{savenotes}
 
-Vor allem bei der Übersetzung von Primitiven existiert das Problem der unterschiedlichen Wertebereiche. Man kann zwar jeden Wert des Scala Typs \lstinline!Byte! in einen Wert des \ac{SL} Typs \lstinline!Int! übersetzen, aber nicht umgekehrt. In der Tabelle \ref{tab:primitives-borders} werden die Wertebereiche für primitive Typen aufgelistet. Kann ein Wert von einer Darstellungsform nicht in die andere Darstellungsform umgewandelt werden muss dieser Fehler behandelt werden (siehe Abschnitt \ref{sec:trans-implementation}). Insbesondere bei den ganzzahligen Primitiven ist das Problem unumgänglich.  Für ihre Wertebereiche gilt:
+Vor allem bei der Übersetzung von Primitiven existiert das Problem der unterschiedlichen Wertebereiche. Man kann zwar jeden Wert des Scala Typs \lstinline!Byte! in einen Wert des SL Typs \lstinline!Int! übersetzen, aber nicht umgekehrt. In der Tabelle \ref{tab:primitives-borders} werden die Wertebereiche für primitive Typen aufgelistet. Kann ein Wert von einer Darstellungsform nicht in die andere Darstellungsform umgewandelt werden muss dieser Fehler behandelt werden (siehe Abschnitt \ref{subsec:example-option-translator}). Insbesondere bei den ganzzahligen Primitiven ist das Problem unumgänglich.  Für ihre Wertebereiche gilt:
+
 \begin{center}
 $|$\lstinline!Int!$| < |$\lstinline!Number!$| < |$\lstinline!Long!$|$
 \end{center}
@@ -401,7 +418,7 @@ Die einzelnen Konstruktoren erhalten entsprechend ihrer Reihenfolge eine Konstru
 \label{tab:js-code-of-people}
 \end{table}
 
-An Hand dieses Schemas können wir nun eine Darstellungsübersetzung für den Scala Typ Option (siehe Listing \ref{lst:option-in-sl-scala}) erzeugen:
+Mit Hilfe dieser Informationen und dem Schema aus Absatz \ref{subsec:formal-translate-typ} können jetzt Option-Werte zwischen SL und Scala ausgetauscht werden. In der Tabelle \ref{lst:option-in-sl-scala} wurden beispielhaft einige Werte vom Typ \lstinline!Option[Int]! übersetzt. In Abschnitt \ref{subsec:example-option-translator} wird auf die Implementation der Übersetzung noch einmal genauer eingegangen.
 
 \begin{table}[h]
 \caption{Übersetzung von Option Werten}
@@ -416,16 +433,12 @@ Scala                   & \ac{JS} Darstellung                        & SL \\
 \end{tabular}
 \end{table}
 
+Die Übersetzung von anonymen Funktionen also Werten die eine Funktion darstellen ist im Moment nicht möglich, da kein adäquater Weg gefunden wurde um ihre Darstellung zwischen Scala und JS aus zu tauschen.
+
 %TODO vllt noch Seq[A] zu List a erklären
 
 \section{Erleuterung der Implementation}
 \label{sec:trans-implementation}
-
- 
-
-%TODO erklären das man wenn man neue Typen übersetzen möchte neue Translatorklassen schreiben muss.
-
-%TODO im anhang Beispielhaft einen neuen Typ übersetzen
 
 In der momentanen Implementation wird $translate_{type}$ durch \lstinline!Seq[AbstractTranslator]! dargestellt. Dadurch ist es möglich auch Teilmengen von $translate_{type}$ zu benutzen. Dabei stellt eine Klasse die von \lstinline!AbstractTranslator! erbt ein Paar zwischen einem Scala-Typ und einem SL-Typ dar. Die Klasse ist nach dem jeweiligen Scala Typen den sie übersetzt benannt\footnote{zB. \lstinline!SeqTranslator!}. Die Hauptmethode von \lstinline!AbstractTranslator! ist \lstinline!translate! (siehe Listing \ref{lst:main-function-translate}). Ihr wird ein Scala Typ übergeben. Wenn der übergebene Scala Typ der Klasse entspricht erhält man als Rückgabewert den entsprechenden \ac{SL} Typen, die Import Statements um die entsprechenden \ac{SL} Module zu laden\footnote{Bei primitiven \ac{SL} Typen sind diese leer. Für den \ac{SL} Typ \lstinline!List.List Opt.Option Int! würde \lstinline!IMPORT "std/option" AS Opt, IMPORT "std/list" AS List! zurück gegeben werden.} sowie die \ac{AST}-Repräsentation der Wertübersetzungsfunktionen von Scala nach \ac{SL} und umgekehrt. Andernfalls wird \lstinline!None! zurückgegeben.
 
@@ -439,12 +452,9 @@ def translate
            context.Expr[JValue => Any] )]
 \end{lstlisting}
 
-%Seq[AbstractTranslator]
-
 Weiter Parameter sind \lstinline!context! und \lstinline!translators!. \lstinline!context! ist der Makro Kontext\footnote{siehe Kapitel \ref{chap:scala-compiler-macros}}. Er wird benötigt um \ac{AST}s aufzubauen und den übergebenen Typen zu prüfen. Mit \lstinline!translators! wird der Teil von $translate_{type}$ übergeben mit denen Spezialisierungen eines generischen Typs übersetzt werden können.
 
 Möchte man einen Scala Typ nicht nur gegen eine Klasse prüfen kann man die Hilfsfunktion \lstinline!useTranslators! aus dem companion object von \lstinline!AbstractTranslator! nutzen.
-
 
 \begin{lstlisting}[caption=Statische Hilfsfunktion in AbstractTranslator, label=lst:hilfsfunktionen]
 def useTranslators
@@ -458,35 +468,90 @@ def useTranslators
 
 \lstinline!translators! gibt hier an welche Teilmenge der Funktion $translate_{type}$ man nutzen möchte\footnote{\lstinline!translators! wird in diesem Fall auch für die Spezialisierungen von generischen Typen benutzt.}. 
 
-Die Wertübersetzungsfunktionen haben die Signatur \lstinline!Any => JValue! bzw. \lstinline!JValue => Any!. \lstinline!JValue! ist Teil der json4s Bibliothek \cite{Json4s}, die benutzt wird um JS Werte zu erzeugen. Insbesondere übernimmt sie in der aktuellen Implementation die Übersetzung der primitiven Werte.
+Die Wertübersetzungsfunktionen haben die Signatur \lstinline!Any => JValue! bzw. \lstinline!JValue => Any!. \lstinline!JValue! ist Teil der json4s Bibliothek \cite{Json4s}, die benutzt wird um JS-Werte zu erzeugen. Insbesondere übernimmt sie in der aktuellen Implementation die Übersetzung der primitiven Werte.
 
-%TODO implementation von OptionTranslator beschreiben
+\subsection{OptionTranslator als Beispiel}
+\label{subsec:example-option-translator}
 
-In Anhang \ref{subsec:option-translator} kann eine kommentierte Variante des OptionTranslators eingesehen werden.
+Der \lstinline!OptionTranslator! bildet die Verbindung zwischen dem Scala-Typ \lstinline!Option[A]! und seinem SL-Pendant \lstinline!Option a! ab. 
+
+Wie bereits erwähnt ist die Hauptfunktion \lstinline!translate! (siehe Listing \ref{lst:main-function-translate}). In ihr wird zunächst mit reflection überprüft ob der übergebene Typ (\lstinline!input!) ein Subtyp von \lstinline!Option[Any]! ist. Durch die Definition von \lstinline!Option[A]! (\lstinline!sealed! und \lstinline!final case! siehe Listing \ref{lst:option-in-sl-scala}) können wir uns sicher sein, das übergebenen Werte nur vom Typ \lstinline!Some[A]! oder \lstinline!None! sind. Wieder mit reflections wird der Typ der Spezialisierung \lstinline!A! bestimmt. Ist dieser Typ mit Hilfe der übergebenen Translator-Klassen (\lstinline!translators!) übersetzbar, wird das Ergebnis zusammengestellt. In jedem anderen Fall wird \lstinline!None! zurückgegeben.
+
+Das Ergebnis besteht aus dem SL-Typ (zB. \lstinline!Option Int!), der Import-Anweisung (zB. \lstinline!IMPORT "std/option" AS Opt!) und den ASTs der beiden Wertübersetzungsfunktionen. Die Wertübersetzungsfunktionen werden im companion object definiert um sie besser mit Unit-Tests zu testen. Mit Hilfe der Funktion \lstinline!reify! aus der Makro API von Scala wird aus Scala-Code der entsprechende AST generiert.
+
+\begin{lstlisting}
+reify ( {
+( i : Any ) = > OptionTranslator.scalaToJsOption ( i , expr_s2j )
+} )
+\end{lstlisting}
+
+\lstinline!expr_s2j! ist in diesem Fall die Wertübersetzungsfunktion des Typs der Spezialisierung. 
+
+\begin{lstlisting}
+def scalaToJsOption( input: Any, f: Any => JValue ): JValue = {
+  import org.json4s._
+  input match {
+    case Some( x ) => {
+      val tmp: List[( String, JValue )] = 
+        List( "_cid" -> JInt( 0 ), "_var0" -> f( x ) )
+      JObject( tmp )
+    }
+    case None => JInt( 1 )
+    case _ => throw new IllegalArgumentException
+  }
+}
+\end{lstlisting}
+
+Wird an die Wertübersetzungsfunktion ein unerwarteter Wert (oder bei primitiven Typen ein Wert außerhalb der zulässigen Grenzen) übergeben wird eine \lstinline!IllegalArgumentException! geworfen.
+
+Möchte man einen einen neuen Scala-Typ übersetzen bzw. zu $translate_{type}$ hinzufügen muss eine neue Translator-Klasse geschrieben werden. Eine entsprechende Anleitung findet sich im Anhang \ref{sec:new-translator-class}.
 
 \chapter{Scala Compiler Macros}
 \label{chap:scala-compiler-macros}
 
-%TODO irgendwo muss noch hin wie funktionen und werte jetzt benutzt werden
+Im \ref{cha:sl-introduction}. Kapitel wurde SL vorgestellt. Eine strikt getypte funktionale Sprache die in JS-Code übersetzt wird.
 
-Wie bereits erwähnt wurde, konnte in einem Paper der Technischen Universität Berlin gezeigt, das man mit Hilfe von Compiler Macros statischen \ac{SL} Code in die Views von Play-Anwendungen einbetten kann\cite{Hoger2013}. Mit der Erweiterung von \ac{SL} durch ein Modul-System musste dieses Makro komplett neu geschrieben werden.
+SL brachte Höger et al. auf die Idee mit Hilfe von Scala Compiler Makros eine strikt getypte Abstraktion für JS in Scala einzubinden\cite{Hoger2013}. Um ihre Ergebnisse zu demonstrieren haben sie eine Beispielwebanwendung mit Hilfe des Play-Frameworks\cite{Play1} geschrieben. 
 
-Es blieb aber ein grundsätzliches Problem erhalten. Wie kann der generierte \ac{JS}-Code auf das Serverumfeld wie Datenbanken, Session oder Benutzerdaten zugreifen. In herkömmlichen Anwendungen gibt es zwei Lösungen dafür: Entweder man bindet die Daten direkt in den Quellcode der einzelnen Webseiten ein oder lädt sie mit Hilfe von asynchronen Anfragen nach. 
-%TODO den satz neu schreiben was macht man damit genau
-In der aktuellen Version von \ac{SL} kann man Scala-Werte direkt im \ac{SL} Code benutzen und Daten über übersetzte Scala Funktionen nachladen bzw. verändern.
+Play ist ein \ac{MVC}-Framework für Webanwendungen welches in Scala geschrieben ist. Play vereinfacht die Erstellung von strukturierten Webanwendungen. Auch innerhalb dieser Arbeit wird es genutzt, um die Einbettung von SL in Scala zu erproben.
 
-%TODO überschrift überarbeiten welches projekt
-\section{Struktur des Projekts}
+Es konnte das Problem der dynamischen Typisierung von JS behoben werden, aber ein anderes blieb offen. Bis jetzt war es nicht möglich SL- bzw. JS-Code abhängig von der Scala-Umgebung zu generieren. Insbesondere für Webanwendung stellt dies ein Problem dar. Es sollte möglich sein den JS-Code zum Beispiel mit dem Benutzername zu personalisieren. 
+
+Mit Hilfe der im Kapitel \ref{cha:model-sharing} beschriebenen Einbettung von Scala-Werten/-Typen in SL ist es jetzt möglich dieses Problem zu lösen.
+
+Um den SL-Code von der Scala-Umgebung abhängig zu machen wurden zwei Ansätze verfolgt. Zum einen ist es jetzt möglich Scala-Werte direkt im SL-Code zu nutzen. Dazu werden Platzhalter in den SL-Code eingefügt die dann durch übersetzte Scala-Werte ersetzt werden.
+
+Auf der anderen Seite können aus Scala-Funktionen aus SL-Code heraus aufgerufen werden. Dazu wird aus einer Scala-Funktion eine SL-Funktion generiert, die die Scala-Funktion über asynchrone Kommunikation mit dem Server und Scala reflections aufruft.
+
+Um diese Lösungen zu realisieren wurden zwei Scala Compiler Makros geschrieben. Diese werden im Laufe dieses Kapitels vorgestellt.
+
+\section{Makros und ihre Abhängigkeiten}
 \label{sec:project-structure}
 
-Um Scala Funktionen für die Verwendung in \ac{SL}-Code zu markieren wurde die macro annotation \lstinline!sl_function! geschrieben, welche im Abschnitt \ref{sec:annotation-macro} behandelt wird. Im darauf folgenden Abschnitt \ref{sec:inline-macro} wird beschrieben, wie statischer \ac{SL} Code mit Hilfe des def macros \lstinline!slci! eingebunden wird und welchen Veränderungen gemacht werden mussten um Scala Werte und Funktionen benutzen zu können. Beide Makros binden den Trait \lstinline!MacroConfig! ein, in dem grundsätzliche Konfigurationen definiert sind. 
+Um Scala Funktionen für die Verwendung in \ac{SL}-Code zu markieren wurde die macro annotation \lstinline!sl_function! geschrieben, welche im Abschnitt \ref{sec:annotation-macro} behandelt wird. Im darauf folgenden Abschnitt \ref{sec:inline-macro} wird beschrieben, wie statischer \ac{SL} Code mit Hilfe des def macros \lstinline!slci! eingebunden wird und welchen Veränderungen gemacht werden mussten um Scala Werte und annotierte Funktionen benutzen zu können. Beide Makros binden den Trait \lstinline!MacroConfig! ein, in dem grundsätzliche Konfigurationen definiert sind. Zur Übersetzung der Typen und Werte werden die Translator-Klassen genutzt. Einen Überblick über das Projekt bietet die Abbildung \ref{fig:project-overview}.
 
-%TODO Config erklären
-%TODO Verzeichnisse erklären / Config erklären
+\begin{figure}[h] 
+  \centering
+     \includegraphics[width=\textwidth]{Bilder/projektstruktur}
+  \caption{Projektübersicht}
+  \label{fig:project-overview}
+\end{figure}
+
+\subsection{Konfiguration der Makros}
+\label{subsec:macro-config}
+
+Im Trait \lstinline!MacroConfig! werden die beiden hier programmierten Makros konfiguriert. In den anschließenden Abschnitten wird sich darauf bezogen. Die wichtigsten Konfigurationsparameter sind:
+
+\begin{description}
+ \item[assets\_dir] Gibt an in welchem Ordner die SL-Quelldateien und ihre Kompilate liegen. Im Moment \lstinline!/projekt_ordner/public/sl/!.
+ \item[inline\_sl\_macro\_folder] Gibt den Unterordner von \lstinline!assets_dir! an, in dem die SL-Module/-Quelldateien und ihre Kompilate liegen, die vom def marco slci generiert werden. Im Moment: \lstinline!generated_inline/!.
+ \item[annotation\_sl\_macro\_folder] Gibt den Unterordner von \lstinline!assets_dir! an, in dem die SL-Module, die von der macro annotation sl\_function generiert werden, liegen. Im Moment: \lstinline!gnerated_annotation/!.
+ \item[inline\_sl\_macro\_handler\_uri] Gibt die \ac{URL} an unter welcher der Server auf asynchrone Kommunikation lauscht um per reflection annotierte Scala-Funktionen aufzurufen. Im Moment ist dies eine relative \ac{URL}: \lstinline!/ajax!.
+\end{description}
+
+Wird in der Konfiguration etwas geändert muss das ganze Projekt neu kompiliert werden. Insbesondere müssen alle generierten SL-Module neu erstellt werden.
+
 %TODO Probleme mit namen von scala funktionen
-
-Zur Übersetzung der Typen und Werte, werden die Hilfsfunktionen aus \lstinline!AbstractTranslator! und \lstinline!AbstractModuleTranslator! genutzt.
-
 
 \section{Macro Annotation sl\_function }
 \label{sec:annotation-macro}
@@ -595,6 +660,8 @@ params         & JSON encodierte Liste der übergebenen Parameter\\
 
 \section{Def Macro slci}
 \label{sec:inline-macro}
+
+%TODO erwähnen das es komplett neu geschrieben wurde
 
 Bis jetzt kann man nur Funktionen markieren. Nun soll \ac{SL} benutzt werden um \ac{JS}-Code zu generieren und ihn auf Benutzerseite zu verwenden. Dazu wurde das \lstinline!slci! Makro neu geschrieben und erweitert. Im Laufe der nächsten Abschnitte vollziehen wir die Entwicklungsschritte des Makros nach.
 
@@ -804,10 +871,8 @@ Aus meiner Sicht erscheint dabei js-scala besonders viel versprechend. Es verein
 \label{chap:conclusion}
 
 \appendix
-\chapter{Anhänge}
-\label{chap:anhänge}
 
-\section{Future Works}
+\chapter{Future Works}
 \label{sec:future-works}
 
 \begin{itemize}
@@ -820,125 +885,12 @@ Aus meiner Sicht erscheint dabei js-scala besonders viel versprechend. Es verein
  \item{Geht das mit require.js? Optimierung des generierten JS Codes. Am Anfang vllt mit ClojureScript}
 \end{itemize}
 
-
-\section{Quellenverzeichnis}
-
-
-\section{Abkürzungsverzeichnis}
-
-\begin{acronym}[TU-Berlin]
- \acro{SL}{Simple Language}
- \acro{JS}{JavaScript}
- \acro{AST}{Abstract Syntax Tree}
- \acro{TU-Berlin}{Technische Universität Berlin}
- \acro{}{}
- \acro{HTML}{Hypertext Markup Language}
- \acro{DOM}{Document Object Model}
- \acro{URL}{Uniform Resource Locator}
-\end{acronym}
+\chapter{Beschreibung der Tests und Beispielprogramme}
+\label{chap:tests-and-examples}
 
 %TODO
 
-\section{Beschreibung der Tests und Beispielprogramme}
-
-%TODO
-
-\subsection{Die Klasse OptionTranslator als Beispiel}
-\label{subsec:option-translator}
-
-Exemplarisch als Implementation für \lstinline!AbstractTranslator! wird in diesem Kapitel der \lstinline!OptionTranslator! genauer betrachtet.
-
-ÜBERARBEITEN (listing kürzen)
-
-\begin{lstlisting}[caption=Source Code von OptionTranslator, label=lst:source option translator]
-case class OptionTranslator( override val module_alias: String = "Opt" ) 
-extends AbstractModulTranslator( module_alias ) {
-  val import_path = "std/option"
-  
-  override def translate
-    ( context: Context )
-    ( input: context.universe.Type, translators: Seq[AbstractTranslator] )
-  : Option[( String, 
-             Set[String], 
-             context.Expr[Any => JValue], 
-             context.Expr[JValue => Any] )] =
-    {
-      import context.universe._
-
-      val option_class_symbol: ClassSymbol = typeOf[Option[_]].typeSymbol.asClass
-      val first_type_parameter: Type = option_class_symbol.typeParams( 0 ).asType.toType
-      val option_any_type: Type = typeOf[Option[Any]]
-
-      if ( input.<:<( option_any_type ) ) {
-        val actual_type = first_type_parameter.asSeenFrom( input, option_class_symbol )
-
-        AbstractTranslator.useTranslators( context )( actual_type, translators ) match {
-          case Some( ( sl_type, imports, expr_s2j, expr_j2s ) ) =>
-            {
-              val scala2js = reify( 
-                { 
-                  ( i: Any ) => OptionTranslator.scalaToJsOption( i, expr_s2j.splice ) 
-                } 
-              )
-              val js2scala = reify( ... )
-              Some( 
-                ( module_alias + ".Option ( " + SL_type + " )", 
-                imports + module_import, 
-                scala2js, 
-                js2scala ) 
-              )
-            }
-          case None =>
-            None
-        }
-      }
-      else
-        None
-    }
-}
-
-object OptionTranslator {
-  def scalaToJsOption( input: Any, f: Any => JValue ): JValue =
-    {
-      import org.json4s._
-
-      input match {
-        case Some( x ) => {
-          val tmp: List[( String, JValue )] = List( "_cid" -> JInt( 0 ), "_var0" -> f( x ) )
-          JObject( tmp )
-        }
-        case None => JInt( 1 )
-        case _ =>
-          throw new IllegalArgumentException
-      }
-    }
-
-  def \ac{JS}ToScalaOption[T]( input: JValue, f: JValue => T ): Option[T] =
-    {
-      input match {
-        case JInt( _ ) => None: Option[T]
-        case JObject( x ) => {
-          val tmp = x.find( j => ( j._1 == "_var0" ) )
-          if ( tmp.isDefined )
-            Some( f( tmp.get._2 ) )
-          else
-            throw new IllegalArgumentException
-        }
-        case _ => throw new IllegalArgumentException
-      }
-    }
-}
-
-\end{lstlisting}
-
-\lstinline!OptionTranslator! erbt nicht von \lstinline!AbstractTranslator! sondern von \lstinline!AbstractModuleTranslator!, weil der korrespondierende \ac{SL} Typ \lstinline!Option! in einem Modul definiert ist (Zeile 1-2). Außerdem wird ein default \lstinline!module_alias! angegeben. Dies wird im Kapitel \ref{sec:annotation-macro} relevant werden. In Zeile 3 wird der \lstinline!import_path! des zu ladenen Moduls angegeben. 
-
-Kommen wir zur Hauptfunktion \lstinline!translate!. Zunächst wird überprüft ob der übergebene Typ \lstinline!input! ein Subtyp von \lstinline!Option[Any]!\footnote{Für den Scala Typ \lstinline!Any! kann es keine semantisch sinnvolle Übersetzung nach \ac{SL} geben} ist (Zeile 21). Falls dies der Fall ist wird die Spezialisierung von \lstinline!Option! bestimmt (Zeile 22). Also handelt es sich um \lstinline!Option[Int]! oder \lstinline!Option[OptionTranslator]! um Beispiele zu nennen. In Zeile 24 wird versucht mit \lstinline!AbstractTranslator.useTranslators! eine passende \ac{SL} Entsprechung für die Spezialisierung zu finden. Ist dies der Fall wird ein Ergebnis zusammengesetzt (Zeile 25-45). In jedem anderen Fall wird \lstinline!None! zurückgegeben.
-
-Die Wertübersetzungsfunktionen von Scala nach \ac{SL} und umgekehrt werden im companion object \lstinline!OptionTranslator! definiert um sie besser testen zu können (ab Zeile 55). Sie werfen eine \lstinline!IllegalArgumentException! falls der Wert auserhalb der übersetzbaren Grenzen liegt\footnote{Das kann bei \lstinline!Option! nicht passieren, aber bei anderen Übersetzungen. Siehe Tabelle \ref{tab:primitives-borders}.} oder ein unerwarteter Wert übergeben wird.
-%TODO ? Soll reify erwähnt werden?
-
-\section{Benutzte Techniken/Bibliotheken}
+\chapter{Benutzte Techniken/Bibliotheken}
 
 %TODO webseiten noch einfügen
 \begin{itemize}
@@ -961,9 +913,13 @@ Die Wertübersetzungsfunktionen von Scala nach \ac{SL} und umgekehrt werden im c
 
 
 
-\section{HowTo's}
-\subsection{Projekt aufsetzen}
-\subsection{Einen neuen Translator anlegen}
+\chapter{HowTo's}
+
+\section{Projekt aufsetzen}
+\label{sec:setup-project}
+
+\section{Einen neuen Translator anlegen}
+\label{sec:new-translator-class}
 
 \bibliography{powers.bib}{}
 \bibliographystyle{geralpha}

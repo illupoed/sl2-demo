@@ -477,7 +477,7 @@ Der \lstinline!OptionTranslator! bildet die Verbindung zwischen dem Scala-Typ \l
 
 Wie bereits erwähnt ist die Hauptfunktion \lstinline!translate! (siehe Listing \ref{lst:main-function-translate}). In ihr wird zunächst mit reflection überprüft ob der übergebene Typ (\lstinline!input!) ein Subtyp von \lstinline!Option[Any]! ist. Durch die Definition von \lstinline!Option[A]! (\lstinline!sealed! und \lstinline!final case! siehe Listing \ref{lst:option-in-sl-scala}) können wir uns sicher sein, das übergebenen Werte nur vom Typ \lstinline!Some[A]! oder \lstinline!None! sind. Wieder mit reflections wird der Typ der Spezialisierung \lstinline!A! bestimmt. Ist dieser Typ mit Hilfe der übergebenen Translator-Klassen (\lstinline!translators!) übersetzbar, wird das Ergebnis zusammengestellt. In jedem anderen Fall wird \lstinline!None! zurückgegeben.
 
-Das Ergebnis besteht aus dem SL-Typ (zB. \lstinline!Option Int!), der Import-Anweisung (zB. \lstinline!IMPORT "std/option" AS Opt!) und den ASTs der beiden Wertübersetzungsfunktionen. Die Wertübersetzungsfunktionen werden im companion object definiert um sie besser mit Unit-Tests zu testen. Mit Hilfe der Funktion \lstinline!reify! aus der Makro API von Scala wird aus Scala-Code der entsprechende AST generiert.
+Das Ergebnis besteht aus dem SL-Typ (zB. \lstinline!Option Int!), der Import-Anweisung (zB. \lstinline!IMPORT "std/option" AS Opt!) und den ASTs der beiden Wertübersetzungsfunktionen. Die Wertübersetzungsfunktionen werden im companion object definiert um sie besser mit Unit-Tests zu testen. Mit Hilfe der Funktion \lstinline!reify! aus der Makro API von Scala wird aus Scala-Code der entsprechende AST generiert. Grundsätzlich könnte der AST auch eine anonyme Funktion und keine Funktionsaufruf repräsentieren die Wertübersetzung beschreibt. In späteren Kapiteln heißen die Funktionen zum Übersetzen deshalb immer \lstinline!scala_to_js! und \lstinline!js_to_scala!.
 
 \begin{lstlisting}
 reify ( {
@@ -558,7 +558,6 @@ Wird in der Konfiguration etwas geändert muss das ganze Projekt neu kompiliert 
 
 Mit macro annotations kann in den Übersetzungsprozess von Scala eingegriffen werden\cite{EPFL1}. Es ist möglich den annotierten Code zu verändern\footnote{Es können Funktionen, Klassen, Objekte, Typparameter oder Funktionsparameter annotiert werden.}. Mit dem geschriebenen Makro können nur Funktionen annotiert werden. Für jede Funktion wird eine Hilfsfunktion und ein \ac{SL}-Modul erzeugt. Die Hilfsfunktion soll den Aufruf im Rahmen von ajax requests erleichtern. Das \ac{SL}-Modul ermöglicht es diesen Aufruf typsicher in \ac{SL}-Programme einzubinden. Beispielhaft wird das An­no­tie­ren einer Funktion anhand der im Listing \ref{lst:example-function} beschriebenen Funktion \lstinline!factorial! betrachtet.
 
-%TODO was macht das macro genau (Schrittweise)
 
 \begin{lstlisting}[caption=Scala Beispielfunktion, label=lst:example-function, float=h]
 -- Foo.scala
@@ -580,17 +579,24 @@ Die zu übersetzende Funktion muss gewisse Anforderungen erfüllen. Wenn wir sie
 
 Andere Anforderungen ergeben sich aus der Implementation bzw. wurden aufgestellt um die Implementation zu erleichtern:
 
-\begin{itemize}
- \item[-]{Die Funktion muss einen Rückgabetyp definieren\footnote{Andernfalls müsste der Rückgabetyp erst über reflection bestimmt werden.}.}
- \item[-]{Die Funktion darf nur eine Parameterliste haben\footnote{In der aktuellen Implementation werden die Default-Werte eines Parameters ignoriert. Eine entsprechende warning wird erzeugt.}}
- \item[-]{Die Ein- und Ausgangstypen müssen sich in \ac{SL}-Typen übersetzen lassen.}
- \item[-]{Der Funktionsname darf keine ungewöhnlichen Zeichen enthalten\footnote{Da sich der Name der Funktion im Name und Pfad des erzeugten Moduls widerspiegelt, sind nur die Zahlen von 0 bis 9 sowie kleine Buchstaben von a bis z erlaubt. Ähnliche Einschränkungen gelten für die übergeordneten Pakete sowie den Namen des Objekts in dem die Funktion definiert ist.}}
-\end{itemize}
+\begin{description}
+ \item[Die Ein- und Ausgangstypen müssen sich in SL-Typen übersetzen lassen.]{Gilt dies nicht kann keine passende SL-Funktion erzeugt werden.}
+ \item[Die Funktion muss einen Rückgabetyp definieren.]{Andernfalls müsste der Rückgabetyp erst über reflection bestimmt werden. Der Scala Compiler kann den Rückgabetyp wahrscheinlich bestimmen, dies wurde aber nicht in Angriff genommen.}
+ \item[Die Funktion darf nur eine Parameterliste haben.]{Mehrere Parameterlisten könnten in eine zusammengefasst werden. Da diese Einschränkung aber nur minimal ist und es den Aufruf der Funktion über reflection erschwert wurde davon Abstand genommen.}
+ \item[Standardwerte von Parametern werden ignoriert.]{In der aktuellen Implementation werden die Standardwerte eines Parameters ignoriert. Eine entsprechende Compilerwarnung wird erzeugt.}
+ \item[Der Funktionsname darf keine ungewöhnlichen Zeichen enthalten]{Da sich der Name der Funktion im Name und Pfad des erzeugten Moduls widerspiegelt, sind nur die Zahlen von 0 bis 9 sowie kleine Buchstaben von a bis z erlaubt. Ähnliche Einschränkungen gelten für die übergeordneten Pakete sowie den Namen des Objekts in dem die Funktion definiert ist.}
+\end{description}
 
 \subsection{SL-Modul}
 \label{subsec:sl-modul}
 
-Für jede annotierte Funktion wird ein Modul erstellt. Das Modul enthält zwei Funktionen. Jeweils für den asynchronen und synchronen Aufruf der Scala-Funktion über Ajax. Das Ergebnis wird in \lstinline!Option! gekapselt, um auf Fehler in der Kommunikation mit dem Server reagieren zu können. Das Erzeugen der Ajax Anfrage und das Behandeln des Ergebnisses passiert in den \ac{JS}-Funktionen \lstinline!_sendRequestSync()! und \lstinline!sendRequestAsync()!. Diese Funktionen sind in der \ac{JS}-Bibliothek std/\_scalafun.js definiert. Weiterhin enthält das Modul in Kommentaren den Namen der aufgerufenen Funktion sowie den voll qualifizierten Namen des Objektes in dem die Funktion definiert ist. Diese Informationen werden gebraucht um Abhängigkeiten zwischen der Scala Funktion und ihrer Benutzung in \ac{SL}-Code aufzulösen. Genauer wird dies im Kapitel \ref{sec:inline-macro} beschrieben. Das Modul wird direkt nach dem erstellen kompiliert.
+Für jede annotierte Funktion wird ein Modul erstellt. Das heißt eine SL-Quelldatei erstellt, die den entsprechenden SL-Code enthält.
+
+Das Modul enthält zwei Funktionen. Jeweils für den asynchronen und synchronen Aufruf der Scala-Funktion über Ajax. Das Ergebnis wird in \lstinline!Option! gekapselt, um auf Fehler in der Kommunikation mit dem Server reagieren zu können. Das Erzeugen der Ajax Anfrage und das Behandeln des Ergebnisses passiert in den \ac{JS}-Funktionen \lstinline!_sendRequestSync()! und \lstinline!sendRequestAsync()!. Diese Funktionen sind in der \ac{JS}-Bibliothek std/\_scalafun.js definiert. 
+
+Weiterhin enthält das Modul in Kommentaren den Namen der aufgerufenen Funktion sowie den voll qualifizierten Namen des Objektes in dem die Funktion definiert ist. Diese Informationen werden gebraucht um Abhängigkeiten zwischen der Scala Funktion und ihrer Benutzung in \ac{SL}-Code aufzulösen. Genauer wird dies im Abschnitt \ref{subsec:use-scala-function-in-sl} beschrieben. Das Modul wird direkt nach dem erstellen kompiliert.
+
+Zu erwähnen sind noch die Import-Anweisungen. Die Quelldateien \lstinline!std/option! und \lstinline!std_scalafun! werden immer importiert, da sie offensichtlich immer gebraucht werden. Enthält aber die Funktionsdefinition der annotierten Funktion einen Scala-Typ dessen SL-Pendant in einem externen Modul definiert ist (zum Beispiel \lstinline!List a!) muss dieses auch importiert werden. Eine entsprechende Import-Anweisung wird dann hinzugefügt.
 
 \begin{lstlisting}[caption=SL-Modul factorial.sl zur Funktion aus Listing \ref{lst:example-function}, label=lst:example-sl-modul, float=h]
 -- DO NOT ALTER THIS FILE! --------------------------------
@@ -603,7 +609,7 @@ IMPORT EXTERN "std/_scalafun"
 IMPORT "std/option" AS Opt
 
 -- this functions should call the scala function:
--- callable_functions.Examples.factorial
+-- example.Foo.factorial
 PUBLIC FUN factorialSync : Int ->  DOM ( Opt.Option (Int) )
 DEF factorialSync p0 = {| _sendRequestSync( ... ) ($p0) |}  : DOM ( Opt.Option (Int) )
 
@@ -616,8 +622,7 @@ DEF factorialAsync callbackFun p0 = {| _sendRequestAsync( ... )  ($callbackFun, 
 
 Um den Aufruf mit Ajax Anfragen zu erleichtern wird eine Hilfsfunktion definiert. Sie kapselt die eigentliche Scala Funktion. Sie erhält die Parameter als \lstinline!JValue!. Die Parameter werden mit Hilfe der Funktionen aus den Translator Klassen in Scala Werte übertragen und dann auf die passenden Typ gecasted. Anschließend wird mit ihnen die eigentlich Funktion aufgerufen. Das Ergebnis wird in ein \lstinline!JValue! Wert umgewandelt und zurückgegeben.
 
-%TODO ref auf translate abschnitt
-Die Funktionen $scala_to_sl$ und $sl_to_scala$ sind nur Platzhalter. Wie diese Funktionen genau definiert sind hängt von der Implementation der entsprechenden Translator-Klasse ab.
+Die Funktionen \lstinline!scala_to_sl! und \lstinline!sl_to_scala! sind nur Platzhalter. Wie diese Funktionen genau definiert sind, hängt von der Implementation der entsprechenden Translator-Klasse ab (siehe Abschnitt \ref{subsec:example-option-translator}).
 
 \begin{lstlisting}[caption=Hilfsfunktion zur Funktion aus Listing \ref{lst:example-function}, label=lst:helperfunction, float=h]
 -- Foo.scala
@@ -632,6 +637,15 @@ object Foo {
 }
 \end{lstlisting}
 
+\subsection{Ablauf eines sl\_function Aufrufs}
+
+Wie bereits erwähnt wird das Makro während der Übersetzung des Scala Programms aufgerufen. Der Aufruf des sl\_function folgt den letzten drei Abschnitten. Zunächst wird überprüft ob die annotierte Funktion den Anforderungen genügt. Dann wird das Modul im Ordner \lstinline!annotation_sl_macro_folder! (siehe Abschnitt \ref{subsec:macro-config}) erzeugt und übersetzt. Der genaue Pfad des Moduls ist \lstinline!annotation_sl_macro_folder/!
+
+ Daraufhin wird der \ac{AST} der Hilfsfunktion erzeugt und diese hinter der annotierten Funktion in das Objekt eingefügt. 
+
+Sollte es in einem der Schritte zu einem Fehler kommen, wird ein Compilerfehler erzeugt und die Übersetzung des Scala Programms abgebrochen.
+
+%TODO ordnerstruktur erklären
 
 \subsection{Ablauf eines Aufrufs}
 \label{subs:call-scala-functions}
@@ -755,6 +769,7 @@ sl['5a40c735438fd9e1fd43657bd7f8564scalaParam1'] = {"_cid":0,"_var0":3};
 \end{lstlisting}
 
 \subsection{Scala Funktionen in SL nutzen}
+\label{subsec:use-scala-function-in-sl}
 
 Im Abschnitt \ref{sec:annotation-macro} wurde erklärt wie Scala-Funktionen für die Verwendung in \ac{SL}-Code markiert werden. Für die markierten Funktionen werden \ac{SL}-Module erzeugt. Wenn ein solches Modul geladen wird\footnote{Der Pfad des Moduls fängt in der aktuellen Konfiguration mit \lstinline!generated_annotation/! an.}, werden am Anfang des vom Makro erzeugten Scala-Codes \lstinline!import!-Anweisungen eingefügt, die auf die referenzierten Scala Funktionen verweisen. Falls sich die Signatur der importierten Funktionen ändert, soll der Aufrufende SL-Code neu compiliert werden.
 Für die Funktion \lstinline!factorial! aus Listing \ref{lst:example-function} würde der Scala-Code im Listing \ref{lst:slci-function-import} erzeugt werden.

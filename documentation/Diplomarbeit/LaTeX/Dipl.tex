@@ -885,41 +885,36 @@ DEF foo = {| document.getElementById("canvas").width |}:DOM Int
 
 Passt das Ergebnis nicht zum Typ wird die Ausführung des Programms mit einer Exception abgebrochen. 
 
-\chapter{Related Works}
+\chapter{Ähnliche Projekte}
 \label{chap:related-works}
 
-% - webprogrammierung nach mvc modell
-% - in dieser arbeit geht es um die einbettung des typsystems von scala in js
-% -> die in dieser arbeit vorgestellten konzepte lassen sich nicht so einfach auf andere sprachen ummünzen ->
-% -> es sollen projekte betrachtet die auch js in scala einbetten
-% - js code mithilfe des scala compilers erzeugen
-% - soll typsicherheit nach js bringen
-%
-% - können sie scala typen in js übertragen <- also können werte aus scala im js code genutzt werden
-% - ist es möglich den geschriebenen models zu sharen <- also auch funktionen/methoden
-% - wie gut lassen sich existierende js-bibliotheken einbinden
-% - wie schnell ist das ganze
-% - welchen aufwand haben die ansätze während der laufzeit
-% - im laufe der betrachtungen werden noch weitere feinheiten betrachtet
-% - können bibliotheken erzeugt werden
+In diesem Kapitel sollen Projekte vorgestellt werden, die JS als Zielsprache haben und JS zu einem statischen Typsystem verhelfen. Einen Überblick über Projekte die JS als Zielsprache haben, hat das CoffeScript-Projekt zusammengestellt\footnote{siehe https://github.com/jashkenas/coffeescript/wiki/List-of-languages-that-compile-to-JS}. 
 
-% - jscala fällt raus <- bringt keien typsicherheit mit
+Für dieses Problem gibt es mehrere Lösungsmöglichkeiten. Es ist möglich einen neue statisch getypte Sprache zu entwickeln die nach JS übersetzt werden. Ein Beispiel dafür ist das in dieser Arbeit vorgestellte SL. Andere wären TypeScript und JSX\footnote{siehe webseiten}. Eine andere Möglichkeit wäre eine bereits existierende statisch getypte Sprache nach JS zu übersetzten. Also einen neuen Compiler für eine existierende Sprache zu schreiben. Bespiele dafür wären gopherjs (Go), ghcjs (Haskell), haste (Haskell), fay (Haskell) oder sharpkit (C\#). Oder man baut die virtuelle Maschine einer Sprache in JS nach. Wie dies im doppio-Projekt (jvm) gemacht wurde. Ein anderen Ansatz verfolgt das js\_of\_ocaml Projekt. Hier wird der Ocaml-Bytecode in JS übersetzt. Natürlich kann man auch eine Programmbibliothek schreiben die JS-Code erzeugt und das Typsystem der Host-Sprache nutzt. Ein Beispiel dafür ist die in Haskell geschriebene sunroof-Bibliothek. 
 
+Im Rahmen dieser Arbeit möchte ich mich aber auf Projekte beschränken die JS in Scala einbetten und diese dann mit der hier vorgestellten Lösung vergleichen. Dazu wird Scala.js und js-scala betrachtet. Auch jscala erzeugt JS-Code innerhalb von Scala, verhilft ihm aber nicht zu einem statischen Typsystem.
 
-Auch andere Gruppen haben JS in Scala eingebunden. In den folgenden Abschnitten wird versucht einen groben Überblick dazu zu geben und sie mit der hier vorgestellten Implementation zu vergleichen. 
+Das Szenario soll ein nach dem MVC-Schema geschriebenes Webprojekt sein, das die hier vorgestellten Projekte benutzt um den clientseitigen JS-Code zu erzeugen. 'Zur Laufzeit' soll in dieser Betrachtung bedeuten während einer Anfrage an den in Scala geschriebenen Webserver. Es werden folgende Aspekte betrachtet:
 
-Allen Ansätzen ist gemein, das sie JS zu einem statischen Typsystem verhelfen. Was die Wartung großer Projekte in JS erleichtert. 
+\begin{description}
+ \item[Ist es möglich Code client- und serverseitig zu benutzen] Also kann der Code zum generieren von JS auch in Scala genutzt werden.
+ \item[Können Scala-Werte zur Laufzeit in den JS-Code eingebunden werden] Kann der generierte JS-Code auf die Serverumgebung wie Session oder Datenbanken zugreifen.
+ \item[Wie gut lassen sich JS-Bibliotheken in den generierten JS-Code einbinden] Welche Mechanismen stellen die einzelnen Projekte dafür zur Verfügung.
+ \item[Welchen Aufwand erzeugt das generieren des JS-Codes zur Laufzeit]
+\end{description}
+
+In den folgenden Abschnitten werden die Ansätze kurz vorgestellt und später verglichen.
 
 \section{Scala.js}
 \label{sec:scala-js}
 
 Scala.js ist ein Compiler. Er übersetzt Scala Code in JS anstatt in JVM Bytecode\cite{Doeraene2013}. Der Compiler wurde als Compiler-PlugIn für den Scala Standardcompiler geschrieben und kann damit auch Eigenschaften wie Compilermakros nutzen. 
 
-Mit Scala.js kann die gesamte Sprachkern von Scala sowie einige wenige Teile des Javasprachkerns, die essenziell für Scala sind, genutzt werden. Es gibt leichte Unterscheide, da sich die primitiven Datentypen in Scala und JS unterschiedlich verhalten (siehe Abschnitt \ref{subsec:primitive-value-translation} und \cite{Doeraene2014}) und man Java runtime reflection nur sehr eingeschränkt nutzen kann. Insbesondere kann man aber Scala Code in beiden Welten also Bytecode und JS nutzen[webseite].
+Mit Scala.js kann die gesamte Sprachkern von Scala sowie einige wenige Teile des Java-Sprachkerns, die essenziell für Scala sind, genutzt werden. Es gibt leichte Unterscheide, da sich die primitiven Datentypen in Scala und JS unterschiedlich verhalten (siehe Abschnitt \ref{subsec:primitive-value-translation} und \cite{Doeraene2014}) und man Java runtime reflection nur sehr eingeschränkt nutzen kann. Insbesondere kann man aber Scala Code in beiden Welten also Bytecode und JS nutzen\footnote{[webseite]}. 
 
-Mit Hilfe von implicit conversion und custom dynamic types war es möglich das JS Typsystem in das von Scala einzubetten ohne das von Scala zu verändern. Damit ist es möglich bestehende JS Bibliotheken dynamisch oder statisch getypt in Scala.js einzubinden. Was einen großen Vorteil bietet. 
+Mit Hilfe von implicit conversion und custom dynamic types war es möglich das JS-Typsystem in das von Scala einzubetten ohne das von Scala zu verändern. Damit ist es möglich bestehende JS-Bibliotheken dynamisch oder statisch getypt in Scala.js einzubinden. Was einen großen Vorteil bietet. 
 
-Ein großer Nachteil für das Entwickeln von Webseiten ist, das man innerhalb von Scala Code der nach Bytecode übersetzt wird, keinen JS Code mit Hilfe von Scala.js erzeugen kann. Also man kann im erstellten JS Code nicht leicht auf die Serverumgebung, wie die momentane Session oder Datenbanken, zugreifen.
+Zur Laufzeit liegen nur die übersetzten Dateien vor. Das bedeutet einerseits, das der generierte JS-Code nicht auf Scala-Werte zugreifen kann, aber auch das nur ein Mindestmaß an Rechenzeit verloren geht.
 
 \section{js-scala}
 
@@ -933,20 +928,21 @@ Natürlich werden dies Vorteile durch mehr Aufwand während der Laufzeit erkauft
 
 Wie auch in Scala.js, ist es in js-scala möglich JS-Bibliotheken in statisch oder dynamisch getypt einzubinden.
 
-
 \section{SL in Scala}
 
-Im Gegensatz zu allen anderen Ansätzen ist die Einbettung von SL in Scala sehr auf die Nutzung in Webservices beschränkt. Das liegt zum einen an der Verwendung von require.js zum Nachladen von Modulen. Dadurch ist es nicht möglich unabhängige JS Dateien zu erstellen. Zum anderen ist das Aufrufen von Scala-Funktionen über Ajax nur in einem solchen Kontext sinnvoll, aber auch besonders hilfreich.
+Im Gegensatz zu allen anderen Ansätzen ist die Einbettung von SL in Scala sehr auf die Nutzung in Webservices beschränkt. Das liegt zum einen an der Verwendung von require.js zum Nachladen von Modulen. Dadurch ist es nicht möglich unabhängige JS-Dateien zu erstellen. Zum anderen ist das Aufrufen von Scala-Funktionen über Ajax nur in einem solchen Kontext sinnvoll, aber auch besonders hilfreich.
 
 Als Vorteil kann gesehen werden, das die beschreibende Sprache, also SL, sehr übersichtlich und ihre Grenzen klar sind. Weil die anderen Ansätze Scala als beschreibende Sprache benutzen kann dies zu Verwirrung führen. 
 
-Ein besonders schwerwiegendes Manko ist die schwierige Einbindung von bereits existierenden JS-Bibliotheken. Dabei kommt eine Eigenschaft von SL besonders zum Tragen. Das Typsystem von SL kann keine JS-Objekte darstellen, die von den meisten Bibliotheken benutzt werden. Es bleibt nur die Möglichkeit Wrapper-Module zu erstellen, die massiv von JS-Quotings Gebrauch machen und um die Verwendung von Objekten herum arbeiten.
+Ein besonders schwerwiegendes Manko ist die schwierige Einbindung von bereits existierenden JS-Bibliotheken. Zwar ist es möglich mit Hilfe JS-quoating Monade, aus Sicht einer funktionalen Sprache, typsicher auf JS zuzugreifen, aber durch das Typsystem von SL ist man trotzdem sehr eingeschränkt. SL kennt keine Abstraktion für JS-Objekte. Für Bibliotheken wie jQuery die JS-Objekte benutzen, müssen dadurch aufwändig wrapper Module gebaut und gewartet werden. 
 
-Zu erwähnen bleibt, das die momentane Implementation nur zeigen soll was mit SL in Scala möglich ist. Mögliche Verbesserungsvorschläge werden im Anhang \ref{sec:future-works} diskutiert.
+In SL geschriebener Code kann natürlich nicht in Scala wiederverwendet werden, aber es ist möglich zur Laufzeit auf die Serverumgebung zu reagieren. Insbesondere die Einbindung von annotierten Scala-Funktionen über Ajax ist einzigartig. Auch der Aufwand zur Laufzeit hält sich in Grenzen. Nur die Übersetzung der verwendeten Scala-Werte passiert zur Laufzeit.
+
+Zu erwähnen bleibt, das die momentane Implementation nur zeigen soll was mit SL in Scala möglich ist. Mögliche Verbesserungsvorschläge werden im Anhang \ref{sec:future-works} vorgestellt.
 
 \section{Zusammenfassung}
 
-Die wichtigsten Eigenschaften der verschiedenen Ansätze werden in der Tabelle \ref{tab:related-work-overview} noch einmal zusammengefasst. Dabei soll folgendes Szenario angenommen werden. Ein Webserver bietet, eine in Scala geschriebene, Rich Internet Application an. Möglich wäre das Online-Postfach eines E-Mail-Anbieters wie gmail.com.
+Die wichtigsten Eigenschaften der verschiedenen Ansätze werden in der Tabelle \ref{tab:related-work-overview} noch einmal zusammengefasst.
 
 \begin{table}[ht]
 \caption{Übersicht über die verschiedenen JS-in-Scala-Projekte}
@@ -964,9 +960,10 @@ während der Laufzeit & \\
 \addlinespace
 Abstraktion von Ajax-Anfragen & ja & nein & nein \\
 \addlinespace
-cross compiling & nein & ja & ja \\
+Code server- und & nein & ja & ja \\
+clientseitig nutzen \\
 \addlinespace
-Einbinden von JS Bibliotheken & schwer & leicht & leicht \\
+Einbinden von JS-Bibliotheken & schwer & leicht & leicht \\
 
 \end{tabular}
 \label{tab:related-work-overview}
@@ -990,6 +987,7 @@ Aus meiner Sicht erscheint dabei js-scala besonders viel versprechend. Es verein
  \item{Einfachere Einbindung von JS Bibliotheken. Entweder mehr Module bauen <- viel Wartung oder unterstützung von dynamischen Objekten <- weniger typsicherheit}
  \item{Einen besser an Scala angepassten Syntax für SL}
  \item{Geht das mit require.js? Optimierung des generierten JS Codes. Am Anfang vllt mit ClojureScript}
+ \item{Unittest umgebung für sl <- für große Projekte sehr sinnfoll}
 \end{itemize}
 
 \chapter{Beschreibung der Tests und Beispielprogramme}

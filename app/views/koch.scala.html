@@ -53,7 +53,7 @@ FUN testFoo : Void -> Void
 DEF testFoo a = Void
 
 FUN param1 : Int
-DEF param1 = $s
+DEF param1 = #s
 
 -- foo $s bar $s blub $s $s $s
  
@@ -80,10 +80,10 @@ FUN baz : Bool
 DEF baz = True
 
 FUN woot : List.List
-DEF woot = $s
+DEF woot = #s
 
 FUN foo : Opt.Option Int
-DEF foo = $s
+DEF foo = #s
 
 
 """, i, Seq(1,2), Some(3)))

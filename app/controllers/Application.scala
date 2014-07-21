@@ -27,6 +27,14 @@ object Application extends Controller {
   def checkOption = Action {
     Ok( views.html.checkOption() )
   }
+  
+  def checkSeq = Action {
+    Ok( views.html.checkSeq() )
+  }
+  
+  def checkPrim = Action {
+    Ok( views.html.checkPrim() )
+  }
 
   def slCalls = Action { request =>
 

@@ -1,0 +1,268 @@
+@import de.tuberlin.uebb.sl2.impl.MacroDriver._
+
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>Check Primitives</title>
+        
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        
+        <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/main.css")">
+        <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
+        
+        <script src="@routes.Assets.at("javascripts/jquery-1.9.0.min.js")" type="text/javascript"></script>
+        <script src="@routes.Assets.at("javascripts/sl_init.js")" type="text/javascript"></script>
+        <script src="@routes.Assets.at("javascripts/require.js")" type="text/javascript"></script>
+    </head>
+
+   	<body>
+    	<h1>Check Primitives</h1>
+    	<hr />
+    	
+    	<h2>Byte</h2>
+    	Are Byte values correct translated<br>
+    	zero: <span id="test1">not tested</span><br>
+    	positive value: <span id="test2">not tested</span><br>
+    	negative value: <span id="test3">not tested</span><br>
+    	
+    	<h2>Short</h2>
+    	Are Short values correct translated<br>
+    	zero: <span id="test4">not tested</span><br>
+    	positive value: <span id="test5">not tested</span><br>
+    	negative value: <span id="test6">not tested</span><br>
+    	
+    	<h2>Int</h2>
+    	Are Int values correct translated<br>
+    	zero: <span id="test7">not tested</span><br>
+    	positive value: <span id="test8">not tested</span><br>
+    	negative value: <span id="test9">not tested</span><br>
+    	
+    	<h2>Long</h2>
+    	Are Long values correct translated<br>
+    	zero: <span id="test10">not tested</span><br>
+    	positive value: <span id="test11">not tested</span><br>
+    	negative value: <span id="test12">not tested</span><br>
+    	
+    	<h2>Float</h2>
+    	Are Float values correct translated<br>
+    	zero: <span id="test13">not tested</span><br>
+    	positive value: <span id="test14">not tested</span><br>
+    	negative value: <span id="test15">not tested</span><br>
+    	
+    	<h2>Double</h2>
+    	Are Double values correct translated<br>
+    	zero: <span id="test16">not tested</span><br>
+    	positive value: <span id="test17">not tested</span><br>
+    	negative value: <span id="test18">not tested</span><br>
+    	
+    	<h2>Boolean</h2>
+    	Are Boolean values correct translated<br>
+    	true: <span id="test19">not tested</span><br>
+    	false: <span id="test20">not tested</span><br>
+    	
+    	<h2>Char</h2>
+    	Are Char values correct translated<br>
+    	'a': <span id="test21">not tested</span><br>
+    	' ': <span id="test22">not tested</span><br>
+    	
+    	<h2>String</h2>
+    	Are String values correct translated<br>
+    	"": <span id="test23">not tested</span><br>
+    	"hello world": <span id="test24">not tested</span><br>
+		<script type="text/javascript">@{
+Html(slci(
+"""
+IMPORT "std/basicweb" AS Web
+IMPORT "std/real" AS Real
+
+-- they test if the translator classes for Option (and Int) work correctly
+PUBLIC FUN main : DOM Void
+DEF main = test totestB0   shouldbezero eq    "test1"
+         & test totestB64  shouldbe64 eq      "test2"
+         & test totestBm64 shouldbeminus64 eq "test3"
+         & test totestS0   shouldbezero eq    "test4"
+         & test totestS64  shouldbe64 eq      "test5"
+         & test totestSm64 shouldbeminus64 eq "test6"
+         & test totestI0   shouldbezero eq    "test7"
+         & test totestI64  shouldbe64 eq      "test8"
+         & test totestIm64 shouldbeminus64 eq "test9"
+         & test totestL0   shouldbezero eq    "test10"
+         & test totestL64  shouldbe64 eq      "test11"
+         & test totestLm64 shouldbeminus64 eq "test12"
+-- floatingpoint very likely to have rounding errors
+         & test totestF0   shouldberealzero realeq "test13"
+         & test totestFpos shouldberealpos realeq  "test14"
+         & test totestFneg shouldberealneg realeq  "test15"
+         & test totestD0   shouldberealzero realeq "test16"
+         & test totestDpos shouldberealpos realeq  "test17"
+         & test totestDneg shouldberealneg realeq  "test18"
+-- bool
+         & test totestBtrue  True booleq  "test19"
+         & test totestBfalse False booleq "test20"
+-- char
+         & test totestCa     'a' chareq "test21"
+         & test totestCSpace ' ' chareq "test22"
+-- string
+         & test totestSempty "" strEq            "test23"
+         & test totestShello "hello world" strEq "test24"
+      
+
+-- Helper Funktion
+FUN test : a -> a -> (a -> a -> Bool) -> String -> DOM Void
+DEF test a b f div = IF ( f a b ) THEN writeToDiv div "<span style=\"color:#090\">passed</span>" ELSE writeToDiv div "<span style=\"color:#f00\">failed</span>"
+
+FUN writeToDiv : String -> String-> DOM Void
+DEF writeToDiv id what = {| $("#" + $id).html($what) |}
+
+FUN eq : Int -> Int -> Bool
+DEF eq a b = a == b
+
+FUN realeq : Real -> Real -> Bool
+DEF realeq a b = a Real.== b
+
+-- There is no function to compare bools ... woot
+FUN booleq : Bool -> Bool -> Bool
+DEF booleq True True = True
+DEF booleq False False = True
+DEF booleq a b = False 
+
+-- and of course there is no function to compare chars ... wtf
+FUN chareq : Char -> Char -> Bool
+DEF chareq a b = (charToInt a ) == (charToInt b)
+
+
+-- Test values
+FUN totestB0 : Int
+DEF totestB0 = #s
+
+FUN totestB64 : Int
+DEF totestB64 = #s
+
+FUN totestBm64 : Int
+DEF totestBm64 = #s
+
+FUN totestS0 : Int
+DEF totestS0 = #s
+
+FUN totestS64 : Int
+DEF totestS64 = #s
+
+FUN totestSm64 : Int
+DEF totestSm64 = #s
+
+FUN totestI0 : Int
+DEF totestI0 = #s
+
+FUN totestI64 : Int
+DEF totestI64 = #s
+
+FUN totestIm64 : Int
+DEF totestIm64 = #s
+
+FUN totestL0 : Int
+DEF totestL0 = #s
+
+FUN totestL64 : Int
+DEF totestL64 = #s
+
+FUN totestLm64 : Int
+DEF totestLm64 = #s
+
+FUN totestF0 : Real
+DEF totestF0 = #s
+
+FUN totestFpos : Real
+DEF totestFpos = #s
+
+FUN totestFneg : Real
+DEF totestFneg = #s
+
+FUN totestD0 : Real
+DEF totestD0 = #s
+
+FUN totestDpos : Real
+DEF totestDpos = #s
+
+FUN totestDneg : Real
+DEF totestDneg = #s
+
+FUN totestBtrue : Bool
+DEF totestBtrue = #s
+
+FUN totestBfalse : Bool
+DEF totestBfalse = #s
+
+FUN totestCa : Char
+DEF totestCa = #s
+
+FUN totestCSpace : Char
+DEF totestCSpace = #s
+
+FUN totestSempty : String
+DEF totestSempty = #s
+
+FUN totestShello : String
+DEF totestShello = #s
+
+FUN totestVoid : Void
+DEF totestVoid = #s
+
+FUN shouldbezero : Int
+DEF shouldbezero = 0
+
+FUN shouldbe64 : Int
+DEF shouldbe64 = 64
+
+FUN shouldbeminus64 : Int
+DEF shouldbeminus64 = -64
+
+FUN shouldberealzero : Real
+DEF shouldberealzero = 0.0
+
+FUN shouldberealpos : Real
+DEF shouldberealpos = 2.0
+
+FUN shouldberealneg : Real
+DEF shouldberealneg = -2.0
+
+FUN shouldbetrue : Bool
+DEF shouldbetrue = True
+
+FUN shouldbefalse : Bool
+DEF shouldbefalse = False
+
+""",
+// you have to annotate the type because literals have a different type then the object eg.: 0 has the type Int(0) not Int
+0:Byte, 
+64:Byte,
+-64:Byte,
+0:Short,
+64:Short,
+-64:Short,
+0:Int,
+64:Int,
+-64:Int,
+0:Long,
+64:Long,
+-64:Long,
+0.0f:Float,
+2.0f:Float,
+-2.0f:Float,
+0.0:Double,
+2.0:Double,
+-2.0:Double,
+true:Boolean,
+false:Boolean,
+'a':Char,
+' ':Char,
+"":String,
+"hello world":String,
+// to test the translation of void .... the result is irrelavant
+println("")
+
+))
+		}
+        </script>
+    </body>
+</html>

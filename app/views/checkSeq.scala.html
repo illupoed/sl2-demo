@@ -4,7 +4,7 @@
 
 <html>
     <head>
-        <title>Check Option</title>
+        <title>Check Seq</title>
         
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
         
@@ -17,17 +17,17 @@
     </head>
 
    	<body>
-    	<h1>Check Option</h1>
+    	<h1>Check Seq</h1>
     	<hr />
-    	This should test if the OptionTranslator correctly translates the scala value Some(3) to sl
+    	This should test if the SeqTranslator correctly translates the scala value Seq() to sl
     	<br>
     	<div id="test1">not tested</div>
     	<p>
-    	This should test if the OptionTranslator correctly translates the scala value None to sl
+    	This should test if the SeqTranslator correctly translates the scala value Seq(1,2,3) to sl
     	<br>
     	<div id="test2">not tested</div>
     	<p>
-    	The next two tests should test if Some(3) != None and None != Some(3)
+    	The next two tests should test if Seq(1,2,3) != Nil and Seq() != Cons 1 Cons 2 Cons 3 Nil.
     	<br>
     	<div id="test3">not tested</div><br>
     	<div id="test4">not tested</div>
@@ -35,14 +35,15 @@
 Html(slci(
 """
 IMPORT "std/basicweb" AS Web
+IMPORT "std/list" AS List
 IMPORT "std/option" AS Option
 
 -- they test if the translator classes for Option (and Int) work correctly
 PUBLIC FUN main : DOM Void
-DEF main = test totest1 shouldbe1 eqOption "test1"
-         & test totest2 shouldbe2 eqOption "test2"
-         & test totest1 shouldbe2 neqOption "test3"
-         & test totest2 shouldbe1 neqOption "test4"
+DEF main = test totest1 shouldbe1 eqList "test1"
+         & test totest2 shouldbe2 eqList "test2"
+         & test totest1 shouldbe2 neqList "test3"
+         & test totest2 shouldbe1 neqList "test4"
 
 -- Helper Funktion
 FUN test : a -> a -> (a -> a -> Bool) -> String -> DOM Void
@@ -51,29 +52,27 @@ DEF test a b f div = IF ( f a b ) THEN writeToDiv div "<span style=\"color:#090\
 FUN writeToDiv : String -> String-> DOM Void
 DEF writeToDiv id what = {| $("#" + $id).html($what) |}
 
-FUN eqOption : Option.Option Int -> Option.Option Int -> Bool
-DEF eqOption a b = Option.cmp eq a b
+FUN eqList : List.List Int -> List.List Int -> Bool
+DEF eqList (List.Cons h1 t1) (List.Cons h2 t2) = IF ( h1 == h2 ) THEN eqList t1 t2 ELSE False
+DEF eqList List.Nil List.Nil = True
+DEF eqList a b = False
 
-FUN neqOption : Option.Option Int -> Option.Option Int -> Bool
-DEF neqOption a b = not (Option.cmp eq a b)
-
-FUN eq : Int -> Int -> Bool
-DEF eq a b = a == b
+FUN neqList : List.List Int -> List.List Int -> Bool
+DEF neqList a b = not (eqList a b)
 
 -- Test values
-
-FUN totest1 : Option.Option Int
+FUN totest1 : List.List Int
 DEF totest1 = #s
 
-FUN shouldbe1 : Option.Option
-DEF shouldbe1 = Option.Some 3
+FUN shouldbe1 : List.List Int
+DEF shouldbe1 = List.Cons 1 (List.Cons 2 (List.Cons 3 List.Nil))
 
-FUN totest2 : Option.Option Int
+FUN totest2 : List.List Int
 DEF totest2 = #s
 
-FUN shouldbe2 : Option.Option Int
-DEF shouldbe2 = Option.None
-""", Some(3), None:Option[Int]))
+FUN shouldbe2 : List.List Int
+DEF shouldbe2 = List.Nil
+""", Seq(1,2,3):Seq[Int], Seq():Seq[Int]))
 		}
         </script>
     </body>

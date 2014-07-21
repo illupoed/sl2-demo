@@ -16,6 +16,10 @@ POST	/ajax				controllers.Application.slCalls
 
 GET		/checkOption		controllers.Application.checkOption
 
+GET		/checkSeq			controllers.Application.checkSeq
+
+GET		/checkPrim			controllers.Application.checkPrim
+
 #GET		/woot				controllers.Application.woot
 
 #GET	/kochFile		    controllers.Application.kochFile

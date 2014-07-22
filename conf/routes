@@ -20,6 +20,8 @@ GET		/checkSeq			controllers.Application.checkSeq
 
 GET		/checkPrim			controllers.Application.checkPrim
 
+GET 	/checkFunCall		controllers.Application.checkFunCall
+
 #GET		/woot				controllers.Application.woot
 
 #GET	/kochFile		    controllers.Application.kochFile

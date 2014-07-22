@@ -35,6 +35,10 @@ object Application extends Controller {
   def checkPrim = Action {
     Ok( views.html.checkPrim() )
   }
+  
+  def checkFunCall = Action {
+    Ok( views.html.checkFunCall() )
+  }
 
   def slCalls = Action { request =>
 

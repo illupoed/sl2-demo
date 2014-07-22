@@ -97,7 +97,7 @@
 
 \vspace{1cm}
 
-Hiermit erkläre ich, dass ich die vorliegende Arbeit selbstständig und eigenhändig sowie ohne unerlaubte fremde Hilfe und ausschließlich unter Verwendung der aufgeführten Quellen und Hilfsmittel angefertigt habe.
+Hiermit erkläre ich, dass ich die vorliegende Arbeit selbstständig und eigenhändig, sowie ohne unerlaubte fremde Hilfe und ausschließlich unter Verwendung der aufgeführten Quellen und Hilfsmittel angefertigt habe.
 \vspace{2cm}
 
 Berlin, den \today
@@ -118,36 +118,35 @@ Unterschrift
 % set style for code blocks
 \lstset{basicstyle=\ttfamily\small, numbers=left, numberstyle=\tiny}
 
-\chapter*{Einleitung}
+\chapter{Einleitung}
 \setcounter{page}{1}
-\addcontentsline{toc}{chapter}{Einleitung}
 
-Das World Wide Web ist ein integraler Bestandteil unseres Lebens geworden. Ein großer Teil der Software mit der wir in Berührung kommen, benutzt Webseiten als Benutzerschnittstelle. Deshalb muss sich jede moderne Programmiersprache daran messen lassen wie leicht es ist mit ihr Webprojekte zu erstellen. Daher bieten Java, Scala, Ruby und viele andere Programmiersprachen Frameworks an um schnell und einfach strukturierte Webprojekte zu erstellen. Ein gemeinsames Problem dieser Frameworks ist es, insbesondere mit dem aufkommen von Rich Internet Applications, das clientseitig Code ausgeführt werden muss. In diesem Bereich hat sich JavaScript (JS) zum Quasistandard entwickelt\footnote{Es gibt weitere Alternativen wie Java oder Flash, die aber Browserplugins vorraussetzen.}. Dadurch ist man beim Schreiben von Browser-seitigen Funktionen auf die von den JS-Entwicklern bevorzugten Programmierparadigmen wie dynamische Typisierung festgelegt. Bei größeren Bibliotheken kann dies die Wartung und Weiterentwicklung erschweren.
+Das World Wide Web ist ein integraler Bestandteil unseres Lebens geworden. Ein großer Teil der Software, mit der wir in Berührung kommen, benutzt Webseiten als Benutzerschnittstelle. Deshalb muss sich jede moderne Programmiersprache daran messen lassen wie leicht es ist mit ihr Webprojekte zu erstellen. Daher bieten Java, Scala, Ruby und viele andere Programmiersprachen Frameworks an, um schnell und einfach strukturierte Webprojekte zu erstellen. Ein gemeinsames Problem dieser Frameworks ist es, insbesondere mit dem Aufkommen von Rich Internet Applications, dass clientseitig Code ausgeführt werden muss. In diesem Bereich hat sich JavaScript (JS) zum Quasi-Standard entwickelt\footnote{Es gibt weitere Alternativen wie Java oder Flash, die aber Browserplugins vorraussetzen.}. Dadurch ist man beim Schreiben von browserseitigen Funktionen auf die von den JS-Entwicklern bevorzugten Programmierparadigmen wie dynamische Typisierung festgelegt. Bei größeren Bibliotheken kann dies die Wartung und Weiterentwicklung erschweren.
 
-Innerhalb der letzten Jahre kam es zu Entwicklungen die eine mögliche Lösung für dieses Problem bieten. Einerseits haben Büchle et al. im Rahmen eines Projektes an der \ac{TUB} einen Compiler entwickelt, der die Typ-sichere, funktionale Sprache Simple Language (SL) nach JS übersetzt\cite{Buchle2013}. Andererseits wurde durch die Einführung von compiler makros \cite{Burmako2013}, die Metaprogrammierung innerhalb von Scala erheblich vereinfacht.
+Innerhalb der letzten Jahre kam es zu Entwicklungen, die eine mögliche Lösung für dieses Problem bieten. Einerseits haben Büchle et al. im Rahmen eines Projektes an der \ac{TUB} einen Compiler entwickelt, der die typsichere, funktionale Sprache Simple Language (SL) nach JS übersetzt\cite{Buchle2013}. Andererseits wurde durch die Einführung von compiler makros \cite{Burmako2013} die Metaprogrammierung innerhalb von Scala erheblich vereinfacht.
 
-Mit Hilfe dieser beiden Voraussetzungen konnte SL als Abstraktion für JS in Scala eingebettet werden\cite{Hoger2013} um Probleme mit der dynamischen Typisierung von JS zu lösen. Dazu wurde eine Beispielanwendung im Play Framework geschrieben\cite{Play1}. 
+Mit Hilfe dieser beiden Voraussetzungen konnte SL als Abstraktion für JS in Scala eingebettet werden\cite{Hoger2013}, um Probleme mit der dynamischen Typisierung von JS zu lösen. Dazu wurde eine Beispielanwendung im Play Framework geschrieben\cite{Play1}. 
 
-Diese Einbettung wurde im Zuge dieser Diplomarbeit erweitert. Nun ist es  möglich Scala-Funktionen und -Werte in einem gewissen Rahmen automatisch zu übersetzen und typsicher im SL Code zu benutzen. 
+Diese Einbettung wurde im Zuge dieser Diplomarbeit erweitert. Nun ist es  möglich Scala-Funktionen und -Werte in einem gewissen Rahmen automatisch zu übersetzen und typsicher im SL-Code zu benutzen. 
 
-Mit Scala Werten ist der Inhalt einer Scala Variable gemeint. Wenn dieser sich in SL abbilden lässt, kann er jetzt in statischen SL Code eingebunden werden. Für Scala-Funktionen wird eine SL Funktionen erzeugt, die dann die entsprechenden Scala-Funktionen aufrufen, falls sich die Ein- und Rückgabetypen in SL Typen übersetzen lassen.
+Mit Scala-Werten ist der Inhalt einer Scala-Variable gemeint. Wenn dieser sich in SL abbilden lässt, kann er jetzt in statischen SL-Code eingebunden werden. Für eine Scala-Funktion wird eine SL-Funktion erzeugt, die dann die entsprechenden Scala-Funktion aufruft, falls sich die Ein- und Rückgabetypen in SL-Typen übersetzen lassen.
 
-Dazu wurde die Möglichkeit geschaffen Scala Type und Werte in SL zu übersetzen sowie zwei Makros geschrieben, die die Einbettung von SL in Scala ermöglichen. 
+Dazu wurde die Möglichkeit geschaffen Scala-Typen und -Werte in SL zu übersetzen sowie zwei Makros geschrieben, die die Einbettung von SL in Scala ermöglichen. 
 
 Für das Verständnis der Diplomarbeit werden Kenntnisse im Bereich funktionaler Programmierung sowie Grundlagen in den Sprachen Scala und JS vorausgesetzt.
 
-Im \ref{cha:sl-introduction}. Kapitel wird die Sprache SL kurz vorgestellt. Daraufhin wird beschrieben wie Scala Typen und Werte in SL übersetzt werden (Kapitel \ref{cha:model-sharing}). Dies wird im \ref{chap:scala-compiler-macros}. Kapitel benutzt um mit Hilfe der dort beschriebenen Makros SL in Scala einzubetten. Darauf hin wird kurz auf den SL Compiler eingegangen und welche Erweiterungen im Zuge dieser Arbeit an ihm gemacht wurden. Abschließend wird diese Einbettung von JS in Scala mit anderen Varianten aus dem Scala Universum verglichen (Kapitel \ref{chap:related-works}). 
+Im \ref{cha:sl-introduction}. Kapitel wird die Sprache SL kurz vorgestellt. Daraufhin wird beschrieben wie Scala-Typen und -Werte in SL übersetzt werden (Kapitel \ref{cha:model-sharing}). Dies wird im \ref{chap:scala-compiler-macros}. Kapitel benutzt, um mit Hilfe der dort beschriebenen Makros SL in Scala einzubetten. Daraufhin wird kurz auf den SL-Compiler eingegangen und welche Erweiterungen im Zuge dieser Arbeit an ihm gemacht wurden. Abschließend wird diese Einbettung von JS in Scala mit anderen Varianten aus dem Scala-Universum verglichen (Kapitel \ref{chap:related-works}). 
 
 \chapter{Einführung in Simple Language}
 \label{cha:sl-introduction}
 
 Zunächst wird im diesem Kapitel die Sprache SL vorgestellt, da sie essenziell für das Verständnis dieser Arbeit ist.
 
-SL ist eine einfache strikt getypte funktionale Sprache, die als Lehrsprache für den Studienbetrieb der \ac{TUB} entwickelt wurde. SL hat einen sehr modularen Compiler, der es ermöglicht leicht neuer Konzepte auszuprobieren. In den folgenden Abschnitten werden die für diese Arbeit relevanten Eigenschaften erklärt.
+SL ist eine einfache, strikt getypte funktionale Sprache, die als Lehrsprache für den Studienbetrieb der \ac{TUB} entwickelt wurde. SL hat einen sehr modularen Compiler, der es ermöglicht leicht neue Konzepte auszuprobieren. In den folgenden Abschnitten werden die für diese Arbeit relevanten Eigenschaften erklärt.
 
 \section{Struktur eines SL Programms}
 
-Im Rahmen des Compilerbauprojekts im Sommersemester 2013 wurde SL von den Studierenden um die Möglichkeit der Modularisierung erweitert \cite{Bisping2013}. Seit dem besteht ein SL-Programm aus einer Menge von Modulen. Ein Modul ist eine Quelldatei mit der Endung '.sl'. In ihm können Funktionen und Typen definiert werden. Durch die Übersetzung eines SL Moduls werden zwei Dateien erzeugt. Die Datei mit der Endung '.ls.js' enthält den ausführbaren JS-Code. Die zweite Datei mit der Endung '.signature' enthält Informationen darüber welche Funktionen und Datentypen in anderen Modulen verwendet werden können. Das Modul prelude.sl beschreibt alle vordefinierten Funktionen und Datentypen und wird in alle Programme eingebunden. 
+Im Rahmen des Compilerbauprojekts im Sommersemester 2013 wurde SL von den Studierenden um die Möglichkeit der Modularisierung erweitert \cite{Bisping2013}. Seitdem besteht ein SL-Programm aus einer Menge von Modulen. Ein Modul ist eine Quelldatei mit der Endung '.sl'. In ihm können Funktionen und Typen definiert werden. Durch die Übersetzung eines SL-Moduls werden zwei Dateien erzeugt. Die Datei mit der Endung '.ls.js' enthält den ausführbaren JS-Code. Die zweite Datei mit der Endung '.signature' enthält Informationen darüber, welche Funktionen und Datentypen in anderen Modulen verwendet werden können. Das Modul prelude.sl beschreibt alle vordefinierten Funktionen und Datentypen und wird in alle Programme eingebunden. 
 
 \section{Syntax von SL}
 
@@ -185,11 +184,11 @@ Mit \lstinline!IMPORT "<Pfad>" AS <Bezeichner>! können Module nachgeladen werde
 \subsection{Basistypen}
 
 %TODO neu schreiben extra subsection für JS-Quoting monade
-\lstinline!DOM a! und \lstinline!Void! sind einige der Vordefinierten Typen. \lstinline!Void! bezeichnet den leeren Typen, also keinen Rückgabewert. \lstinline!DOM a! ist der Typ der JS-quoting Monade. Mit ihr können JS-Snippets in SL eingebunden werden (Beispiel: \lstinline!{| window.outerHeight |} : DOM Int!). Weiter vordefinierte Typen sind \lstinline!Char! und \lstinline!String! um Zeichen(ketten) darzustellen, sowie \lstinline!Int! für ganzzahlige Werte und \lstinline!Real! für Gleitkommazahlen. Der letzte vordefinierte Typ ist \lstinline!Bool! für boolesche Werte.
+\lstinline!DOM a! und \lstinline!Void! sind einige der vordefinierten Typen. \lstinline!Void! bezeichnet den leeren Typen, also keinen Rückgabewert. \lstinline!DOM a! ist der Typ der JS-quoting Monade. Mit ihr können JS-Snippets in SL eingebunden werden (Beispiel: \lstinline!{| window.outerHeight |} : DOM Int!). Weiter vordefinierte Typen sind \lstinline!Char! und \lstinline!String! um Zeichen(-ketten) darzustellen, sowie \lstinline!Int! für ganzzahlige Werte und \lstinline!Real! für Gleitkommazahlen. Der letzte vordefinierte Typ ist \lstinline!Bool! für boolesche Werte.
   
-\subsection{Funktionsdefintionen}
+\subsection{Funktionsdefinitionen}
 
-Die optionale Signatur einer Funktion kann mit \lstinline!FUN <Funktionsname> : <Typ>! angegeben werden. Wenn ein \lstinline!PUBLIC! vorgestellt wird, ist die Funktion auch außerhalb des Moduls sichtbar. Darauf folgen eine oder mehrere pattern basierte Funktionsdefinition der Form \lstinline!DEF <Funktionsname> = <Funktionsrumpf>!.
+Die optionale Signatur einer Funktion kann mit \lstinline!FUN <Funktionsname> : <Typ>! angegeben werden. Wenn ein \lstinline!PUBLIC! vorgestellt wird ist die Funktion auch außerhalb des Moduls sichtbar. Darauf folgen eine oder mehrere pattern-basierte Funktionsdefinitionen der Form \lstinline!DEF <Funktionsname> = <Funktionsrumpf>!.
 
 
 \subsection{Programmeinstiegspunkt}
@@ -198,22 +197,22 @@ Ein Spezialfall bildet die Funktion \lstinline!main!. Sie bildet den Einstiegspu
 
 \subsection{Typdefinitionen}
 
-Mit \lstinline!DATA <Typname> [<Typprameter> ...] = <Konstruktor> [<Typparameter> ...] | ...! können eigene Typen definiert werden. Wie wir Scala Typen und Werte nach SL und zurück übersetzen wird Stoff des nächsten Kapitels sein.
+Mit \lstinline!DATA <Typname> [<Typprameter> ...] = <Konstruktor> [<Typparameter> ...] | ...! können eigene Typen definiert werden. Wie wir Scala-Typen und -Werte nach SL und zurück übersetzen wird Stoff des nächsten Kapitels sein.
 
 \chapter{Model Sharing}
 \label{cha:model-sharing}
 
-Im Zuge dieser Arbeit sollten Scala-Werte und -Funktionen in SL eingebettet werden. Dazu muss einem Scala-Typ ein SL-Typ zugeordnet und ihre Werte in einander überführt werden. Dies wird im allgemeinen unter dem Begriff Model Sharing zusammengefasst.
+Im Zuge dieser Arbeit sollten Scala-Werte und -Funktionen in SL eingebettet werden. Dazu muss einem Scala-Typ ein SL-Typ zugeordnet und ihre Werte ineinander überführt werden. Dies wird im allgemeinen unter dem Begriff Model Sharing zusammengefasst.
 
-Betrachten wir dazu beispielhaft die Scala Funktion \lstinline!scala_foo! im Listing \ref{lst:scala-fun-example}.
+Betrachten wir dazu beispielhaft die Scala-Funktion \lstinline!scala_foo! im Listing \ref{lst:scala-fun-example}.
 
 \begin{lstlisting}[caption=Beispielfunktion scala\_foo, label=lst:scala-fun-example]
 def foo( i: Float ): Double = {...}
 \end{lstlisting}
 
-Für die Typen \lstinline!Float! und \lstinline!Double! müssen wir ihre SL-Entsprechung finden. Um die Implementation zu vereinfachen setzen wir voraus, das jedem Scala Typ genau ein SL-Typ zugeordnet wird. Andernfalls müssten wir für alle möglichen Permutationen einen SL-Funktionsrumpf erstellen. Bei eingebetteten Scala Werten müsste der SL-Code analysiert werden, um die passende Übersetzung zu finden\footnote{Das dies keine besonders große Einschränkung wird später gezeigt. SL definiert wesentlich weniger Typen in seiner Standardbibliothek als Scala. }. Wir erhalten die partielle Funktion $translate_{type}(Type_{Scala}) = Type_{SL}$. Diese wird in Abschnitt \ref{subsec:translate_type} behandelt.
+Für die Typen \lstinline!Float! und \lstinline!Double! müssen wir ihre SL-Entsprechung finden. Um die Implementation zu vereinfachen setzen wir voraus, dass jedem Scala-Typ genau ein SL-Typ zugeordnet wird. Andernfalls müssten wir für alle möglichen Permutationen einen SL-Funktionsrumpf erstellen. Bei eingebetteten Scala-Werten müsste der SL-Code analysiert werden, um die passende Übersetzung zu finden\footnote{Dass dies keine besonders große Einschränkung ist, wird später gezeigt. SL definiert wesentlich weniger Typen in seiner Standardbibliothek als Scala. }. Wir erhalten die partielle Funktion $translate_{type}(Type_{Scala}) = Type_{SL}$. Diese wird in Abschnitt \ref{subsec:translate_type} behandelt.
 
-Haben wir einen passenden Typen gefunden, müssen auch die Werte in einander überführt werden. Dies sollte eine bijektive Abbildung sein. Das dies nicht immer möglich ist, wird in Abschnitt \ref{sec:value-transformation} behandelt.
+Haben wir einen passenden Typen gefunden, müssen auch die Werte ineinander überführt werden. Dies sollte eine bijektive Abbildung sein. Dass dies nicht immer möglich ist, wird in Abschnitt \ref{sec:value-transformation} behandelt.
 
 Für \lstinline!Float! und \lstinline!Double! ist der SL-Typ \lstinline!Real! die semantisch beste Wahl. Im Ergebnis erhalten wir schematisch die SL-Funktion \lstinline!sl_foo! aus Listing \ref{lst:scala-fun-example-translate}.
 
@@ -480,7 +479,7 @@ Scala                & JS-Darstellung                        & SL \\
 
 Die Übersetzung von anonymen Funktionen also Werten die eine Funktion darstellen ist im Moment nicht möglich, da kein adäquater Weg gefunden wurde um ihre Darstellung zwischen Scala und JS auszutauschen.
 
-\section{Erleuterung der Implementation}
+\section{Erläuterung der Implementation}
 \label{sec:trans-implementation}
 
 In der momentanen Implementation wird $translate_{type}$ durch \lstinline!Seq[AbstractTranslator]! dargestellt. Dadurch ist es möglich auch Teilmengen von $translate_{type}$ zu benutzen. Dabei stellt eine Klasse die von \lstinline!AbstractTranslator! erbt ein Paar zwischen einem Scala-Typ und einem SL-Typ dar. Die Klasse ist nach dem jeweiligen Scala Typen den sie übersetzt benannt. Zum Beispiel stellt die Klasse \lstinline!SeqTranslator! die Verbindung zwischen dem Scala-Typ \lstinline!Seq[A]! und dem SL-Typ \lstinline!List a! her. 

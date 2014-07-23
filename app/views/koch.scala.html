@@ -24,7 +24,6 @@
     	<canvas id="canvas" width="1500" height="200"></canvas>
     	<form action="/koch" method="get">
     	  <select name="n">
-    	    <option @(if (i == 0) "selected" else "")>0</option>
     	    <option @(if (i == 1) "selected" else "")>1</option>
     	    <option @(if (i == 2) "selected" else "")>2</option>
     	    <option @(if (i == 3) "selected" else "")>3</option>
@@ -32,6 +31,7 @@
     	    <option @(if (i == 5) "selected" else "")>5</option>
     	    <option @(if (i == 6) "selected" else "")>6</option>
     	    <option @(if (i == 7) "selected" else "")>7</option>
+    	    <option @(if (i == 8) "selected" else "")>8</option>
     	  </select>
     	  <input type="submit" value=" Absenden ">
     	</form>
@@ -97,7 +97,7 @@ DEF recur n c = IF (n == -1)
                 ELSE snowflake c n (5 + 140 * n) 115 125 & recur (n - 1) c
 
 PUBLIC FUN main : DOM Void
-DEF main = context &= recur #s & {| console.log("done.") |}
+DEF main = context &= recur ( #s - 1 ) & {| console.log("done.") |}
 """, i
 )) }
         </script>

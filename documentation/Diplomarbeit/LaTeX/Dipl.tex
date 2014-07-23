@@ -997,23 +997,23 @@ Einbinden von JS-Bibliotheken & schwer & leicht & leicht \\
 \label{tab:related-work-overview}
 \end{table}
 
-Aus meiner Sicht erscheint dabei js-scala besonders viel versprechend. Es vereint die meisten Vorteile und ist besonders flexibel. Mit ähnlichen Techniken wie in dieser Arbeit vorgestellt (siehe Abschnitt \ref{sec:annotation-macro}) sollte es möglich sein eine Abstraktion für Ajax-Anfragen zu implementieren.
+Aus meiner Sicht erscheint dabei js-scala besonders vielversprechend. Es vereint die meisten Vorteile und ist besonders flexibel. Mit ähnlichen Techniken, wie in dieser Arbeit vorgestellt (siehe Abschnitt \ref{sec:annotation-macro}), sollte es möglich sein eine Abstraktion für Ajax-Anfragen zu implementieren.
 
 \chapter{Ausblick}
 \label{sec:future-works}
 
-Bis jetzt ist die Einbettung von SL in Scala eher ein Prototyp. Um dies in einen Zustand für den produktiven Einsatz weiter zu entwickeln, sollte noch einige Probleme angegangen werden. Die folgende Liste erhebt keinen Anspruch auf Vollständigkeit. 
+Bis jetzt ist die Einbettung von SL in Scala eher ein Prototyp. Um dies in einen Zustand für den produktiven Einsatz weiterzuentwickeln, sollte noch einige Probleme angegangen werden. Die folgende Liste erhebt keinen Anspruch auf Vollständigkeit. 
 
 \begin{description}
  \item[Security] Insbesondere der Aufruf von annotierten Funktionen stellt ein großes Problem dar. Im Moment können alle Hilfsfunktionen über den Ajax-Handler aufgerufen werden (siehe Abschnitt \ref{subs:call-scala-functions}). In Zukunft sollte der Zugriff auf die annotierten Funktionen sinnvoll begrenzt werden.
  \item[Bessere Fehlermeldungen] Ein Problem sind die immer noch schwer verständlichen Fehlermeldungen des SL-Compilers. Während des Studentenprojekts wurden einige Schritte in die richtige Richtung gemacht. Die Fehlermeldungen bleiben trotzdem meist kryptisch. Insbesondere beim slci-Makro sind auch die Zeilen- und Spaltenangaben der Fehler falsch. Sie beziehen sich auf das generierte Modul und nicht auf die Datei in der das slci-Makro aufgerufen wird. 
  \item[Typen für Objekte] Das SL-Typsystem sollte Objekte unterstützen. Zum einen würde dies die Einbettung in Scala wesentlich vereinfachen. Auf der anderen Seite würde die Einbindung von JS-Bibliotheken vereinfacht werden. Sie setzen häufig auf die Benutzung von JS-Objekten. 
- \item[Automatische Übersetzung von Scala-Typen] Wie im Abschnitt \ref{subsec:formal-translate-typ} vorgestellt, können bestimmte Scala-Konstrukte automatisch übersetzt werden. Dies sollte implementiert werden und es sollte erforscht werden für welche Konstrukte das noch gilt. Insbesondere würde auch die Einführung von Objekt-Typen in SL dies vereinfachen.
+ \item[Automatische Übersetzung von Scala-Typen] Wie im Abschnitt \ref{subsec:formal-translate-typ} vorgestellt, können bestimmte Scala-Konstrukte automatisch übersetzt werden. Dies sollte implementiert und erforscht werden, für welche Konstrukte das noch gilt. Insbesondere würde dies auch die Einführung von Objekt-Typen in SL vereinfachen.
  \item[Bessere Einbindung von JS-Bibliotheken] Im Moment ist die Einbindung von JS-Bibliotheken relativ schwierig. Für jede Bibliothek muss ein Modul gebaut und gewartet werden. Alle Funktionalität einer Bibliothek muss entsprechend des SL-Typsystems in neue Funktionen gegossen werden. Insbesondere wird dies dadurch erschwert das SL keine Objekte kennt.
- \item[Optimierung des erzeugten JS-Codes] Bis jetzt erzeugt der SL-Compiler unoptimierten Code. Möglicherweise ist es möglich dieses Problem mit Hilfe des Closer Compilers\cite{} anzugehen.
- \item[Testumgebung/-bibliothek für SL] Es sollte die Möglichkeit geschaffen werden innerhalb von SBT SL-Bibliotheken zu testen. Ein Problem das mit der Einbettung von SL in Scala gelöst werden sollte, ist die Wartung von großen JS-Bibliotheken. Dazu gehört aber auch diese zu testen.
- \item[Play PlugIn] Das annotieren von Funktionen und ihr Aufruf über Ajax ergibt nur im Rahmen von Webprojekten Sinn. Play ist ein verbreitetes MVC-Framework für Scala. Es würde die Bedienung erleichtern wenn es ein entsprechendes PlugIn für Play gäbe. 
- \item[Anpassen des Syntax an Scala] Der Syntax von SL orientiert sich eher an Haskell und Opal als an Scala. Um die Bedienung zu erleichtern wäre es sinnvoll den Syntax etwas anzupassen.
+ \item[Optimierung des erzeugten JS-Codes] Bis jetzt erzeugt der SL-Compiler unoptimierten Code. Eventuell ist es möglich dieses Problem mit Hilfe des Closer Compilers\cite{} anzugehen.
+ \item[Testumgebung/-bibliothek für SL] Es sollte die Möglichkeit geschaffen werden innerhalb von SBT SL-Bibliotheken zu testen. Ein Problem, das mit der Einbettung von SL in Scala gelöst werden sollte, ist die Wartung von großen JS-Bibliotheken. Dazu gehört aber auch diese zu testen.
+ \item[Play PlugIn] Das Annotieren von Funktionen und ihr Aufruf über Ajax ergibt nur im Rahmen von Webprojekten Sinn. Play ist ein verbreitetes MVC-Framework für Scala. Es würde die Bedienung erleichtern, wenn es ein entsprechendes PlugIn für Play gäbe. 
+ \item[Anpassen des Syntax an Scala] Der Syntax von SL orientiert sich eher an Haskell und Opal als an Scala. Um die Bedienung zu erleichtern, wäre es sinnvoll den Syntax etwas anzupassen.
 \end{description}
 
 \chapter{Fazit}
@@ -1021,7 +1021,7 @@ Bis jetzt ist die Einbettung von SL in Scala eher ein Prototyp. Um dies in einen
 
 Die Einbettung von SL wurde im Rahmen dieser Arbeit erfolgreich verbessert. Es ist jetzt möglich Scala-Werte und -Funktionen im eingebetteten SL-Code zu benutzen. Insbesondere das Benutzen von Scala-Funktionen über Ajax-Anfragen macht den hier vorgestellten Ansatz einzigartig und erleichtert die Entwicklung von Webprojekten erheblich.
 
-Trotzdem muss noch einiges getan werden um die hier vorgestellte Lösung für den produktiven Einsatz vorzubereiten. Besonders sollte darauf geachtete werden bestehende JS-Bibliotheken bessere einzubinden und bestimmte Scala-Typen auch automatisch zu übersetzen.
+Trotzdem muss noch einiges getan werden, um die hier vorgestellte Lösung für den produktiven Einsatz vorzubereiten. Besonders sollte darauf geachtet werden, bestehende JS-Bibliotheken besser einzubinden und bestimmte Scala-Typen auch automatisch zu übersetzen.
 
 %TODO möglicherweise lieber anderen ansatz bevorzugen
 
@@ -1029,9 +1029,9 @@ Trotzdem muss noch einiges getan werden um die hier vorgestellte Lösung für de
 
 \chapter{Anleitungen}
 
-In diesem Anhang werden einige Anleitungen zur Verfügung gestellt. Der erste Abschnitt beschreibt das Einrichten des Projekts. Also was muss getan werden um die Anwendung lokal zu testen bzw. Tic Tac Toe zu spielen.
+In diesem Anhang werden einige Anleitungen zur Verfügung gestellt. Der erste Abschnitt beschreibt das Einrichten des Projekts. Also was getan werden muss, um die Anwendung lokal zu testen bzw. Tic Tac Toe zu spielen.
 
-Der Abschnitt \ref{sec:new-translator-class} wird genau beschrieben was getan werden muss um eine neue Translator-Klasse zu schreiben. 
+Im Abschnitt \ref{sec:new-translator-class} wird genau beschrieben, was getan werden muss, um eine neue Translator-Klasse zu schreiben. 
 
 \section{Projekt aufsetzen}
 \label{sec:setup-project}
@@ -1043,7 +1043,7 @@ folgen.\\*
 \\*
 Zunächst müssen ein paar Werte definiert werden:
 \begin{description}
- \item[<root path>] Ist der Ordner in des das Projekt liegen soll.
+ \item[<root path>] Ist der Ordner in dem das Projekt liegen soll.
  \item[<project path>] Ist der Pfad zum Wurzelverzeichnis des Projekts. Das ist \lstinline!<root path>/sl2-demo!.
 \end{description}
 Jetzt kann es losgehen. Zunächst wird der Quelltext kopiert.
@@ -1058,18 +1058,18 @@ Als nächstes muss die Konfiguration angepasst werden. Dazu öffnet man in einem
 
 Wenn man SBT richtig eingerichtet hat, kann man jetzt im Ordner \lstinline!<project path>! mit dem Befehl \lstinline!sbt! die SBT-Konsole starten. In der SBT-Konsole kann jetzt mit dem Befehl \lstinline!run! der Webserver gestartet werden. Jetzt sollte unter der Adresse \lstinline!http://localhost:9000/koch! das Beispielprogramm aus Abschnitt \ref{subsec:koch-curve} aufrufbar sein.
 
-Optional kann in der SBT-Konsole mit dem Befehl \lstinline!eclipse!, aus dem Quelltext ein Eclipse-Projekt generiert werden. Auf der Webseite\footnote{\lstinline!https://github.com/typesafehub/sbteclipse!} des sbteclipse Projekts findet man dazu mehr Informationen.
+Optional kann in der SBT-Konsole mit dem Befehl \lstinline!eclipse! aus dem Quelltext ein Eclipse-Projekt generiert werden. Auf der Webseite\footnote{\lstinline!https://github.com/typesafehub/sbteclipse!} des sbteclipse Projekts findet man dazu mehr Informationen.
 
 %TODO tag finale version des projekts
 
 \section{Neuen Translator anlegen}
 \label{sec:new-translator-class}
 
-In diesem Abschnitt wird kurz beschrieben wie eine neue Translator-Klasse angelegt wird. Zunächst muss unterschieden werden ob Ziel der Übersetzung ein SL-Typ sein soll der in einem Modul oder in prelude.sl definiert ist. 
+In diesem Abschnitt wird kurz beschrieben, wie eine neue Translator-Klasse angelegt wird. Zunächst muss unterschieden werden, ob Ziel der Übersetzung ein SL-Typ sein soll, der in einem Modul oder in prelude.sl definiert ist. 
 
-Ist der SL-Typ in einem Modul definiert, erbt die neue Klasse von \lstinline!AbstractModulTranslator!. Andernfalls erbt sie von \lstinline!AbstractTranslator!. Für die Implementation kann man sich dann an den bereits geschriebenen Translator-Klassen orientieren. Erbt die Klasse von \lstinline!AbstractModulTranslator! muss darauf geachtet werden das sie einen eindeutigen default \lstinline!module_alias! hat. Es darf keine zwei Klassen geben, die von \lstinline!AbstractModulTranslator! erben und den gleichen default \lstinline!module_alias! haben. Andernfalls könnte das \lstinline!sl_function!-Makro zwei SL-Bibliotheken unter dem gleichen Namen einbinden, was zu einem Übersetzungsfehler führt. 
+Ist der SL-Typ in einem Modul definiert, erbt die neue Klasse von \lstinline!AbstractModulTranslator!. Andernfalls erbt sie von \lstinline!AbstractTranslator!. Für die Implementation kann man sich dann an den bereits geschriebenen Translator-Klassen orientieren. Erbt die Klasse von \lstinline!AbstractModulTranslator!, muss darauf geachtet werden, dass sie einen eindeutigen default \lstinline!module_alias! hat. Es darf keine zwei Klassen geben, die von \lstinline!AbstractModulTranslator! erben und den gleichen default \lstinline!module_alias! haben. Andernfalls könnte das \lstinline!sl_function!-Makro zwei SL-Bibliotheken unter dem gleichen Namen einbinden, was zu einem Übersetzungsfehler führt. 
 
-Ist die neue Klasse programmiert, muss sie den Makros bekannt gemacht werden. Dazu wird eine Klasse die von \lstinline!AbstractModulTranslator! in die Funktion\\* \lstinline!AbstractModulTranslator.allModulTranslators! eingetragen. Erbt die Klasse von \\*\lstinline!AbstractTranslator!, muss sie in die Funktion \lstinline!AbstractTranslator.preludeTranslators! eingetragen werden.
+Ist die neue Klasse programmiert, muss sie den Makros bekannt gemacht werden. Dazu wird eine Klasse von \lstinline!AbstractModulTranslator! in die Funktion\\* \lstinline!AbstractModulTranslator.allModulTranslators! eingetragen. Erbt die Klasse von \\*\lstinline!AbstractTranslator! muss sie in die Funktion \lstinline!AbstractTranslator.preludeTranslators! eingetragen werden.
 
 Daraufhin sollten Unit-Tests und ein check-Programm geschrieben werden. Dies wird in Abschnitt \ref{sec:test-translators} etwas genauer erklärt. Dabei kann man sich an den bereits geschriebenen Tests orientieren.
 
@@ -1090,7 +1090,7 @@ Die Unit-Tests können in der SBT-Konsole des sl2-Subprojekts mit
 \end{centering}
 aufgerufen werden.
 
-Sie überprüfen ob die Wertübersetzungsfunktionen bijektiv sind und die Wertebereiche der einzelnen Datentypen beachten. Um dies zu erleichtern wurden die Wertübersetzungsfunktionen jeweils im companion object der Translator-Klasse definiert.  Die Bijektivität wird mit Tests der Form 
+Sie überprüfen, ob die Wertübersetzungsfunktionen bijektiv sind und die Wertebereiche der einzelnen Datentypen beachten. Um dies zu erleichtern, wurden die Wertübersetzungsfunktionen jeweils im companion object der Translator-Klasse definiert.  Die Bijektivität wird mit Tests der Form 
 \begin{lstlisting}
 val tmp: Int = 0
 IntTranslator.jsToScalaInt( IntTranslator.scalaToJsInt( tmp ) ) == tmp
@@ -1111,7 +1111,7 @@ intercept[IllegalArgumentException] {
 }
 \end{lstlisting} 
 
-Bis jetzt wurde nur getestet das die Wertübersetzungsfunktionen bijektiv sind, aber nicht ob sie für SL ein sinnvolles Ergebnis liefern. Also das der SL-Wert \lstinline!Some 2! gleich dem Wert \lstinline!scala_to_sl(Some(2):Option[Int])! ist. Dazu wurden Testanwendungen geschrieben. Mit Hilfe des Play-HTTP-Servers können diese unter folgenden URL's aufgerufen werden:
+Bis jetzt wurde nur getestet, dass die Wertübersetzungsfunktionen bijektiv sind, aber nicht ob sie für SL ein sinnvolles Ergebnis liefern; also dass der SL-Wert \lstinline!Some 2! gleich dem Wert \lstinline!scala_to_sl(Some(2):Option[Int])! ist. Dazu wurden Testanwendungen geschrieben. Mit Hilfe des Play-HTTP-Servers können diese unter folgenden URL's aufgerufen werden:
 
 \begin{description}
  \item[http://localhost:9000/checkPrim] Hier wird die Übersetzung aller primitiven Scala-Werte überprüft

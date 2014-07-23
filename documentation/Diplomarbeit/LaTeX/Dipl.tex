@@ -111,8 +111,22 @@ Berlin, den \today
 
 Unterschrift
 
-%\Datum
 \vspace*{6cm}
+
+\begin{LARGE}
+    \textbf{Danksagung}		% package soul for underlining
+\end{LARGE}
+
+\vspace{1cm}
+
+Zunächst möchte ich mich an dieser Stelle bei all denjenigen bedanken, die mich während der Anfertigung dieser Diplomarbeit unterstützt und motiviert haben.
+
+Besonders möchte ich mich bei meinem Betreuer Martin Zuber für viele nützliche Tipps und Anregungen bedanken.
+
+Daneben gilt mein Dank Hanka und Franzi, die mir bei meiner schrecklichen Rechtschreibung beigestanden haben.
+
+Meinen Eltern möchte ich dafür danken, dass sie mich während des Studiums so herzlich unterstützt und dabei so viel Geduld bewiesen haben.
+
 \newpage
 
 \pagenumbering{arabic}
@@ -120,8 +134,14 @@ Unterschrift
 % set style for code blocks
 \lstset{basicstyle=\ttfamily\small, numbers=left, numberstyle=\tiny}
 
-\chapter{Einleitung}
+\section*{Zusammenfassung}
+\addcontentsline{toc}{section}{Zusammenfassung}
 \setcounter{page}{1}
+
+Im Rahmen dieser Arbeit wurde die Einbettung von SimpleLanguage in Scala verbessert. Es ist jetzt möglich Scala-Werte und -Funktionen in dem eingebetteten SL-Code zu benutzten. Sowohl die dafür nötige Übersetzung von Scala-Typen und -Werte in SL sowie die Implementation der dafür nötigen Scala-Compilermakros wird hier beschrieben. Ein Überblick über verwandte Projekte sowie mögliche zukünftige Arbeiten schließen diese Diplomarbeit ab.
+
+\chapter{Einleitung}
+
 
 Das World Wide Web ist ein integraler Bestandteil unseres Lebens geworden. Ein großer Teil der Software, mit der wir in Berührung kommen, benutzt Webseiten als Benutzerschnittstelle. Deshalb muss sich jede moderne Programmiersprache daran messen lassen wie leicht es ist mit ihr Webprojekte zu erstellen. Daher bieten Java, Scala, Ruby und viele andere Programmiersprachen Frameworks an, um schnell und einfach strukturierte Webprojekte zu erstellen. Ein gemeinsames Problem dieser Frameworks ist es, insbesondere mit dem Aufkommen von Rich Internet Applications, dass clientseitig Code ausgeführt werden muss. In diesem Bereich hat sich \ac{JS} zum Quasi-Standard entwickelt\footnote{Es gibt weitere Alternativen wie Java oder Flash, die aber Browserplugins vorraussetzen.}. Dadurch ist man beim Schreiben von browserseitigen Funktionen auf die von den JS-Entwicklern bevorzugten Programmierparadigmen wie dynamische Typisierung festgelegt. Bei größeren Bibliotheken kann dies die Wartung und Weiterentwicklung erschweren.
 
@@ -186,7 +206,7 @@ Mit \lstinline!IMPORT "<Pfad>" AS <Bezeichner>! können Module nachgeladen werde
 \subsection{Basistypen}
 
 %TODO neu schreiben extra subsection für JS-Quoting monade
-\lstinline!DOM a! und \lstinline!Void! sind einige der vordefinierten Typen. \lstinline!Void! bezeichnet den leeren Typen, also keinen Rückgabewert. \lstinline!DOM a! ist der Typ der JS-quoting Monade. Mit ihr können JS-Snippets in SL eingebunden werden (Beispiel: \lstinline!{| window.outerHeight |} : DOM Int!). Weiter vordefinierte Typen sind \lstinline!Char! und \lstinline!String! um Zeichen(-ketten) darzustellen, sowie \lstinline!Int! für ganzzahlige Werte und \lstinline!Real! für Gleitkommazahlen. Der letzte vordefinierte Typ ist \lstinline!Bool! für boolesche Werte.
+\lstinline!DOM a! und \lstinline!Void! sind einige der vordefinierten Typen. \lstinline!Void! bezeichnet den leeren Typen, also keinen Rückgabewert. \lstinline!DOM a! ist der Typ der JS-quoting-Monade. Mit ihr können JS-Snippets in SL eingebunden werden (Beispiel: \lstinline!{| window.outerHeight |} : DOM Int!). Weiter vordefinierte Typen sind \lstinline!Char! und \lstinline!String! um Zeichen(-ketten) darzustellen, sowie \lstinline!Int! für ganzzahlige Werte und \lstinline!Real! für Gleitkommazahlen. Der letzte vordefinierte Typ ist \lstinline!Bool! für boolesche Werte.
   
 \subsection{Funktionsdefinitionen}
 
@@ -233,7 +253,7 @@ In den nächsten Abschnitten wird die Typübersetzung betrachtet, also welche Sc
 \subsection{SL-Typsystem}
 \label{subsec:sl-typesystem}
 
-Das Typsystem von SL besteht aus einer Reihe von vordefinierten Typen. Vordefiniert sind \lstinline!Int!, \lstinline!Real!, \lstinline!Char!, \lstinline!String!, \lstinline!Bool! und \lstinline!Void! sowie der Typ der JS-Quoting Monade \lstinline!DOM a!.
+Das Typsystem von SL besteht aus einer Reihe von vordefinierten Typen. Vordefiniert sind \lstinline!Int!, \lstinline!Real!, \lstinline!Char!, \lstinline!String!, \lstinline!Bool! und \lstinline!Void! sowie der Typ der JS-quoting-Monade \lstinline!DOM a!.
 
 Mit dem Stichwort \lstinline!DATA! können eigene Typen definiert werden. Dabei handelt es sich um eine Mischung aus Summen- und Tupeltypen \cite[S.119f u. S. 123]{Pepper2007}. Ein Typ besteht aus $\mathbb{N}^+$ Konstruktoren mit jeweils $\mathbb{N}$ Attributen.
 
@@ -789,7 +809,8 @@ Some(3)
 Die zu ersetzende Stelle wird durch einen Platzhalter (\lstinline!#s!) markiert. Der $n+1$-te Parameter von \lstinline!slci! wird dem $n$-ten Platzhalter zugeordnet. Falls die Anzahl der Parameter ungleich der Anzahl der Platzhalter ist, werden Compiler-Warnungen erzeugt oder die Übersetzung mit einem Fehler abgebrochen. 
 
 Daraufhin werden die \lstinline!IMPORT!-Anweisungen analysiert und die entsprechenden Translator-Klassen geladen\footnote{Translator-Klassen die in Standardtypen von SL übersetzen, werden immer geladen. Für \lstinline!IMPORT "std/option" AS Modulalias! würde die Instanz \lstinline!new OptionTranslator("Modulalias")! erzeugt werden.}.  Die von der Makro-API bestimmten Typen\footnote{Manchmal muss man den Typ annotieren. Das Literal \lstinline!5! hat den Typ \lstinline!Int(5)! und nicht \lstinline!Int!. Man schreibt also \lstinline!5:Int!.} der Parameter werden dann mit den zur Verfügung stehenden Translator-Klassen übersetzt.
-Wenn alle Typen übersetzt werden konnten, werden die Platzhalter durch \ac{JS}-Quotings ersetzt, die auf globale Variablen zugreifen. Im Beispiel aus Listing \ref{lst:slci-example-var} würde \lstinline!#s! durch \\*\lstinline!{| sl['5a40c735438fd9e1fd43657bd7f8564scalaParam1'] |} : Option.Option Int!\footnote{Der Name der JS-Variable folgt folgendem Schema: \\*\lstinline!<Hash des Macrokontexts>scalaParam<Parameternummer>!.} ersetzt werden. Der so erzeugte SL-Code wird dann, wie im Abschnitt \ref{subsec:compile-static-sl} beschrieben, übersetzt. 
+
+Wenn alle Typen übersetzt werden konnten, werden die Platzhalter durch \ac{JS}-quotings ersetzt, die auf globale Variablen zugreifen. Im Beispiel aus Listing \ref{lst:slci-example-var} würde \lstinline!#s! durch \\*\lstinline!{| sl['5a40c735438fd9e1fd43657bd7f8564scalaParam1'] |} : Option.Option Int!\footnote{Der Name der JS-Variable folgt folgendem Schema: \\*\lstinline!<Hash des Macrokontexts>scalaParam<Parameternummer>!.} ersetzt werden. Der so erzeugte SL-Code wird dann, wie im Abschnitt \ref{subsec:compile-static-sl} beschrieben, übersetzt. 
 Listing \ref{lst:slci-example-var-scala-code} enthält den vom Makro erzeugt Scala-Code. 
 
 \begin{lstlisting}[caption={Erzeugter Scala-Code zum Listing \ref{lst:slci-example-var}}, label=lst:slci-example-var-scala-code, float=h]
@@ -879,13 +900,13 @@ Die übersetzten Bibliotheksmodule (zum Beispiel: option.sl.js) werden in das Zi
 
 Weiterhin wurde der Schalter \lstinline!main_function_is_required! eingeführt. Wenn dieser Wert auf \lstinline!true! gesetzt ist, wird sichergestellt das ein zu übersetzendes Modul (in \lstinline!sources! enthalten) eine main-Funktion enthält. Falls dies nicht der Fall ist wird die Übersetzung mit einem Fehler abgebrochen. Wie im Abschnitt \ref{subsec:compile-static-sl} beschrieben, ist nur für das slci-Makro eine main-Funktion nötig. Der Standardwert des Schalters ist \lstinline!false!.
 
-\section{Überprüfung des Ergebnistyps von JS-Quotings}
+\section{Überprüfung des Ergebnistyps von JS-quotings}
 
 Um den SL-Compiler besser kennen zu lernen wurde zu Beginn der Arbeit ein neues Feature für den SL-Compiler umgesetzt.
 
-Wie bereits in der Einführung zu SL (siehe Kapitel \ref{cha:sl-introduction}) erwähnt, kann mit JS-Quotings, JS-Code direkt in SL benutzt werden. Bis jetzt wurde das Ergebnis solcher Quotings zur Laufzeit nicht auf Korrektheit überprüft \cite[S. 29]{Bisping2013}. Im Rahmen dieser Arbeit wurde dieses Verhalten für einige primitive Typen (\lstinline!String!, \lstinline!Char!, \lstinline!Bool!, \lstinline!Real! und \lstinline!Int!) geändert. Dies gilt nur für JS-Quotings die einen entsprechenden \lstinline!DOM a!-Typen haben, wie zum Beispiel im Listing \ref{lst:exampl-js-quoting}.
+Wie bereits in der Einführung zu SL (siehe Kapitel \ref{cha:sl-introduction}) erwähnt, kann mit der JS-quoting-Monade, JS-Code direkt in SL benutzt werden. Bis jetzt wurde das Ergebnis solcher quotings zur Laufzeit nicht auf Korrektheit überprüft \cite[S. 29]{Bisping2013}. Im Rahmen dieser Arbeit wurde dieses Verhalten für einige primitive Typen (\lstinline!String!, \lstinline!Char!, \lstinline!Bool!, \lstinline!Real! und \lstinline!Int!) geändert. Dies gilt nur für JS-quotings die einen entsprechenden \lstinline!DOM a!-Typen haben, wie zum Beispiel im Listing \ref{lst:exampl-js-quoting}.
 
-\begin{lstlisting}[caption={Beispiel: JS-Quoting Monade}, label=lst:exampl-js-quoting]
+\begin{lstlisting}[caption={Beispiel: JS-quoting-Monade}, label=lst:exampl-js-quoting]
 FUN foo : DOM Int
 DEF foo = {| document.getElementById("canvas").width |}:DOM Int
 \end{lstlisting}
@@ -941,7 +962,7 @@ Im Gegensatz zu allen anderen Ansätzen ist die Einbettung von SL in Scala sehr 
 
 Als Vorteil kann gesehen werden, das die beschreibende Sprache, also SL, sehr übersichtlich und ihre Grenzen klar sind. Weil die anderen Ansätze Scala als beschreibende Sprache benutzen kann dies zu Verwirrung führen. 
 
-Ein besonders schwerwiegendes Manko ist die schwierige Einbindung von bereits existierenden JS-Bibliotheken. Zwar ist es möglich mit Hilfe JS-quoating Monade, aus Sicht einer funktionalen Sprache, typsicher auf JS zuzugreifen, aber durch das Typsystem von SL ist man trotzdem sehr eingeschränkt. SL kennt keine Abstraktion für JS-Objekte. Für Bibliotheken wie jQuery die JS-Objekte benutzen, müssen dadurch aufwändig wrapper Module gebaut und gewartet werden. 
+Ein besonders schwerwiegendes Manko ist die schwierige Einbindung von bereits existierenden JS-Bibliotheken. Zwar ist es möglich mit Hilfe JS-quoting-Monade, aus Sicht einer funktionalen Sprache, typsicher auf JS zuzugreifen, aber durch das Typsystem von SL ist man trotzdem sehr eingeschränkt. SL kennt keine Abstraktion für JS-Objekte. Für Bibliotheken wie jQuery die JS-Objekte benutzen, müssen dadurch aufwändig wrapper Module gebaut und gewartet werden. 
 
 In SL geschriebener Code kann natürlich nicht in Scala wiederverwendet werden, aber es ist möglich zur Laufzeit auf die Serverumgebung zu reagieren. Insbesondere die Einbindung von annotierten Scala-Funktionen über Ajax ist einzigartig. Auch der Aufwand zur Laufzeit hält sich in Grenzen. Nur die Übersetzung der verwendeten Scala-Werte passiert zur Laufzeit.
 
@@ -981,21 +1002,33 @@ Aus meiner Sicht erscheint dabei js-scala besonders viel versprechend. Es verein
 \chapter{Ausblick}
 \label{sec:future-works}
 
-Bis jetzt ist die Einbettung von SL in Scala eher ein Prototyp. Um dies zu einem Produkt für den produktiven Einsatz weiter zu entwickeln, sollte noch einige Probleme angegangen werden. Die folgende Liste erhebt keinen Anspruch auf Vollständigkeit. 
+Bis jetzt ist die Einbettung von SL in Scala eher ein Prototyp. Um dies in einen Zustand für den produktiven Einsatz weiter zu entwickeln, sollte noch einige Probleme angegangen werden. Die folgende Liste erhebt keinen Anspruch auf Vollständigkeit. 
 
 \begin{description}
- \item[Security] Insbesondere der Aufruf von anotierten Funktionen stellt ein großes Problem dar. Im Moment können alle Hilfsfunktionen über den Ajax-Handler aufgerufen werden (siehe Abschnitt \ref{subs:call-scala-functions}). In Zukunft sollte der Zugriff auf die annotierten Funktionen sinnvoll begrenzt werden.
- \item[Bessere Fehlermeldungen] Ein Problem sind die immer noch schwer verständlichen Fehlermeldungen des SL-Compilers. Wärend des Studentenprojekts wurden einige Schritte in die richtige Richtung gemacht. Die Fehlermeldungen bleiben trotzdem meist kryptisch. Insbesondere beim slci-Makro sind auch die Zeilen- und Spaltenangaben der Fehler falsch. Sie beziehen sich auf das generierte Modul und nicht auf die Datei in der das slci-Makro aufgerufen wird. 
+ \item[Security] Insbesondere der Aufruf von annotierten Funktionen stellt ein großes Problem dar. Im Moment können alle Hilfsfunktionen über den Ajax-Handler aufgerufen werden (siehe Abschnitt \ref{subs:call-scala-functions}). In Zukunft sollte der Zugriff auf die annotierten Funktionen sinnvoll begrenzt werden.
+ \item[Bessere Fehlermeldungen] Ein Problem sind die immer noch schwer verständlichen Fehlermeldungen des SL-Compilers. Während des Studentenprojekts wurden einige Schritte in die richtige Richtung gemacht. Die Fehlermeldungen bleiben trotzdem meist kryptisch. Insbesondere beim slci-Makro sind auch die Zeilen- und Spaltenangaben der Fehler falsch. Sie beziehen sich auf das generierte Modul und nicht auf die Datei in der das slci-Makro aufgerufen wird. 
  \item[Typen für Objekte] Das SL-Typsystem sollte Objekte unterstützen. Zum einen würde dies die Einbettung in Scala wesentlich vereinfachen. Auf der anderen Seite würde die Einbindung von JS-Bibliotheken vereinfacht werden. Sie setzen häufig auf die Benutzung von JS-Objekten. 
  \item[Bessere Einbindung von JS-Bibliotheken] Im Moment ist die Einbindung von JS-Bibliotheken relativ schwierig. Für jede Bibliothek muss ein Modul gebaut und gewartet werden. Alle Funktionalität einer Bibliothek muss entsprechend des SL-Typsystems in neue Funktionen gegossen werden. Insbesondere wird dies dadurch erschwert das SL keine Objekte kennt.
  \item[Optimierung des erzeugten JS-Codes] Bis jetzt erzeugt der SL-Compiler unoptimierten Code. Möglicherweise ist es möglich dieses Problem mit Hilfe des Closer Compilers\cite{} anzugehen.
  \item[Testumgebung/-bibliothek für SL] Es sollte die Möglichkeit geschaffen werden innerhalb von SBT SL-Bibliotheken zu testen. Ein Problem das mit der Einbettung von SL in Scala gelöst werden sollte, ist die Wartung von großen JS-Bibliotheken. Dazu gehört aber auch diese zu testen.
- \item[Play PlugIn] Das annotieren von Funktionen und ihr Aufruf über Ajax ergibt nur im Rahmen von Webprojekten Sinn. Play ist ein verbreitets MVC-Framework für Scala. Es würde die Bedinung erleichtern wenn es ein entsprechendes PlugIn für Play gäbe. 
- \item[Anpassen des Syntax an Scala] Der Syntax von SL orientiert sich eher an Haskell und Opal als an Scala. Um die Bedinung zu erleichtern wäre es sinnvoll den Syntax etwas anzupassen.
+ \item[Play PlugIn] Das annotieren von Funktionen und ihr Aufruf über Ajax ergibt nur im Rahmen von Webprojekten Sinn. Play ist ein verbreitetes MVC-Framework für Scala. Es würde die Bedienung erleichtern wenn es ein entsprechendes PlugIn für Play gäbe. 
+ \item[Anpassen des Syntax an Scala] Der Syntax von SL orientiert sich eher an Haskell und Opal als an Scala. Um die Bedienung zu erleichtern wäre es sinnvoll den Syntax etwas anzupassen.
 \end{description}
 
 \chapter{Fazit}
 \label{chap:conclusion}
+
+- die einbettung von sl in scala konnte erweitert werden
+
+- das der sl compiler in scala geschrieben wurde machte einfacher war aber nicht unbedingt nötig
+
+- insbesondere das annotieren von funktionen ist eine eigenheit
+
+- für den produktiven einsatz ist noch einiges zu tun
+
+- besonders bessere verwendung von bereits existierenden js-bibliotheken
+
+- möglicherweise lieber anderen ansatz bevorzugen <-
 
 \appendix
 

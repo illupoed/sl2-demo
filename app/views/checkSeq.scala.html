@@ -36,9 +36,7 @@ Html(slci(
 """
 IMPORT "std/basicweb" AS Web
 IMPORT "std/list" AS List
-IMPORT "std/option" AS Option
 
--- they test if the translator classes for Option (and Int) work correctly
 PUBLIC FUN main : DOM Void
 DEF main = test totest1 shouldbe1 eqList "test1"
          & test totest2 shouldbe2 eqList "test2"

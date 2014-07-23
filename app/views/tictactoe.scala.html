@@ -1,0 +1,102 @@
+@import de.tuberlin.uebb.sl2.impl.MacroDriver._
+
+<!DOCTYPE html>
+
+<html>
+<head>
+<title>Check FunCall</title>
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+<link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/main.css")">
+<link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
+
+<script src="@routes.Assets.at("javascripts/jquery-1.9.0.min.js")" type="text/javascript"></script>
+<script src="@routes.Assets.at("javascripts/sl_init.js")" type="text/javascript"></script>
+<script src="@routes.Assets.at("javascripts/require.js")" type="text/javascript"></script>
+</head>
+
+<body>
+  Click on a field to begin.
+	<table border=1>
+		<tr>
+			<td id="0" style="width: 50px; height: 50px; font-size:xx-large"></td>
+			<td id="1" style="width: 50px; height: 50px; font-size:xx-large"></td>
+			<td id="2" style="width: 50px; height: 50px; font-size:xx-large"></td>
+		</tr>                                          
+		<tr>                                           
+			<td id="3" style="width: 50px; height: 50px; font-size:xx-large"></td>
+			<td id="4" style="width: 50px; height: 50px; font-size:xx-large"></td>
+			<td id="5" style="width: 50px; height: 50px; font-size:xx-large"></td>
+		</tr>                                          
+		<tr>                                           
+			<td id="6" style="width: 50px; height: 50px; font-size:xx-large"></td>
+			<td id="7" style="width: 50px; height: 50px; font-size:xx-large"></td>
+			<td id="8" style="width: 50px; height: 50px; font-size:xx-large"></td>
+		</tr>
+		
+		
+
+	</table>
+	<div id="info"></div>
+	<script type="text/javascript">@{
+Html(slci(
+"""
+IMPORT "std/basicweb" AS Web
+IMPORT "std/option" AS Opt
+IMPORT "std/list" AS List
+IMPORT "std/debuglog" AS Dbg
+IMPORT "std/pair" AS Pair
+IMPORT "std/either" AS Eith
+IMPORT "generated_annotation/callable_functions/examples/tictactoesolver" AS Ext
+
+PUBLIC FUN main : DOM Void
+DEF main = makeclickable "0" & makeclickable "1" & makeclickable "2" & makeclickable "3" & makeclickable "4" & makeclickable "5" & makeclickable "6" & makeclickable "7" & makeclickable "8"
+
+FUN makeclickable : String -> DOM Void
+DEF makeclickable elemid = getByID elemid &= \x.Web.setOnClick x ( callback elemid )
+
+FUN dbg : a -> DOM Void
+DEF dbg foo = {| console.log($foo) |} : DOM Void
+
+FUN getByID : String -> DOM Web.Node	
+DEF getByID elemid = {| document.getElementById($elemid) |} : DOM Web.Node
+	
+FUN requesthandler : Opt.Option ( (Eith.Either String  (Pair.Pair String Int) ) ) -> DOM Void
+DEF requesthandler Opt.None = getByID "info" &= setInnerHtml "<span style=\"color:#f00\">Error: Could not reach server.</span>"
+DEF requesthandler (Opt.Some (Eith.Left err)) = getByID "info" &= setInnerHtml err
+DEF requesthandler (Opt.Some (Eith.Right(Pair.Pair msg toset))) = getByID "info" &= setInnerHtml msg & getByID (intToString toset) &= setInnerHtml "o" 
+DEF requesthandler input = dbg input
+
+FUN callback : String -> DOM Void
+DEF callback str = getFieldValue str &= \x. IF x == 0 
+  THEN 
+	  getByID str &= setInnerHtml "x" & getFieldList &= Ext.tictactoesolverAsync requesthandler
+	ELSE
+	  getByID "info" &= setInnerHtml "<span style=\"color:#f00\">This field is already taken.</span>"
+
+FUN getInnerHtml : Web.Node -> DOM String
+DEF getInnerHtml node = {| $node.innerHTML |} : DOM String
+
+FUN setInnerHtml :  String -> Web.Node -> DOM Void
+DEF setInnerHtml str node = {| $node.innerHTML = $str |} : DOM Void
+
+FUN getFieldValue : String -> DOM Int
+DEF getFieldValue elemid = getByID elemid &= getInnerHtml &= \x. IF strEq x "x" THEN yield 1 ELSE IF strEq x "o" THEN yield 2 ELSE yield 0
+
+FUN getFieldList : DOM (List.List Int)
+DEF getFieldList = getFieldValue "0" &= \p0.
+     getFieldValue "1" &= \p1.
+     getFieldValue "2" &= \p2.
+     getFieldValue "3" &= \p3.
+     getFieldValue "4" &= \p4.
+     getFieldValue "5" &= \p5.
+     getFieldValue "6" &= \p6.
+     getFieldValue "7" &= \p7.
+     getFieldValue "8" &= \p8.
+     yield ( List.Cons p0 ( List.Cons p1 ( List.Cons p2 ( List.Cons p3 ( List.Cons p4 ( List.Cons p5 ( List.Cons p6 ( List.Cons p7 ( List.Cons p8 List.Nil ) ) ) ) ) ) ) ) )
+"""
+))}
+        </script>
+</body>
+</html>

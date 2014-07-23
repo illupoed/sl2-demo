@@ -8,7 +8,9 @@ GET		/					controllers.Application.index
 # Map static resources from the /public folder to the /assets URL path
 GET		/assets/*file		controllers.Assets.at(path="/public", file)
 
-GET		/koch				controllers.Application.koch
+GET		/koch				controllers.Application.koch(n: Int ?= 3)
+GET		/koch/:n			controllers.Application.koch(n: Int)
+
 
 GET		/foo				controllers.Application.foo
 
@@ -22,10 +24,6 @@ GET		/checkPrim			controllers.Application.checkPrim
 
 GET 	/checkFunCall		controllers.Application.checkFunCall
 
-#GET		/woot				controllers.Application.woot
+GET 	/tictactoe			controllers.Application.tictactoe
 
-#GET	/kochFile		    controllers.Application.kochFile
-
-#GET	/expr			    controllers.Application.expr
-
-#GET	/parseExpr		    controllers.Application.expr2Json(in : String)
+GET 	/test 				controllers.Application.test

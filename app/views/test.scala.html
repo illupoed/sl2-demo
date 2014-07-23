@@ -1,0 +1,93 @@
+@(number_example: Boolean)
+
+@import de.tuberlin.uebb.sl2.impl.MacroDriver._
+
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>Koch snowflake inline SL example</title>
+        
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        
+        <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/main.css")">
+        <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
+        
+        <script src="@routes.Assets.at("javascripts/jquery-1.9.0.min.js")" type="text/javascript"></script>
+        <script src="@routes.Assets.at("javascripts/sl_init.js")" type="text/javascript"></script>
+        <script src="@routes.Assets.at("javascripts/require.js")" type="text/javascript"></script>
+    </head>
+
+   	<body>
+    	<h1>@("fooo")</h1>
+    	<hr />
+    	<canvas id="canvas" width="1000" height="500"></canvas>
+		<script type="text/javascript">@{
+val i = 1
+Html(slci(
+"""
+IMPORT "std/debuglog" AS Log 
+IMPORT "std/basicweb" AS Web
+IMPORT "std/option" AS Opt
+IMPORT "std/list" AS List
+IMPORT "generated_annotation/callable_functions/examples/addfoo" AS Ext 
+IMPORT "generated_annotation/callable_functions/examples/fac" AS Fac
+
+PUBLIC FUN main : DOM Void 
+-- DEF main = Test.addtest 1 2 &= (\x.Web.alert(intToString x ))
+DEF main = Ext.addfooAsync (jupp) 5 6
+-- DEF main = ja ( jupp) 2 
+-- DEF main = jupp ( Opt.Some(1))
+
+FUN jupp : Opt.Option Int -> DOM Void 
+DEF jupp x = Web.alert(intToString(Opt.getOrElse x 0))
+
+-- DEF main = Ext.addfoo 5 6 &= (\x.Web.alert(intToString(Opt.getOrElse x 0)))
+-- DEF main = Test.call 5 &= (\x.Web.alert(intToString(Opt.getOrElse x 0)))
+-- DEF main = Web.alert(intToString(Opt.getOrElse  foo 0)) 
+
+FUN ja : ( Opt.Option Int -> DOM Void ) -> Int -> DOM Void
+DEF ja fun a = fun ( Opt.Some( a )) 
+
+FUN testFoo : Void -> Void
+DEF testFoo a = Void
+
+FUN param1 : Int
+DEF param1 = #s
+
+-- foo $s bar $s blub $s $s $s
+ 
+-- Tests for js expression type checks
+
+-- PUBLIC FUN main : DOM Void
+-- DEF main = Web.alert(intToString blub) & bla &= (\x.Web.alert( x))
+
+
+-- FUN blub : Int
+-- DEF EXTERN blub = {| document.getElementById("canvas").height |}
+
+-- FUN bla : DOM String
+-- DEF bla = {| document.getElementById("canvas").width |}:DOM String
+
+-- FUN suelz : DOM (Opt.Option (Int))
+-- DEF suelz = {| document.getElementById("canvas").width |}:DOM Opt.Option Int
+
+FUN bar : Opt.Option Int
+-- DEF bar = Opt.Some(2)
+DEF bar = Opt.None
+
+FUN baz : Bool
+DEF baz = True
+
+FUN woot : List.List
+DEF woot = #s
+
+FUN foo : Opt.Option Int
+DEF foo = #s
+
+
+""", i, Seq(1,2), Some(3)))
+		}
+        </script>
+    </body>
+</html>

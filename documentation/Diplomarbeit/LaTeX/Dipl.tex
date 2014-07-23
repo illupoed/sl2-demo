@@ -1008,6 +1008,7 @@ Bis jetzt ist die Einbettung von SL in Scala eher ein Prototyp. Um dies in einen
  \item[Security] Insbesondere der Aufruf von annotierten Funktionen stellt ein großes Problem dar. Im Moment können alle Hilfsfunktionen über den Ajax-Handler aufgerufen werden (siehe Abschnitt \ref{subs:call-scala-functions}). In Zukunft sollte der Zugriff auf die annotierten Funktionen sinnvoll begrenzt werden.
  \item[Bessere Fehlermeldungen] Ein Problem sind die immer noch schwer verständlichen Fehlermeldungen des SL-Compilers. Während des Studentenprojekts wurden einige Schritte in die richtige Richtung gemacht. Die Fehlermeldungen bleiben trotzdem meist kryptisch. Insbesondere beim slci-Makro sind auch die Zeilen- und Spaltenangaben der Fehler falsch. Sie beziehen sich auf das generierte Modul und nicht auf die Datei in der das slci-Makro aufgerufen wird. 
  \item[Typen für Objekte] Das SL-Typsystem sollte Objekte unterstützen. Zum einen würde dies die Einbettung in Scala wesentlich vereinfachen. Auf der anderen Seite würde die Einbindung von JS-Bibliotheken vereinfacht werden. Sie setzen häufig auf die Benutzung von JS-Objekten. 
+ \item[Automatische Übersetzung von Scala-Typen] Wie im Abschnitt \ref{subsec:formal-translate-typ} vorgestellt, können bestimmte Scala-Konstrukte automatisch übersetzt werden. Dies sollte implementiert werden und es sollte erforscht werden für welche Konstrukte das noch gilt. Insbesondere würde auch die Einführung von Objekt-Typen in SL dies vereinfachen.
  \item[Bessere Einbindung von JS-Bibliotheken] Im Moment ist die Einbindung von JS-Bibliotheken relativ schwierig. Für jede Bibliothek muss ein Modul gebaut und gewartet werden. Alle Funktionalität einer Bibliothek muss entsprechend des SL-Typsystems in neue Funktionen gegossen werden. Insbesondere wird dies dadurch erschwert das SL keine Objekte kennt.
  \item[Optimierung des erzeugten JS-Codes] Bis jetzt erzeugt der SL-Compiler unoptimierten Code. Möglicherweise ist es möglich dieses Problem mit Hilfe des Closer Compilers\cite{} anzugehen.
  \item[Testumgebung/-bibliothek für SL] Es sollte die Möglichkeit geschaffen werden innerhalb von SBT SL-Bibliotheken zu testen. Ein Problem das mit der Einbettung von SL in Scala gelöst werden sollte, ist die Wartung von großen JS-Bibliotheken. Dazu gehört aber auch diese zu testen.
@@ -1018,17 +1019,11 @@ Bis jetzt ist die Einbettung von SL in Scala eher ein Prototyp. Um dies in einen
 \chapter{Fazit}
 \label{chap:conclusion}
 
-- die einbettung von sl in scala konnte erweitert werden
+Die Einbettung von SL wurde im Rahmen dieser Arbeit erfolgreich verbessert. Es ist jetzt möglich Scala-Werte und -Funktionen im eingebetteten SL-Code zu benutzen. Insbesondere das Benutzen von Scala-Funktionen über Ajax-Anfragen macht den hier vorgestellten Ansatz einzigartig und erleichtert die Entwicklung von Webprojekten erheblich.
 
-- das der sl compiler in scala geschrieben wurde machte einfacher war aber nicht unbedingt nötig
+Trotzdem muss noch einiges getan werden um die hier vorgestellte Lösung für den produktiven Einsatz vorzubereiten. Besonders sollte darauf geachtete werden bestehende JS-Bibliotheken bessere einzubinden und bestimmte Scala-Typen auch automatisch zu übersetzen.
 
-- insbesondere das annotieren von funktionen ist eine eigenheit
-
-- für den produktiven einsatz ist noch einiges zu tun
-
-- besonders bessere verwendung von bereits existierenden js-bibliotheken
-
-- möglicherweise lieber anderen ansatz bevorzugen <-
+%TODO möglicherweise lieber anderen ansatz bevorzugen
 
 \appendix
 

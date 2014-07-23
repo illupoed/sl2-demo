@@ -33,6 +33,7 @@
 % tabellen
 \usepackage[margin=10pt,labelfont=bf]{caption} %abstand zwischen caption und tabelle und fette caption nummer
 \usepackage{booktabs}
+\usepackage{multirow}
 
 % codeblöcke
 \usepackage{listings}
@@ -76,16 +77,17 @@
 \chapter*{Abkürzungsverzeichnis}
 \begin{acronym}[TU-Berlin]
 \setlength{\itemsep}{-0.3\parsep}
- \acro{SL}{Simple Language}
- \acro{JS}{JavaScript}
  \acro{AST}{Abstract Syntax Tree}
- \acro{TUB}{Technische Universität Berlin}
- \acro{}{}
- \acro{MVC}{Model View Controller}
- \acro{HTML}{Hypertext Markup Language}
  \acro{DOM}{Document Object Model}
- \acro{URL}{Uniform Resource Locator}
+ \acro{HTML}{Hypertext Markup Language}
+ \acro{JS}{JavaScript}
+ \acro{MVC}{Model View Controller}
  \acro{SBT}{Scala Build Tool}
+ \acro{SL}{SimpleLanguage}
+ \acro{TUB}{Technische Universität Berlin}
+ \acro{URL}{Uniform Resource Locator}
+ 
+ \acro{}{}
 \end{acronym}
 
 
@@ -121,9 +123,9 @@ Unterschrift
 \chapter{Einleitung}
 \setcounter{page}{1}
 
-Das World Wide Web ist ein integraler Bestandteil unseres Lebens geworden. Ein großer Teil der Software, mit der wir in Berührung kommen, benutzt Webseiten als Benutzerschnittstelle. Deshalb muss sich jede moderne Programmiersprache daran messen lassen wie leicht es ist mit ihr Webprojekte zu erstellen. Daher bieten Java, Scala, Ruby und viele andere Programmiersprachen Frameworks an, um schnell und einfach strukturierte Webprojekte zu erstellen. Ein gemeinsames Problem dieser Frameworks ist es, insbesondere mit dem Aufkommen von Rich Internet Applications, dass clientseitig Code ausgeführt werden muss. In diesem Bereich hat sich JavaScript (JS) zum Quasi-Standard entwickelt\footnote{Es gibt weitere Alternativen wie Java oder Flash, die aber Browserplugins vorraussetzen.}. Dadurch ist man beim Schreiben von browserseitigen Funktionen auf die von den JS-Entwicklern bevorzugten Programmierparadigmen wie dynamische Typisierung festgelegt. Bei größeren Bibliotheken kann dies die Wartung und Weiterentwicklung erschweren.
+Das World Wide Web ist ein integraler Bestandteil unseres Lebens geworden. Ein großer Teil der Software, mit der wir in Berührung kommen, benutzt Webseiten als Benutzerschnittstelle. Deshalb muss sich jede moderne Programmiersprache daran messen lassen wie leicht es ist mit ihr Webprojekte zu erstellen. Daher bieten Java, Scala, Ruby und viele andere Programmiersprachen Frameworks an, um schnell und einfach strukturierte Webprojekte zu erstellen. Ein gemeinsames Problem dieser Frameworks ist es, insbesondere mit dem Aufkommen von Rich Internet Applications, dass clientseitig Code ausgeführt werden muss. In diesem Bereich hat sich \ac{JS} zum Quasi-Standard entwickelt\footnote{Es gibt weitere Alternativen wie Java oder Flash, die aber Browserplugins vorraussetzen.}. Dadurch ist man beim Schreiben von browserseitigen Funktionen auf die von den JS-Entwicklern bevorzugten Programmierparadigmen wie dynamische Typisierung festgelegt. Bei größeren Bibliotheken kann dies die Wartung und Weiterentwicklung erschweren.
 
-Innerhalb der letzten Jahre kam es zu Entwicklungen, die eine mögliche Lösung für dieses Problem bieten. Einerseits haben Büchle et al. im Rahmen eines Projektes an der \ac{TUB} einen Compiler entwickelt, der die typsichere, funktionale Sprache Simple Language (SL) nach JS übersetzt\cite{Buchle2013}. Andererseits wurde durch die Einführung von compiler makros \cite{Burmako2013} die Metaprogrammierung innerhalb von Scala erheblich vereinfacht.
+Innerhalb der letzten Jahre kam es zu Entwicklungen, die eine mögliche Lösung für dieses Problem bieten. Einerseits haben Büchle et al. im Rahmen eines Projektes an der \ac{TUB} einen Compiler entwickelt, der die typsichere, funktionale Sprache \ac{SL} nach JS übersetzt\cite{Buchle2013}. Andererseits wurde durch die Einführung von compiler makros \cite{Burmako2013} die Metaprogrammierung innerhalb von Scala erheblich vereinfacht.
 
 Mit Hilfe dieser beiden Voraussetzungen konnte SL als Abstraktion für JS in Scala eingebettet werden\cite{Hoger2013}, um Probleme mit der dynamischen Typisierung von JS zu lösen. Dazu wurde eine Beispielanwendung im Play Framework geschrieben\cite{Play1}. 
 
@@ -137,14 +139,14 @@ Für das Verständnis der Diplomarbeit werden Kenntnisse im Bereich funktionaler
 
 Im \ref{cha:sl-introduction}. Kapitel wird die Sprache SL kurz vorgestellt. Daraufhin wird beschrieben wie Scala-Typen und -Werte in SL übersetzt werden (Kapitel \ref{cha:model-sharing}). Dies wird im \ref{chap:scala-compiler-macros}. Kapitel benutzt, um mit Hilfe der dort beschriebenen Makros SL in Scala einzubetten. Daraufhin wird kurz auf den SL-Compiler eingegangen und welche Erweiterungen im Zuge dieser Arbeit an ihm gemacht wurden. Abschließend wird diese Einbettung von JS in Scala mit anderen Varianten aus dem Scala-Universum verglichen (Kapitel \ref{chap:related-works}). 
 
-\chapter{Einführung in Simple Language}
+\chapter{Einführung in SimpleLanguage}
 \label{cha:sl-introduction}
 
 Zunächst wird im diesem Kapitel die Sprache SL vorgestellt, da sie essenziell für das Verständnis dieser Arbeit ist.
 
 SL ist eine einfache, strikt getypte funktionale Sprache, die als Lehrsprache für den Studienbetrieb der \ac{TUB} entwickelt wurde. SL hat einen sehr modularen Compiler, der es ermöglicht leicht neue Konzepte auszuprobieren. In den folgenden Abschnitten werden die für diese Arbeit relevanten Eigenschaften erklärt.
 
-\section{Struktur eines SL Programms}
+\section{Struktur eines SL-Programms}
 
 Im Rahmen des Compilerbauprojekts im Sommersemester 2013 wurde SL von den Studierenden um die Möglichkeit der Modularisierung erweitert \cite{Bisping2013}. Seitdem besteht ein SL-Programm aus einer Menge von Modulen. Ein Modul ist eine Quelldatei mit der Endung '.sl'. In ihm können Funktionen und Typen definiert werden. Durch die Übersetzung eines SL-Moduls werden zwei Dateien erzeugt. Die Datei mit der Endung '.ls.js' enthält den ausführbaren JS-Code. Die zweite Datei mit der Endung '.signature' enthält Informationen darüber, welche Funktionen und Datentypen in anderen Modulen verwendet werden können. Das Modul prelude.sl beschreibt alle vordefinierten Funktionen und Datentypen und wird in alle Programme eingebunden. 
 
@@ -228,7 +230,7 @@ DEF sl_foo p0 = double_to_real (call_via_ajax (
 
 In den nächsten Abschnitten wird die Typübersetzung betrachtet, also welche Scala-Typen mit welchen SL-Typen assoziiert werden. Dazu werden die beiden Typsysteme kurz erläutert und dann die Funktion $translate_{type}$ näher beschrieben.
 
-\subsection{SL Typsystem}
+\subsection{SL-Typsystem}
 \label{subsec:sl-typesystem}
 
 Das Typsystem von SL besteht aus einer Reihe von vordefinierten Typen. Vordefiniert sind \lstinline!Int!, \lstinline!Real!, \lstinline!Char!, \lstinline!String!, \lstinline!Bool! und \lstinline!Void! sowie der Typ der JS-Quoting Monade \lstinline!DOM a!.
@@ -237,7 +239,7 @@ Mit dem Stichwort \lstinline!DATA! können eigene Typen definiert werden. Dabei 
 
 Bei Typdefinitionen werden Typen groß und Typvariablen klein geschrieben. Über Typvariablen können allgemeine Typen definiert werden, die für den Gebrauch spezialisiert werden. Mögliche Spezialisierungen für den Typ \lstinline!Option a! wären zum Beispiel \lstinline!Option Int! oder \lstinline!Option Void!.
 
-\begin{lstlisting}[caption=Beispiele für selbst definierte Datentypen in \ac{SL}, label=lst:bsp2]
+\begin{lstlisting}[caption=Beispiele für selbst definierte Datentypen in SL, label=lst:bsp2]
 -- Typ mit einem Konstruktor ohne Attribute
 DATA Void = Void
 
@@ -248,7 +250,7 @@ DATA CycleKonst = Cycle Int Int
 DATA Option a = Some a | None
 \end{lstlisting}
 
-\subsection{Scala Typsystem}
+\subsection{Scala-Typsystem}
 
 Das Scala-Typsystem in Gänze zu erklären würde den Rahmen dieser Arbeit bei weitem sprengen \cite{Odersky2013}. Im Rahmen dieser Arbeit wurden nur einige wenige vordefinierte Typen übersetzt.
 
@@ -263,7 +265,7 @@ Scala ist strikt objektorientiert. Es kennt keine primitiven Typen. Alle Typen s
 
 Es gibt in Scala Konstrukte, die den selbst definierten Typen aus \ac{SL} sehr ähnlich sind. Das wird anschaulich am Beispiel von Option (siehe Listing \ref{lst:option-in-sl-scala}). Für sie kann die Übersetzung formalisiert werden. Mehr dazu im Abschnitt \ref{subsec:translate_type}. Es wurden aber auch andere Typen wie \lstinline!Seq[A]! übersetzt, deren innere Struktur sich stark von ihrem SL Äquivalent \lstinline!List a! unterscheiden.
 
-\begin{lstlisting}[caption=Option in \ac{SL} und Scala, label=lst:option-in-sl-scala, float=h]
+\begin{lstlisting}[caption=Option in SL und Scala, label=lst:option-in-sl-scala, float=h]
 Option in SL:
 PUBLIC DATA Option a = Some a | None
 
@@ -293,11 +295,16 @@ Wie wir im Abschnitt \ref{sec:value-transformation} sehen werden, wird die zweit
 \caption{Die Funktion $translate_{type}$}
 \centering
 \begin{tabular}{l|llllllllllllll}
-Scala Typ & Byte & Float & Char & String & Boolean & Unit & Seq[A] & Option[A]\\
+\multicolumn{2}{l}{Primitive Datentypen:}\\
+Scala-Typ & Byte & Float & Char & String & Boolean & Unit \\
  & Short & Double\\
  & Int\\
  & Long\\
-SL Typ & Int & Real & Char & String & Bool & Void & List a & Option a\\
+SL-Typ & Int & Real & Char & String & Bool & Void \\
+\addlinespace
+\multicolumn{2}{l}{Andere:} \\
+Scala-Typ & Seq[A] & Tuple2[A,B] & Option[A] & Either[A,B] \\
+SL-Typ &  List a & Pair a b & Option a & Either a b \\
 \end{tabular}
 \label{tab:translate_type}
 \end{table}
@@ -415,7 +422,7 @@ DATA People a b = Alice | Bob Int | Cesar a b | Octavian
 Die einzelnen Konstruktoren erhalten entsprechend ihrer Reihenfolge eine Konstruktor-ID (\lstinline!_cid!) beginnend bei $0$. Hat ein Konstruktor keine Parameter, wird er nur durch seine \lstinline!_cid! dargestellt. Andernfalls wird ein Objekt erzeugt. Dies besitzt das Attribut \lstinline!_cid! sowie entsprechend der Anzahl der Parameter Attribute die von \lstinline!_var0! bis \lstinline!_varN! benannt sind. Die JS Darstellung von dem Beispieltyp aus Listing \ref{lst:example-datatype-sl} findet sich in der Tabelle \ref{tab:js-code-of-people}.
 
 \begin{table}[h]
-\caption{JS Darstellung des \ac{SL} Typen \lstinline!People Char Bool!}
+\caption{JS-Darstellung des SL-Typen \lstinline!People Char Bool!}
 \centering
 \begin{tabular}{ll}
  \ac{SL}              &  \ac{JS} Darstellung \\
@@ -550,7 +557,7 @@ Wird an die Wertübersetzungsfunktion ein unerwarteter Wert (oder bei primitiven
 
 Möchte man einen neuen Scala-Typ übersetzen bzw. zu $translate_{type}$ hinzufügen, muss eine neue Translator-Klasse geschrieben werden. Eine entsprechende Anleitung findet sich im Anhang \ref{sec:new-translator-class}.
 
-\chapter{Scala Compiler Macros}
+\chapter{Scala Compiler Makros}
 \label{chap:scala-compiler-macros}
 
 Im \ref{cha:sl-introduction}. Kapitel wurde SL vorgestellt. Eine strikt getypte funktionale Sprache, die in JS-Code übersetzt wird.
@@ -664,7 +671,7 @@ DEF factorialAsync callbackFun p0 = {| _sendRequestAsync( ... )  ($callbackFun, 
 \subsection{Hilfsfunktion}
 \label{subsec:helperfunction}
 
-Um den Aufruf mit Ajax Anfragen zu erleichtern wird eine Hilfsfunktion definiert. Sie kapselt die eigentliche Scala Funktion. Sie erhält die Parameter als \lstinline!JValue!. Die Parameter werden mit Hilfe der Funktionen aus den Translator Klassen in Scala Werte übertragen und dann auf die passenden Typ gecasted. Anschließend wird mit ihnen die eigentlich Funktion aufgerufen. Das Ergebnis wird in ein \lstinline!JValue! Wert umgewandelt und zurückgegeben.
+Um den Aufruf mit Ajax-Anfragen zu erleichtern wird eine Hilfsfunktion definiert. Sie kapselt die eigentliche Scala Funktion. Sie erhält die Parameter als \lstinline!JValue!. Die Parameter werden mit Hilfe der Funktionen aus den Translator Klassen in Scala Werte übertragen und dann auf die passenden Typ gecasted. Anschließend wird mit ihnen die eigentlich Funktion aufgerufen. Das Ergebnis wird in ein \lstinline!JValue! Wert umgewandelt und zurückgegeben.
 
 Die Funktionen \lstinline!scala_to_sl! und \lstinline!sl_to_scala! sind nur Platzhalter. Wie diese Funktionen genau definiert sind, hängt von der Implementation der entsprechenden Translator-Klasse ab (siehe Abschnitt \ref{subsec:example-option-translator}).
 
@@ -717,11 +724,11 @@ params         & JSON encodierte Liste der übergebenen Parameter\\
 \section{Def Macro slci}
 \label{sec:inline-macro}
 
-Bis jetzt kann man nur Funktionen markieren. Nun soll \ac{SL} benutzt werden, um \ac{JS}-Code zu generieren und ihn auf Benutzerseite zu verwenden. Dazu wurde das \lstinline!slci! Makro neu geschrieben und erweitert. Im Laufe der nächsten Abschnitte vollziehen wir die Entwicklungsschritte des Makros nach.
+Bis jetzt kann man nur Funktionen markieren. Nun soll \ac{SL} benutzt werden, um \ac{JS}-Code zu generieren und ihn auf Benutzerseite zu verwenden. Dazu wurde das \lstinline!slci!-Makro neu geschrieben und erweitert. Im Laufe der nächsten Abschnitte vollziehen wir die Entwicklungsschritte des Makros nach.
 
 Mit def macros kann während des Übersetzungsprozesses von Scala in den Code eingegriffen werden \cite{EPFL2}. Der Aufruf solch eines Makros verhält sich wie eine Funktion, nur dass das Makro die \ac{AST}s der Parameter übergeben bekommt und einen \ac{AST} liefert, der den Aufruf des Makros ersetzt. Listing \ref{lst:slci-example} enthält einen beispielhaften Aufruf des slci-Makros.
 
-\begin{lstlisting}[caption={Beispielaufruf des slci-Makros in einer Play View}, label=lst:slci-example, float=h]
+\begin{lstlisting}[caption={Beispielaufruf des slci-Makros in einer Play-View}, label=lst:slci-example, float=h]
 -- Example.scala.html
 ...
 <script type="text/javascript">@{
@@ -735,10 +742,10 @@ DEF main = ...
 ...
 \end{lstlisting}
 
-\subsection{Statischen SL Code übersetzen}
+\subsection{Statischen SL-Code übersetzen}
 \label{subsec:compile-static-sl}
 
-Mit der Entwicklung eines Modulsystems für \ac{SL} musste das Einbetten von statischem Code neu geschrieben werden \cite{Bisping2013}. Die erste Version des \lstinline!slci! Makros nutzte eine Version von \ac{SL} die \ac{JS}-Code erzeugt. Im Laufe des Studentenprojekts wurde davon Abstand genommen. Das Ergebnis der Übersetzung sind \ac{JS}-Dateien, die mit Hilfe von require.js\footnote{require.js ist eine JS-Bibliothek mit der JS-Dateien und -Module geladen werden können. Es ist besonders für die Benutzung in Browsern optimiert.} in Webseiten eingebettet werden \cite{RequireJS1}.
+Mit der Entwicklung eines Modulsystems für \ac{SL} musste das Einbetten von statischem Code neu geschrieben werden \cite{Bisping2013}. Die erste Version des \lstinline!slci!-Makros nutzte eine Version von \ac{SL} die \ac{JS}-Code erzeugt. Im Laufe des Studentenprojekts wurde davon Abstand genommen. Das Ergebnis der Übersetzung sind \ac{JS}-Dateien, die mit Hilfe von require.js\footnote{require.js ist eine JS-Bibliothek mit der JS-Dateien und -Module geladen werden können. Es ist besonders für die Benutzung in Browsern optimiert.} in Webseiten eingebettet werden \cite{RequireJS1}.
 
 Entsprechend wird jetzt vom \lstinline!slci! Makro ein \ac{SL}-Modul erzeugt. Die Datei wird entsprechend des Ortes, an dem \lstinline!slci! aufgerufen wird, benannt:
 \begin{center}
@@ -749,14 +756,14 @@ Wenn diese Datei übersetzt werden kann, wird der Aufruf des slci-Makros durch e
 Neben require.js müssen noch andere \ac{JS}-Bibliotheken geladen werden. Möchte man \ac{SL}-Code in einer Webseite benutzen, müssen alle Bibliotheken, die in Tabelle \ref{tab:js-libraries} aufgelistet sind, eingebunden werden.
 
 \begin{table}[h]
-\caption{Benötigte \ac{JS}-Bibliotheken}
+\caption{Benötigte JS-Bibliotheken}
 \centering
 \begin{tabular}{ll}
 jquery-1.9.0.min.js & Erleichtert Ajax-Anfragen. Wird vom sl\_function-Markro benötigt\cite{JQuery1}.\\
 sl\_init.js         & Initialisiert die globale Variable \lstinline!sl! und konfiguriert require.js. \\
                     & Muss vor require.js geladen werden.\\
-require.js          & Wird benötigt um \ac{SL}-Module nach zu laden\cite{RequireJS1}.\\
-json.js             & zum Umwandeln von JS Werten in ihre JSON-Repräsentation \\
+require.js          & Wird benötigt um SL-Module nach zu laden\cite{RequireJS1}.\\
+json.js             & zum Umwandeln von JS-Werten in ihre JSON-Repräsentation \\
                     & und zurück. Siehe Abschnitt \ref{subs:call-scala-functions}\cite{Crockford2010}.\\
 \end{tabular}
 \label{tab:js-libraries}
@@ -766,7 +773,7 @@ json.js             & zum Umwandeln von JS Werten in ihre JSON-Repräsentation \
 
 Als nächstes wurde die Verwendung von Scala-Variablen in \ac{SL}-Code implementiert. Anhand des Beispiels im Listing \ref{lst:slci-example-var} werden die dafür nötigen Schritte erklärt.
 
-\begin{lstlisting}[caption={Beispielaufruf des slci Macros mit Scala Variablen}, label=lst:slci-example-var, float=h]
+\begin{lstlisting}[caption={Beispielaufruf des slci-Macros mit Scala Variablen}, label=lst:slci-example-var, float=h]
 slci(
 """
 IMPORT "std/option" AS Option 
@@ -822,7 +829,7 @@ require(...);
 }
 \end{lstlisting}
 
-Die Funktion wird unter einem zufallsgenerierten Namen importiert, um Namenskonflikten vorzubeugen.
+Die Funktion wird unter einem zufälligen Namen importiert, um Namenskonflikten vorzubeugen.
 
 \chapter{SL-Compiler}
 \label{chap:dom-monad-extensions}
@@ -866,13 +873,13 @@ Im Rahmen dieser Arbeit war es kaum nötig in den Build-Prozess\cite[S. 16-19]{B
 
 \section{Erweiterungen an der Konfiguration und am MultiDriver}
 
-In der vorherigen Version des \lstinline!MultiDriver!s wurden, wenn ein Modul eine main-Funktion enthält, neben dem Kompilat die Dateien \lstinline!main.js! und \lstinline!index.html! erstellt \cite[S. 18-19]{Bisping2013}. Da dies unerwünscht ist, wenn der \ac{SL}-Code in eine Play View eingebettet wird, wurde in der Konfiguration (\lstinline!Configs.scala!) des Compilers eine neue Option eingeführt. Mit dem Schalter \lstinline!generate_index_html! kann das oben genannte Verhalten unterdrückt werden. Im Normalfall ist dieser Wert auf \lstinline!true! gesetzt; die Makros verwenden ihn mit dem Wert \lstinline!false!.
+In der vorherigen Version des \lstinline!MultiDriver!s wurden, wenn ein Modul eine main-Funktion enthält, neben dem Kompilat die Dateien \lstinline!main.js! und \lstinline!index.html! erstellt \cite[S. 18-19]{Bisping2013}. Da dies unerwünscht ist, wenn der \ac{SL}-Code in eine Play-View eingebettet wird, wurde in der Konfiguration (\lstinline!Configs.scala!) des Compilers eine neue Option eingeführt. Mit dem Schalter \lstinline!generate_index_html! kann das oben genannte Verhalten unterdrückt werden. Im Normalfall ist dieser Wert auf \lstinline!true! gesetzt; die Makros verwenden ihn mit dem Wert \lstinline!false!.
 
 Die übersetzten Bibliotheksmodule (zum Beispiel: option.sl.js) werden in das Zielverzeichnis der Übersetzung kopiert, wenn das zu übersetzende Modul eine main-Funktion enthält und der SL-Übersetzer in Form einer jar-Datei vorliegt. Das ist nötig, damit die entsprechenden Module mit require.js nachgeladen werden können. Dies ist bis jetzt undokumentiertes Verhalten. In der aktuellen Version des SL-Übersetzers werden die Dateien auch kopiert wenn der Übersetzer nicht gepackt vorliegt.
 
 Weiterhin wurde der Schalter \lstinline!main_function_is_required! eingeführt. Wenn dieser Wert auf \lstinline!true! gesetzt ist, wird sichergestellt das ein zu übersetzendes Modul (in \lstinline!sources! enthalten) eine main-Funktion enthält. Falls dies nicht der Fall ist wird die Übersetzung mit einem Fehler abgebrochen. Wie im Abschnitt \ref{subsec:compile-static-sl} beschrieben, ist nur für das slci-Makro eine main-Funktion nötig. Der Standardwert des Schalters ist \lstinline!false!.
 
-\section{Überprüfung des Ergebnistyps von \ac{JS}-Quotings}
+\section{Überprüfung des Ergebnistyps von JS-Quotings}
 
 Um den SL-Compiler besser kennen zu lernen wurde zu Beginn der Arbeit ein neues Feature für den SL-Compiler umgesetzt.
 
@@ -992,21 +999,67 @@ Bis jetzt ist die Einbettung von SL in Scala eher ein Prototyp. Um dies zu einem
 
 \appendix
 
+\chapter{Anleitungen}
+
+In diesem Anhang werden einige Anleitungen zur Verfügung gestellt. Der erste Abschnitt beschreibt das Einrichten des Projekts. Also was muss getan werden um die Anwendung lokal zu testen bzw. Tic Tac Toe zu spielen.
+
+Der Abschnitt \ref{sec:new-translator-class} wird genau beschrieben was getan werden muss um eine neue Translator-Klasse zu schreiben. 
+
+\section{Projekt aufsetzen}
+\label{sec:setup-project}
+
+Es werden die Programme Git und SBT benötigt. Eine Anleitung wie man Git installiert, findet man hier:\\\lstinline!http://git-scm.com/book/en/Getting-Started-Installing-Git!\\
+Für SBT sollte man der Dokumentation auf\\
+\lstinline!http://www.scala-sbt.org/!\\
+folgen.\\*
+\\*
+Zunächst müssen ein paar Werte definiert werden:
+\begin{description}
+ \item[<root path>] Ist der Ordner in des das Projekt liegen soll.
+ \item[<project path>] Ist der Pfad zum Wurzelverzeichnis des Projekts. Das ist \lstinline!<root path>/sl2-demo!.
+\end{description}
+Jetzt kann es losgehen. Zunächst wird der Quelltext kopiert.
+\begin{lstlisting}
+cd <root path>
+git clone https://github.com/illupoed/sl2-demo.git
+cd sl2-demo
+git submodule update --init --recursive
+\end{lstlisting}
+
+Als nächstes muss die Konfiguration angepasst werden. Dazu öffnet man in einem Editor die Datei: \\*\lstinline!<project path>/sl2/src/main/scala/de/tuberlin/uebb/sl2/slmacro/MacroConfig.scala! Der Wert von \lstinline!val assets_dir! muss auf \lstinline!<project path>/public/sl/! geändert werden.
+
+Wenn man SBT richtig eingerichtet hat, kann man jetzt im Ordner \lstinline!<project path>! mit dem Befehl \lstinline!sbt! die SBT-Konsole starten. In der SBT-Konsole kann jetzt mit dem Befehl \lstinline!run! der Webserver gestartet werden. Jetzt sollte unter der Adresse \lstinline!http://localhost:9000/koch! das Beispielprogramm aus Abschnitt \ref{subsec:koch-curve} aufrufbar sein.
+
+Optional kann in der SBT-Konsole mit dem Befehl \lstinline!eclipse!, aus dem Quelltext ein Eclipse-Projekt generiert werden. Auf der Webseite\footnote{\lstinline!https://github.com/typesafehub/sbteclipse!} des sbteclipse Projekts findet man dazu mehr Informationen.
+
+%TODO tag finale version des projekts
+
+\section{Neuen Translator anlegen}
+\label{sec:new-translator-class}
+
+In diesem Abschnitt wird kurz beschrieben wie eine neue Translator-Klasse angelegt wird. Zunächst muss unterschieden werden ob Ziel der Übersetzung ein SL-Typ sein soll der in einem Modul oder in prelude.sl definiert ist. 
+
+Ist der SL-Typ in einem Modul definiert, erbt die neue Klasse von \lstinline!AbstractModulTranslator!. Andernfalls erbt sie von \lstinline!AbstractTranslator!. Für die Implementation kann man sich dann an den bereits geschriebenen Translator-Klassen orientieren. Erbt die Klasse von \lstinline!AbstractModulTranslator! muss darauf geachtet werden das sie einen eindeutigen default \lstinline!module_alias! hat. Es darf keine zwei Klassen geben, die von \lstinline!AbstractModulTranslator! erben und den gleichen default \lstinline!module_alias! haben. Andernfalls könnte das \lstinline!sl_function!-Makro zwei SL-Bibliotheken unter dem gleichen Namen einbinden, was zu einem Übersetzungsfehler führt. 
+
+Ist die neue Klasse programmiert, muss sie den Makros bekannt gemacht werden. Dazu wird eine Klasse die von \lstinline!AbstractModulTranslator! in die Funktion\\* \lstinline!AbstractModulTranslator.allModulTranslators! eingetragen. Erbt die Klasse von \\*\lstinline!AbstractTranslator!, muss sie in die Funktion \lstinline!AbstractTranslator.preludeTranslators! eingetragen werden.
+
+Daraufhin sollten Unit-Tests und ein check-Programm geschrieben werden. Dies wird in Abschnitt \ref{sec:test-translators} etwas genauer erklärt. Dabei kann man sich an den bereits geschriebenen Tests orientieren.
+
 \chapter{Beschreibung der Tests und Beispielprogramme}
 \label{chap:tests-and-examples}
 
-Im Moment lassen sich Macros noch schwer testen. Insbesondere das Erzeugen von Compiler-Fehlern konnte nicht getestet werden. Deshalb sollte für das Testen der Makros auf die Beispielprogramme zurückgegriffen werden.  Vor allem wurde auf das Testen der Translator-Klassen wert gelegt. Im nächsten Abschnitt wird dies genauer beschrieben. 
+Im Moment lassen sich Makros noch schwer testen. Insbesondere das Erzeugen von Compiler-Fehlern konnte nicht getestet werden. Deshalb sollte für das Testen der Makros auf die Beispielprogramme zurückgegriffen werden.  Vor allem wurde auf das Testen der Translator-Klassen wert gelegt. Im nächsten Abschnitt wird dies genauer beschrieben. 
 
 \section{Test der Translator-Klassen}
+\label{sec:test-translators}
 
-Das Testen der Translator-Klassen (siehe Abbildung \ref{}) erfolgt auf zwei Wegen. Zum einen können Unit-Tests aufgerufen werden. Zum anderen wurden Check-Anwendungen geschrieben.
+Das Testen der Translator-Klassen (siehe Abbildung \ref{fig:project-overview}) erfolgt auf zwei Wegen. Zum einen können Unit-Tests aufgerufen werden. Zum anderen wurden Check-Anwendungen geschrieben.
 
-Die Unit-Tests können in der SBT-Konsole mit
+Die Unit-Tests können in der SBT-Konsole des sl2-Subprojekts mit
 
 \begin{centering}
 \lstinline!> testOnly de.tuberlin.uebb.sl2.slmacro.TranslationTest!\\
 \end{centering}
-
 aufgerufen werden.
 
 Sie überprüfen ob die Wertübersetzungsfunktionen bijektiv sind und die Wertebereiche der einzelnen Datentypen beachten. Um dies zu erleichtern wurden die Wertübersetzungsfunktionen jeweils im companion object der Translator-Klasse definiert.  Die Bijektivität wird mit Tests der Form 
@@ -1036,6 +1089,8 @@ Bis jetzt wurde nur getestet das die Wertübersetzungsfunktionen bijektiv sind, 
  \item[http://localhost:9000/checkPrim] Hier wird die Übersetzung aller primitiven Scala-Werte überprüft
  \item[http://localhost:9000/checkOption] Testet den OptionTranslator
  \item[http://localhost:9000/checkSeq] Testet den SeqTranslator
+ \item[http://localhost:9000/checkTuple2] Testet den Tuple2Translator
+ \item[http://localhost:9000/checkEither] Testet den EitherTranslator
  \item[http://localhost:9000/checkFunCall] Sehr einfacher Test ob das Benutzen von annotierten Funktionen funktioniert
 \end{description}
 
@@ -1045,42 +1100,13 @@ Es wurden zwei Beispielprogramme geschrieben, die die neuen Fähigkeiten der SL-
 
 \subsection{Tic Tac Toe}
 
-Die Anwendung Tic Tac Toe kann unter der Addresse \lstinline!http://localhost:9000/tictactoe! aufgerufen werden. Man spielt gegen den Computer das bekannte Spiel. Das Programm soll die Benutzung von annotierten Funktionen testen und verdeutlichen. Dazu wurde 'KI' als Scala-Funktion geschrieben, die über Ajax aufgerufen wird.
+Die Anwendung Tic Tac Toe kann unter der Adresse \lstinline!http://localhost:9000/tictactoe! aufgerufen werden. Man spielt gegen den Computer das bekannte Spiel. Das Programm soll die Benutzung von annotierten Funktionen testen und verdeutlichen. Dazu wurde die 'KI' als Scala-Funktion geschrieben, die über Ajax aufgerufen wird.
 
-\subsection{Koch}
+\subsection{Koch-Kurve}
+\label{subsec:koch-curve}
 
-% Koch
+Unter der Adresse \lstinline!http://localhost:9000/koch! werden Koch-Kurven in einem HTML-canvas gezeichnet. Diese Anwendung wurde bereits von Höger et al. in SL implementiert\cite{Hoger2013}. Der SL-Code wurde an die aktuelle Version des SL-Compilers angepasst und jetzt kann auf der Webseite ausgewählt werden, wie viel Kurven gezeichnet werden sollen. Damit soll die Benutzung von Scala-Variablen in eingebetteten SL-Code verdeutlicht werden.
 
-\chapter{Benutzte Techniken/Bibliotheken}
-
-%TODO webseiten noch einfügen
-\begin{itemize}
-  \item{Scala}
-  \begin{itemize}
-    \item{Scala v}
-    \item{SBT v}
-    \item{Play Framework v}
-    \item{Macroparadise v}
-    \item{json4s v}
-  \end{itemize}
-  \item{JavaScript}
-  \begin{itemize}
-    \item{JQuery v}
-    \item{require.js v}
-    \item{json.js v}
-  \end{itemize}
-  \item{Simple Language}
-\end{itemize}
-
-
-
-\chapter{HowTo's}
-
-\section{Projekt aufsetzen}
-\label{sec:setup-project}
-
-\section{Einen neuen Translator anlegen}
-\label{sec:new-translator-class}
 
 \bibliography{powers.bib}{}
 \bibliographystyle{geralpha}

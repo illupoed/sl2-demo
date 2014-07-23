@@ -32,6 +32,14 @@ object Application extends Controller with InvokeHelper {
     Ok( views.html.checkSeq() )
   }
   
+  def checkEither = Action {
+    Ok( views.html.checkEither() )
+  }
+  
+  def checkTuple2 = Action {
+    Ok( views.html.checkTuple2() )
+  }
+  
   def checkPrim = Action {
     Ok( views.html.checkPrim() )
   }

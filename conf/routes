@@ -20,6 +20,10 @@ GET		/checkOption		controllers.Application.checkOption
 
 GET		/checkSeq			controllers.Application.checkSeq
 
+GET 	/checkEither		controllers.Application.checkEither
+
+GET		/checkTuple2		controllers.Application.checkTuple2
+
 GET		/checkPrim			controllers.Application.checkPrim
 
 GET 	/checkFunCall		controllers.Application.checkFunCall

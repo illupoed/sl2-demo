@@ -977,14 +977,14 @@ Aus meiner Sicht erscheint dabei js-scala besonders viel versprechend. Es verein
 Bis jetzt ist die Einbettung von SL in Scala eher ein Prototyp. Um dies zu einem Produkt für den produktiven Einsatz weiter zu entwickeln, sollte noch einige Probleme angegangen werden. Die folgende Liste erhebt keinen Anspruch auf Vollständigkeit. 
 
 \begin{description}
- \item[Security] Insbesondere der Aufruf von anotierten Funktionen stellt ein großes Problem dar. Im Moment können alle Hilfsfunktionen über den Ajax-Handler aufgerufen werden\ref{subs:call-scala-functions}. In Zukunft sollte der Zugriff auf die annotierten Funktionen sinnvoll begrenzt werden.
+ \item[Security] Insbesondere der Aufruf von anotierten Funktionen stellt ein großes Problem dar. Im Moment können alle Hilfsfunktionen über den Ajax-Handler aufgerufen werden (siehe Abschnitt \ref{subs:call-scala-functions}). In Zukunft sollte der Zugriff auf die annotierten Funktionen sinnvoll begrenzt werden.
  \item[Bessere Fehlermeldungen] Ein Problem sind die immer noch schwer verständlichen Fehlermeldungen des SL-Compilers. Wärend des Studentenprojekts wurden einige Schritte in die richtige Richtung gemacht. Die Fehlermeldungen bleiben trotzdem meist kryptisch. Insbesondere beim slci-Makro sind auch die Zeilen- und Spaltenangaben der Fehler falsch. Sie beziehen sich auf das generierte Modul und nicht auf die Datei in der das slci-Makro aufgerufen wird. 
  \item[Typen für Objekte] Das SL-Typsystem sollte Objekte unterstützen. Zum einen würde dies die Einbettung in Scala wesentlich vereinfachen. Auf der anderen Seite würde die Einbindung von JS-Bibliotheken vereinfacht werden. Sie setzen häufig auf die Benutzung von JS-Objekten. 
  \item[Bessere Einbindung von JS-Bibliotheken] Im Moment ist die Einbindung von JS-Bibliotheken relativ schwierig. Für jede Bibliothek muss ein Modul gebaut und gewartet werden. Alle Funktionalität einer Bibliothek muss entsprechend des SL-Typsystems in neue Funktionen gegossen werden. Insbesondere wird dies dadurch erschwert das SL keine Objekte kennt.
  \item[Optimierung des erzeugten JS-Codes] Bis jetzt erzeugt der SL-Compiler unoptimierten Code. Möglicherweise ist es möglich dieses Problem mit Hilfe des Closer Compilers\cite{} anzugehen.
- \item[Testumgebung/-bibliothek für SL] Es sollte die Möglichkeit geschaffen werden innerhalb von SBT SL-Bibliotheken zu testen. Ein Problem das mit der Einbettung von SL in Scala gelöst werden sollte, ist die Wartung von großen JS-Bibliotheken. Dazu gehört aber auch diese auch zu testen.
+ \item[Testumgebung/-bibliothek für SL] Es sollte die Möglichkeit geschaffen werden innerhalb von SBT SL-Bibliotheken zu testen. Ein Problem das mit der Einbettung von SL in Scala gelöst werden sollte, ist die Wartung von großen JS-Bibliotheken. Dazu gehört aber auch diese zu testen.
  \item[Play PlugIn] Das annotieren von Funktionen und ihr Aufruf über Ajax ergibt nur im Rahmen von Webprojekten Sinn. Play ist ein verbreitets MVC-Framework für Scala. Es würde die Bedinung erleichtern wenn es ein entsprechendes PlugIn für Play gäbe. 
- \item[Anpassen des Syntax an Scala] Der Syntax von SL orientiert sich eher an Haskell oder Opal als an Scala. Um die Bedinung zu erleichtern wäre es sinnvoll den Syntax etwas anzupassen.
+ \item[Anpassen des Syntax an Scala] Der Syntax von SL orientiert sich eher an Haskell und Opal als an Scala. Um die Bedinung zu erleichtern wäre es sinnvoll den Syntax etwas anzupassen.
 \end{description}
 
 \chapter{Fazit}
@@ -1002,27 +1002,30 @@ Im Moment lassen sich Macros noch schwer testen. Insbesondere das Erzeugen von C
 Das Testen der Translator-Klassen (siehe Abbildung \ref{}) erfolgt auf zwei Wegen. Zum einen können Unit-Tests aufgerufen werden. Zum anderen wurden Check-Anwendungen geschrieben.
 
 Die Unit-Tests können in der SBT-Konsole mit
+
 \begin{centering}
-\lstinline!> testOnly de.tuberlin.uebb.sl2.slmacro.TranslationTest!
-\end{centering}\\*
+\lstinline!> testOnly de.tuberlin.uebb.sl2.slmacro.TranslationTest!\\
+\end{centering}
+
 aufgerufen werden.
 
 Sie überprüfen ob die Wertübersetzungsfunktionen bijektiv sind und die Wertebereiche der einzelnen Datentypen beachten. Um dies zu erleichtern wurden die Wertübersetzungsfunktionen jeweils im companion object der Translator-Klasse definiert.  Die Bijektivität wird mit Tests der Form 
 \begin{lstlisting}
 val tmp: Int = 0
 IntTranslator.jsToScalaInt( IntTranslator.scalaToJsInt( tmp ) ) == tmp
-\end{lstlisting}\\*
+\end{lstlisting}
 und
 \begin{lstlisting}
 val tmp = JInt( 1 )
 IntTranslator.scalaToJsInt( IntTranslator.jsToScalaInt( tmp ) ) == tmp
-\end{lstlisting}\\*
+\end{lstlisting}
 überprüft.
 
-Das beim Überschreiten des Wertebereichs oder bei unerwarteten Eingaben eine \lstinline!IllegalArgumentException! erzeugt wird, überprüfen Tests der Art:
+Das beim Überschreiten des Wertebereichs oder bei unerwarteten Eingaben eine\\*\lstinline!IllegalArgumentException! erzeugt wird, überprüfen Tests der Art:
 \begin{lstlisting}
 val tmp = JInt( Int.MaxValue.toLong + 1 )
-intercept[IllegalArgumentException] { // es wird eine IllegalArgumentException erwartet
+// es wird eine IllegalArgumentException erwartet
+intercept[IllegalArgumentException] { 
   IntTranslator.jsToScalaInt( tmp )
 }
 \end{lstlisting} 

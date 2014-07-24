@@ -1066,6 +1066,13 @@ cd sl2-demo
 git submodule update --init --recursive
 \end{lstlisting}
 
+Die finale Version des Quelltext im Rahmen der Diplomarbeit wurde mit dem git-Tag \lstinline!v0.1! markiert. Man kann sie optional folgendermaßen auschecken:
+\begin{lstlisting}
+cd <project path path>
+git checkout tags/v0.1
+git submodule update --recursive
+\end{lstlisting}
+
 Als nächstes muss die Konfiguration angepasst werden. Dazu öffnet man in einem Editor die Datei: \\*\lstinline!<project path>/sl2/src/main/scala/de/tuberlin/uebb/sl2/slmacro/MacroConfig.scala! Der Wert von \lstinline!val assets_dir! muss auf \lstinline!<project path>/public/sl/! geändert werden.
 
 Wenn man SBT richtig eingerichtet hat, kann man jetzt im Ordner \lstinline!<project path>! mit dem Befehl \lstinline!sbt! die SBT-Konsole starten. In der SBT-Konsole kann jetzt mit dem Befehl \lstinline!run! der Webserver gestartet werden. Jetzt sollte unter der Adresse \lstinline!http://localhost:9000/koch! das Beispielprogramm aus Abschnitt \ref{subsec:koch-curve} aufrufbar sein.
